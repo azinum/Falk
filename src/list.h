@@ -4,7 +4,6 @@
 
 #ifndef list_h
 #define list_h
-
 /*
 ** define a new list
 */
@@ -14,5 +13,35 @@ typedef struct NAME { \
     unsigned int size; \
     unsigned int top; \
 } NAME
+
+/*
+** initialize list
+*/
+#define list_init(LIST, TYPE) \
+LIST->value = new(TYPE); \
+LIST->size = 1; \
+LIST->top = 0
+
+/*
+** for increasing list size if we need to
+*/
+#define list_need_space(LIST) (LIST->top >= LIST->size)
+
+
+/*
+** push item to list
+*/
+#define list_push(LIST, TYPE, VALUE) \
+if (list_need_space(LIST)) {\
+    LIST->value = (TYPE*)realloc(LIST->value, sizeof(TYPE) * (++LIST->size)); \
+} \
+LIST->value[LIST->top++] = VALUE
+
+
+/*
+** string is a type of list
+** list of chars
+*/
+list_define(String, char);
 
 #endif /* list_h */
