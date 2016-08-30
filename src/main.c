@@ -7,10 +7,6 @@
 #include <stdlib.h>
 
 int main(int argc, const char* argv[]) {
-    String* string = new(String);
-    list_init(string, char);
-    string_push(string, "Hello there");
-    printf("%s\n", string->value);
     
     return 0;
 }

@@ -11,6 +11,7 @@
 
 typedef union Value {
     double number;
+    const char* string;
     void* ptr;
 } Value;
 
@@ -18,5 +19,16 @@ typedef struct Object {
     union Value value;
     unsigned char type;
 } Object;
+
+typedef struct Token {
+    const char* token;
+    unsigned char op;
+} Token;
+
+enum Instructions {
+    OP_ADD = 10,
+    OP_SUB,
+};
+
 
 #endif /* object_h */

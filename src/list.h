@@ -5,6 +5,7 @@
 #ifndef list_h
 #define list_h
 
+#include "object.h"
 
 #define arr_size(ARR) (sizeof(ARR) / sizeof(ARR[0]))
 
@@ -31,7 +32,6 @@ LIST->top = 0
 */
 #define list_need_space(LIST) (LIST->top >= LIST->size)
 
-
 /*
 ** push item to list
 */
@@ -52,5 +52,7 @@ for (int i = 0; i < arr_size(VALUE); i++) {\
 ** list of chars
 */
 list_define(String, char);
+
+list_define(Lexed, Object);
 
 #endif /* list_h */

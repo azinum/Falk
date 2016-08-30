@@ -4,3 +4,7 @@
 
 
 #include "lex.h"
+
+void lex(Lex_instance* L, String* input) {
+    
+}
