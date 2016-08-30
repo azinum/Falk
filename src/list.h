@@ -4,6 +4,10 @@
 
 #ifndef list_h
 #define list_h
+
+
+#define arr_size(ARR) (sizeof(ARR) / sizeof(ARR[0]))
+
 /*
 ** define a new list
 */
@@ -37,6 +41,11 @@ if (list_need_space(LIST)) {\
 } \
 LIST->value[LIST->top++] = VALUE
 
+
+#define string_push(STRING, VALUE) \
+for (int i = 0; i < arr_size(VALUE); i++) {\
+    list_push(STRING, char, VALUE[i]); \
+}
 
 /*
 ** string is a type of list
