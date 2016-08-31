@@ -7,6 +7,6 @@
 #include <stdlib.h>
 
 int main(int argc, const char* argv[]) {
-    
+    printf("%.1f\n", to_number("0xfba"));
     return 0;
 }

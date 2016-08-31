@@ -6,12 +6,15 @@
 #define object_h
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #define new(TYPE) ((TYPE*)malloc(sizeof(TYPE)))
 
+#define true 1
+#define false 0
+
 typedef union Value {
     double number;
-    const char* string;
     void* ptr;
 } Value;
 
@@ -26,9 +29,17 @@ typedef struct Token {
 } Token;
 
 enum Instructions {
-    OP_ADD = 10,
+    OP_ADD,
     OP_SUB,
+    OP_MUL,
+    OP_DIV,
+    
+    OP_IDENTIFIER,
+    
 };
 
+unsigned char is_number(const char* string);
+
+double to_number(const char* string);
 
 #endif /* object_h */

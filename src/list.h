@@ -53,6 +53,6 @@ for (int i = 0; i < arr_size(VALUE); i++) {\
 */
 list_define(String, char);
 
-list_define(Lexed, Object);
+list_define(Lexed, Token);
 
 #endif /* list_h */
