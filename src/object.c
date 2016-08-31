@@ -8,7 +8,9 @@ Token tokens[] = {
     {"+", OP_ADD},
     {"-", OP_SUB},
     {"*", OP_MUL},
-    {"/", OP_DIV}
+    {"/", OP_DIV},
+    
+    {"\n", TOK_NEWLINE}
 };
 
 unsigned char is_number(const char* string) {

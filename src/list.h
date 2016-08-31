@@ -15,8 +15,8 @@
 #define list_define(NAME, TYPE) \
 typedef struct NAME { \
     TYPE* value; \
-    unsigned int size; \
-    unsigned int top; \
+    unsigned long size; \
+    unsigned long top; \
 } NAME
 
 /*
