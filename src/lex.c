@@ -25,9 +25,8 @@ void lex_instance_init(Lex_instance* L) {
 ** get description from enum: Instructions, at "object.h"
 */
 void lex(Lex_instance* L, char* input) {
-    Tokenlist* splitted = new(Tokenlist);
-    list_init(splitted);
-    
+    if (strlen(input) <= 1)
+        return;
     String* item = new(String);
     list_init(item);
     char temp_token;
@@ -38,7 +37,7 @@ void lex(Lex_instance* L, char* input) {
         if (temp_token == ' ') {
             Token to_push;
             to_push.token = item->value;
-            list_push(splitted, to_push);
+            list_push(L->result, to_push);
             list_clear(item);
         } else {
             list_push(item, temp_token);
@@ -46,13 +45,12 @@ void lex(Lex_instance* L, char* input) {
     }
     
     /* push last item to output */
-    list_push(splitted, (Token){item->value});
+    list_push(L->result, (Token){item->value});
     
-    for (int i = 0; i < splitted->size; i++) {
-        printf("%s \n", splitted->value[i].token);
+    for (int i = 0; i < L->result->size; i++) {
+        printf("%s \n", L->result->value[i].token);
     }
     
-    list_free(splitted);
     list_free(item);
 }
 
