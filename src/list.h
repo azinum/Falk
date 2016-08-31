@@ -41,6 +41,10 @@ if (list_need_space(LIST)) {\
 } \
 LIST->value[LIST->top++] = VALUE
 
+#define list_free(LIST) \
+free(LIST->value); \
+free(LIST);
+
 
 #define string_push(STRING, VALUE) \
 for (int i = 0; i < arr_size(VALUE) - 1; i++) {\

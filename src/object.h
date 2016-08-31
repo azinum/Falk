@@ -30,7 +30,7 @@ typedef struct Object {
 
 typedef struct Token {
     const char* token;
-    unsigned char op;
+    int op;
 } Token;
 
 enum Instructions {
@@ -40,6 +40,8 @@ enum Instructions {
     OP_DIV,
     
     OP_IDENTIFIER,
+    
+    TOK_NEWLINE = 255,
     
 };
 

@@ -21,7 +21,17 @@ void lex_instance_init(Lex_instance* L) {
 ** here we convert our input string to a list of tokens
 ** every token has a string type and a integer byte (unsigned char)
 ** the string is for knowing how the token looks like, the number is describing the token
+** get description from enum: Instructions, at "object.h"
 */
 void lex(Lex_instance* L, String* input) {
     
+}
+
+
+/*
+** free a lex instance
+*/
+void lex_instance_free(Lex_instance* L) {
+    list_free(L->result);
+    free(L);    /* free whole instance */
 }

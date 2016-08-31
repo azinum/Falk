@@ -7,6 +7,9 @@
 #include <stdlib.h>
 
 int main(int argc, const char* argv[]) {
-    printf("%.1f\n", to_number("0xfba"));
+    Lex_instance* L = new(Lex_instance);
+    lex_instance_init(L);
+    
+    lex_instance_free(L);
     return 0;
 }
