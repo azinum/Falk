@@ -10,8 +10,13 @@
 
 #define new(TYPE) ((TYPE*)malloc(sizeof(TYPE)))
 
-#define true 1
-#define false 0
+/*
+** when using C99 we need to use __typeof__ keyword
+** now rewritten so that we can use the normal typeof
+*/
+#ifndef typeof
+#define typeof __typeof__
+#endif
 
 typedef union Value {
     double number;

@@ -22,8 +22,8 @@ typedef struct NAME { \
 /*
 ** initialize list
 */
-#define list_init(LIST, TYPE) \
-LIST->value = new(TYPE); \
+#define list_init(LIST) \
+LIST->value = new(typeof(*LIST->value)); \
 LIST->size = 1; \
 LIST->top = 0
 
@@ -35,16 +35,16 @@ LIST->top = 0
 /*
 ** push item to list
 */
-#define list_push(LIST, TYPE, VALUE) \
+#define list_push(LIST, VALUE) \
 if (list_need_space(LIST)) {\
-    LIST->value = (TYPE*)realloc(LIST->value, sizeof(TYPE) * (++LIST->size)); \
+    LIST->value = (typeof(VALUE)*)realloc(LIST->value, sizeof(VALUE) * (++LIST->size)); \
 } \
 LIST->value[LIST->top++] = VALUE
 
 
 #define string_push(STRING, VALUE) \
-for (int i = 0; i < arr_size(VALUE); i++) {\
-    list_push(STRING, char, VALUE[i]); \
+for (int i = 0; i < arr_size(VALUE) - 1; i++) {\
+    list_push(STRING, VALUE[i]); \
 }
 
 /*

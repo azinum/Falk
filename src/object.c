@@ -6,7 +6,9 @@
 
 Token tokens[] = {
     {"+", OP_ADD},
-    {"-", OP_SUB}
+    {"-", OP_SUB},
+    {"*", OP_MUL},
+    {"/", OP_DIV}
 };
 
 unsigned char is_number(const char* string) {
@@ -14,9 +16,9 @@ unsigned char is_number(const char* string) {
     strtod(string, &end);
 
     if (*end != '\0')
-        return false;
+        return 0;
 
-    return true;
+    return 1;
 }
 
 double to_number(const char* string) {

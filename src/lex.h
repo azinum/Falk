@@ -23,5 +23,6 @@ typedef struct Lex_instance {
 
 
 void lex(Lex_instance* L, String* input);
+void lex_instance_init(Lex_instance* L);
 
 #endif /* lex_h */
