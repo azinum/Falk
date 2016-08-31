@@ -27,6 +27,13 @@ LIST->value = new(typeof(*LIST->value)); \
 LIST->size = 1; \
 LIST->top = 0
 
+#define list_clear(LIST) \
+LIST->top = 0; \
+LIST->size = 1; \
+LIST->value = NULL; \
+free(LIST->value); \
+LIST->value = new(typeof(*LIST->value))
+
 /*
 ** for increasing list size if we need to
 */
@@ -45,6 +52,12 @@ LIST->value[LIST->top++] = VALUE
 free(LIST->value); \
 free(LIST);
 
+#define list_pop(LIST) \
+LIST->value = (typeof(*LIST->value)*)realloc(LIST->value, sizeof(LIST->value) * (--LIST->size)); \
+LIST->top--; \
+if (LIST->top < 0) \
+    LIST->top = 0
+
 
 #define string_push(STRING, VALUE) \
 for (int i = 0; i < arr_size(VALUE) - 1; i++) {\
@@ -57,6 +70,6 @@ for (int i = 0; i < arr_size(VALUE) - 1; i++) {\
 */
 list_define(String, char);
 
-list_define(Lexed, Token);
+list_define(Tokenlist, Token);
 
 #endif /* list_h */

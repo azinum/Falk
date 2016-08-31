@@ -12,16 +12,16 @@ void falk_instance_init(Falk_instance* F) {
 
 
 void falk_getinput(Falk_instance* F) {
-    String* input = new(String);
+    char* input = NULL;
+    unsigned long size = 0;
     
     while (1) {
         printf(FALK_PROMPT);
-        if (getline(&input->value, &input->size, stdin) != -1) {;
-            printf("%s\n", input->value);
+        if (getline(&input, &size, stdin) != -1) {
+            lex(F->lex_instance, input);
         } else
             break;
     }
     
-    list_free(input);
     lex_instance_free(F->lex_instance);
 }

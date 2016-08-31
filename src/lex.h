@@ -7,6 +7,8 @@
 #define lex_h
 
 #include <stdio.h>
+#include <string.h>
+
 #include "list.h"
 
 enum Lex_errors {
@@ -18,11 +20,11 @@ enum Lex_errors {
 typedef struct Lex_instance {
     int error, warning;  /* current error and warning */
     unsigned int line;  /* to trace our code back if error */
-    Lexed* result;  /* final lexed product */
+    Tokenlist* result;  /* final lexed product */
 } Lex_instance;
 
 
-void lex(Lex_instance* L, String* input);
+void lex(Lex_instance* L, char* input);
 
 void lex_instance_init(Lex_instance* L);
 
