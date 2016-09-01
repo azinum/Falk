@@ -11,6 +11,7 @@
 
 #include "list.h"
 
+
 enum Lex_errors {
     LEX_NO_ERROR,
     LEXERR_INVALID_TOKEN,
@@ -20,7 +21,9 @@ enum Lex_errors {
 typedef struct Lex_instance {
     int error, warning;  /* current error and warning */
     unsigned int line;  /* to trace our code back if error */
+    unsigned int inputindex;    /* to get character from input string */
     Tokenlist* result;  /* final lexed product */
+    Token op;   /* current operator */
 } Lex_instance;
 
 
@@ -29,5 +32,7 @@ void lex(Lex_instance* L, char* input);
 void lex_instance_init(Lex_instance* L);
 
 void lex_instance_free(Lex_instance* L);
+
+unsigned char is_operator(char token);
 
 #endif /* lex_h */

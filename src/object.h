@@ -19,6 +19,15 @@
 #define typeof __typeof__
 #endif
 
+/*
+** token with the most characters
+** tok | size
+** + :   1
+** == :  2
+** <<= : 3
+*/
+#define TOKEN_SIZE_MAX 3
+
 typedef union Value {
     double number;
     void* ptr;
@@ -40,11 +49,26 @@ enum Instructions {
     OP_MUL,
     OP_DIV,
     
+    OP_LEFT_SHIFT,  /* << */
+    OP_RIGHT_SHIFT,  /* >> */
+    
     OP_IDENTIFIER,
     
-    TOK_NEWLINE = 255,
-    
+    TOK_NEWLINE = 255,  /* normal instructions goes from 0-255 due to BYTE format (unsigned char) */
+    TOK_LEFT_P,     /* left parenthesis "(" */
+    TOK_RIGHT_P,
 };
+
+static Token tokens[] = {
+    {"+", OP_ADD},
+    {"-", OP_SUB},
+    {"*", OP_MUL},
+    {"/", OP_DIV},
+    {"\n", TOK_NEWLINE},
+    {"(", TOK_LEFT_P},
+    {")", TOK_RIGHT_P}
+};
+
 
 unsigned char is_number(const char* string);
 

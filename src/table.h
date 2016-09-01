@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include "object.h"
+#include "list.h"
 
 #define table_define(NAME, TYPE) \
 typedef struct NAME { \

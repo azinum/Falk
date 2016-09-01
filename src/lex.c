@@ -5,6 +5,7 @@
 
 #include "lex.h"
 
+
 /*
 ** initialize any Lex_instance
 */
@@ -12,10 +13,24 @@ void lex_instance_init(Lex_instance* L) {
     L->error = LEX_NO_ERROR;
     L->warning = 0;
     L->line = 0;
+    L->inputindex = 0;
     L->result = new(Tokenlist);
     list_init(L->result);
 }
 
+
+unsigned char is_operator(char token) {
+    char* cmp = new(char);
+    *cmp = token;
+    for (int i = 0; i < arr_size(tokens); i++) {
+        if (!strcmp(cmp, tokens[i].token)) {
+            free(cmp);
+            return 1;
+        }
+    }
+    free(cmp);
+    return 0;
+}
 
 /*
 ** main function for lexer
@@ -25,31 +40,39 @@ void lex_instance_init(Lex_instance* L) {
 ** get description from enum: Instructions, at "object.h"
 */
 void lex(Lex_instance* L, char* input) {
-    if (strlen(input) <= 1)
+    if (strlen(input) <= 0)
         return;
     String* item = new(String);
     list_init(item);
+    
     char temp_token;
     
-    for (int i = 0; i < (int)strlen(input) - 1; i++) {
-        temp_token = input[i];
+    for (; L->inputindex <= (int)strlen(input); L->inputindex++) {
+        temp_token = input[L->inputindex];
+        
+        if (is_operator(temp_token)) {
+            list_push(L->result, (Token){item->value});
+            list_clear(item);
+            list_push(item, temp_token);
+            list_push(L->result, (Token){item->value});
+            list_clear(item);
+            continue;
+        }
         
         if (temp_token == ' ') {
-            Token to_push;
-            to_push.token = item->value;
-            list_push(L->result, to_push);
+            list_push(L->result, ((Token){item->value}));
             list_clear(item);
         } else {
             list_push(item, temp_token);
         }
     }
-    
+
     /* push last item to output */
     list_push(L->result, (Token){item->value});
     
-    for (int i = 0; i < L->result->size; i++) {
-        printf("%s \n", L->result->value[i].token);
-    }
+    for (int i = 0; i < L->result->size; i++)
+        printf("%s ", L->result->value[i].token);
+    printf("\n");
     
     list_free(item);
 }
