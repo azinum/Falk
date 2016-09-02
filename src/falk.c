@@ -18,6 +18,7 @@ void falk_getinput(Falk_instance* F) {
     while (1) {
         printf(FALK_PROMPT);
         if (getline(&input, &size, stdin) != -1) {
+            input[strlen(input)] = 0;   /* remove newline */
             lex(F->lex_instance, input);
         } else
             break;

@@ -21,7 +21,6 @@ enum Lex_errors {
 typedef struct Lex_instance {
     int error, warning;  /* current error and warning */
     unsigned int line;  /* to trace our code back if error */
-    unsigned int inputindex;    /* to get character from input string */
     Tokenlist* result;  /* final lexed product */
     Token op;   /* current operator */
 } Lex_instance;

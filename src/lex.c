@@ -13,7 +13,6 @@ void lex_instance_init(Lex_instance* L) {
     L->error = LEX_NO_ERROR;
     L->warning = 0;
     L->line = 0;
-    L->inputindex = 0;
     L->result = new(Tokenlist);
     list_init(L->result);
 }
@@ -40,15 +39,15 @@ unsigned char is_operator(char token) {
 ** get description from enum: Instructions, at "object.h"
 */
 void lex(Lex_instance* L, char* input) {
-    if (strlen(input) <= 0)
+    if (strlen(input) <= 1)
         return;
     String* item = new(String);
     list_init(item);
     
     char temp_token;
     
-    for (L->inputindex = 0; L->inputindex < (int)strlen(input); L->inputindex++) {
-        temp_token = input[L->inputindex];
+    for (int i = 0; i < (int)strlen(input); i++) {
+        temp_token = input[i];
         
         if (is_operator(temp_token)) {
             list_push(L->result, (Token){item->value});
@@ -74,7 +73,7 @@ void lex(Lex_instance* L, char* input) {
         printf("%s ", L->result->value[i].token);
     printf("\n");
     
-    list_free(item);
+//    list_free(item);
 }
 
 

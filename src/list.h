@@ -67,14 +67,10 @@ for (int i = 0; i < arr_size(VALUE) - 1; i++) {\
     list_push(STRING, VALUE[i]); \
 }
 
-/*
-** WARNING! this might not be safe
-** check here if memory failure
-*/
 #define string_pop(STRING) \
-STRING->value[--STRING->size] = '\0'; \
+STRING->value[(--STRING->size)] = 0; \
 STRING->top--; \
-mem_realloc(STRING->value, sizeof(STRING->value) * (STRING->size))
+//mem_realloc(STRING->value, sizeof(STRING->value) * (STRING->size))
 
 
 #define string_clear(STRING) \

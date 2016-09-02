@@ -39,7 +39,7 @@ typedef struct Object {
 } Object;
 
 typedef struct Token {
-    const char* token;
+    char* token;
     int op;
 } Token;
 
@@ -49,6 +49,8 @@ enum Instructions {
     OP_MUL,
     OP_DIV,
     
+    OP_EQ_ASSIGN,
+    
     OP_LEFT_SHIFT,  /* << */
     OP_RIGHT_SHIFT,  /* >> */
     
@@ -57,6 +59,11 @@ enum Instructions {
     TOK_NEWLINE = 255,  /* normal instructions goes from 0-255 due to BYTE format (unsigned char) */
     TOK_LEFT_P,     /* left parenthesis "(" */
     TOK_RIGHT_P,
+    TOK_LEFT_CURLY_BRACKET,
+    TOK_RIGHT_CURLY_BRACKET,
+    TOK_COMMA,
+    TOK_PERIOD,
+    TOK_COLON,
 };
 
 static Token tokens[] = {
@@ -64,9 +71,15 @@ static Token tokens[] = {
     {"-", OP_SUB},
     {"*", OP_MUL},
     {"/", OP_DIV},
-    {"\n", TOK_NEWLINE},
+    {"=", OP_EQ_ASSIGN},
     {"(", TOK_LEFT_P},
-    {")", TOK_RIGHT_P}
+    {")", TOK_RIGHT_P},
+    {"{", TOK_LEFT_CURLY_BRACKET},
+    {"}", TOK_RIGHT_CURLY_BRACKET},
+    {",", TOK_COMMA},
+    {".", TOK_PERIOD},
+    {":", TOK_COLON}
+//    {"\n", TOK_NEWLINE},
 };
 
 
