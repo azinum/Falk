@@ -1,0 +1,7 @@
+#- this is a comment -#
+# this is also a comment
+
+#- define a function -#
+test = fndef(a, b) {
+    return(a + b);
+}

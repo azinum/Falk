@@ -47,7 +47,7 @@ void lex(Lex_instance* L, char* input) {
     
     char temp_token;
     
-    for (; L->inputindex <= (int)strlen(input); L->inputindex++) {
+    for (L->inputindex = 0; L->inputindex < (int)strlen(input); L->inputindex++) {
         temp_token = input[L->inputindex];
         
         if (is_operator(temp_token)) {
@@ -70,7 +70,7 @@ void lex(Lex_instance* L, char* input) {
     /* push last item to output */
     list_push(L->result, (Token){item->value});
     
-    for (int i = 0; i < L->result->size; i++)
+    for (int i = 0; i < L->result->top; i++)
         printf("%s ", L->result->value[i].token);
     printf("\n");
     
