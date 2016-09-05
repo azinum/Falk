@@ -8,6 +8,8 @@
 void falk_instance_init(Falk_instance* F) {
     F->lex_instance = new(Lex_instance);
     lex_instance_init(F->lex_instance);
+    F->parse_instance = new(Parse_instance);
+    parse_instance_init(F->parse_instance);
 }
 
 
@@ -17,7 +19,7 @@ void falk_getinput(Falk_instance* F) {
     
     while (1) {
         printf(FALK_PROMPT);
-        if (getline(&input, &size, stdin) != -1) {
+        if (getline(&input, &size, stdin) > -1) {
             input[strlen(input)] = 0;   /* remove newline */
             lex(F->lex_instance, input);
         } else
@@ -25,4 +27,5 @@ void falk_getinput(Falk_instance* F) {
     }
     
     lex_instance_free(F->lex_instance);
+    parse_instance_free(F->parse_instance);
 }

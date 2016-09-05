@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "lex.h"
+#include "parse.h"
 #include "object.h"
 #include "list.h"
 
@@ -19,6 +19,7 @@
 
 typedef struct Falk_instance {
     Lex_instance* lex_instance;
+    Parse_instance* parse_instance;
 } Falk_instance;
 
 void falk_instance_init(Falk_instance* F);
