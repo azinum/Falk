@@ -20,12 +20,17 @@ void falk_getinput(Falk_instance* F) {
     while (1) {
         printf(FALK_PROMPT);
         if (getline(&input, &size, stdin) > -1) {
-            input[strlen(input)] = 0;   /* remove newline */
             parse(F->parse_instance, input);
         } else
             break;
     }
     
-    lex_instance_free(F->parse_instance->lex_instance);
-    parse_instance_free(F->parse_instance);
+    falk_instance_free(F);
 }
+
+void falk_instance_free(Falk_instance* F) {
+    parse_instance_free(F->parse_instance);
+    lex_instance_free(F->parse_instance->lex_instance);
+    free(F);
+}
+

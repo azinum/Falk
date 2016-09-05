@@ -19,9 +19,12 @@
 
 typedef struct Falk_instance {
     Parse_instance* parse_instance;
+    int argc;
+    const char** argv;
 } Falk_instance;
 
 void falk_instance_init(Falk_instance* F);
 void falk_getinput(Falk_instance* F);
+void falk_instance_free(Falk_instance* F);
 
 #endif /* falk_h */

@@ -11,7 +11,7 @@
 
 #include "list.h"
 
-#define LEX_DEBUG 0
+#define LEX_DEBUG 1
 
 enum Lex_errors {
     LEX_NO_ERROR,

@@ -9,6 +9,8 @@
 
 int main(int argc, const char* argv[]) {
     Falk_instance* F = new(Falk_instance);
+    F->argc = argc;
+    F->argv = argv;
     falk_instance_init(F);
     falk_getinput(F);
     return 0;

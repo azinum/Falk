@@ -45,30 +45,40 @@ void lex(Lex_instance* L, char* input) {
     list_init(item);
     
     char temp_token;
+    int max = (int)strlen(input);
     
-    for (int i = 0; i < (int)strlen(input); i++) {
+    for (int i = 0; i < max; i++) {
         temp_token = input[i];
-        
-        if (is_operator(temp_token)) {
-            char* tmp = new(char);
-            strcpy(tmp, item->value);
-            list_push(L->result, ((Token){tmp}));
-            string_clear(item);
-            list_push(item, temp_token);
-            tmp = new(char);
-            strcpy(tmp, item->value);
-            list_push(L->result, ((Token){tmp}));
-            string_clear(item);
-            continue;
-        }
-        
-        if (temp_token == ' ') {
-            char* tmp = new(char);
-            strcpy(tmp, item->value);
-            list_push(L->result, ((Token){tmp}));
-            string_clear(item);
-        } else {
-            list_push(item, temp_token);
+        switch (temp_token) {
+            case '#': {     /* comment */
+                while (i++ < max || input[i] == '\n');
+            }
+                break;
+            
+            default: {
+                if (is_operator(temp_token)) {
+                    char* tmp = new(char);
+                    strcpy(tmp, item->value);
+                    list_push(L->result, ((Token){tmp}));
+                    string_clear(item);
+                    list_push(item, temp_token);
+                    tmp = new(char);
+                    strcpy(tmp, item->value);
+                    list_push(L->result, ((Token){tmp}));
+                    string_clear(item);
+                    continue;
+                }
+                
+                if (temp_token == ' ') {
+                    char* tmp = new(char);
+                    strcpy(tmp, item->value);
+                    list_push(L->result, ((Token){tmp}));
+                    string_clear(item);
+                } else {
+                    list_push(item, temp_token);
+                }
+            }
+                break;
         }
     }
     
@@ -80,8 +90,11 @@ void lex(Lex_instance* L, char* input) {
     list_free(item);
     
 #if LEX_DEBUG
+    Token current;
     for (int i = 0; i < L->result->top; i++) {
-        puts(L->result->value[i].token);
+        current = L->result->value[i];
+        if (strcmp(current.token, "\0"))    /* don't print null character */
+            puts(current.token);
     }
 #endif
 }
