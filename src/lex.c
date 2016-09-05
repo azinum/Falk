@@ -50,17 +50,23 @@ void lex(Lex_instance* L, char* input) {
         temp_token = input[i];
         
         if (is_operator(temp_token)) {
-            list_push(L->result, (Token){item->value});
-            list_clear(item);
+            char* tmp = new(char);
+            strcpy(tmp, item->value);
+            list_push(L->result, ((Token){tmp}));
+            string_clear(item);
             list_push(item, temp_token);
-            list_push(L->result, (Token){item->value});
-            list_clear(item);
+            tmp = new(char);
+            strcpy(tmp, item->value);
+            list_push(L->result, ((Token){tmp}));
+            string_clear(item);
             continue;
         }
         
         if (temp_token == ' ') {
-            list_push(L->result, ((Token){item->value}));
-            list_clear(item);
+            char* tmp = new(char);
+            strcpy(tmp, item->value);
+            list_push(L->result, ((Token){tmp}));
+            string_clear(item);
         } else {
             list_push(item, temp_token);
         }
@@ -69,11 +75,13 @@ void lex(Lex_instance* L, char* input) {
     /* push last item to output */
     list_push(L->result, (Token){item->value});
     
-    for (int i = 0; i < L->result->top; i++)
-        printf("%s ", L->result->value[i].token);
+    for (int i = 0; i < L->result->top; i++) {
+        puts(L->result->value[i].token);
+    }
+    
     printf("\n");
     
-//    list_free(item);
+    list_free(item);
 }
 
 

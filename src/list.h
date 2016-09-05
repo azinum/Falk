@@ -7,13 +7,24 @@
 
 #include "object.h"
 
+/*
+** get array size / length
+** e.g
+** int test[] = {
+**     23, 43, 239, 2
+** };
+** printf("array 'test' contain %i elements.\n", (int)arr_size(test));
+*/
 #define arr_size(ARR) (sizeof(ARR) / sizeof(ARR[0]))
 
+/*
+** simple realloc with specific size
+*/
 #define mem_realloc(TARGET, SIZE) \
 TARGET = (typeof(*TARGET)*)realloc(TARGET, SIZE);
 
 /*
-** define a new list
+** define a new list with any type you want
 */
 #define list_define(NAME, TYPE) \
 typedef struct NAME { \
@@ -30,53 +41,88 @@ LIST->value = new(typeof(*LIST->value)); \
 LIST->size = 1; \
 LIST->top = 0
 
+/*
+** smart reallocation macro for increase and decrease size of list
+*/
+#define list_realloc(TARGET, SIZE) \
+TARGET->value = (typeof(*TARGET->value)*)realloc(TARGET->value, (TARGET->size * sizeof(typeof(*TARGET->value))) + ((SIZE + 1) * sizeof(typeof(*TARGET->value)))); \
+TARGET->size += SIZE
+
 
 #define list_clear(LIST) \
-LIST->top = 0; \
-LIST->size = 1; \
-LIST->value = NULL; \
-free(LIST->value); \
-LIST->value = new(typeof(*LIST->value))
+while (LIST->size > 1) { \
+    list_pop(LIST); \
+}
 
 /*
 ** for increasing list size if we need to
 */
-#define list_need_space(LIST) (LIST->top >= LIST->size)
+#define list_need_space(LIST) (LIST->top >= LIST->size - 1)
+
+/*
+** safe to push item to list?
+*/
+#define list_is_safe(LIST) (LIST->size > LIST->top)
+
+/*
+** quick assign value to top of list
+*/
+#define list_set_top(LIST, VALUE) LIST->value[LIST->top] = VALUE
 
 /*
 ** push item to list
 */
 #define list_push(LIST, VALUE) \
-if (list_need_space(LIST)) {\
-    LIST->value = (typeof(VALUE)*)realloc(LIST->value, sizeof(VALUE) * (++LIST->size)); \
+if (list_need_space(LIST)) { \
+    list_realloc(LIST, 1); \
 } \
-LIST->value[LIST->top++] = (VALUE);
+LIST->value[LIST->top++] = VALUE
 
+/*
+** free not only items in list, but the list itself too
+*/
 #define list_free(LIST) \
 free(LIST->value); \
 free(LIST);
 
+/*
+** remove last item in list
+*/
 #define list_pop(LIST) \
-LIST->top--; \
-if (LIST->top < 0) \
-    LIST->top = 0
+LIST->value[--LIST->top] = 0; \
+list_realloc(LIST, -1)
 
-
+/*
+** instead of pushing one character at a time, we can now push a full string onto our target string
+*/
 #define string_push(STRING, VALUE) \
-for (int i = 0; i < arr_size(VALUE) - 1; i++) {\
+for (int i = 0; i < arr_size(VALUE) - 1; i++) { \
     list_push(STRING, VALUE[i]); \
 }
 
+/*
+** depreciated!
+** list_pop is more significant
+*/
 #define string_pop(STRING) \
-STRING->value[(--STRING->size)] = 0; \
-STRING->top--; \
-//mem_realloc(STRING->value, sizeof(STRING->value) * (STRING->size))
+STRING->value[STRING->top] = '\0'; \
+mem_realloc(STRING, (--STRING->size) * sizeof(char)); \
+STRING->top--
 
+#define string_pop2(STRING) \
+STRING->value[--STRING->top] = '\0'; \
+list_realloc(STRING, -1)
 
+#define string_print(STRING) \
+puts(STRING->value)
+
+/*
+** remove every character in string and free memory @list_realloc
+*/
 #define string_clear(STRING) \
-for (int i = 0; i < STRING->size; i++) { \
-    string_pop(STRING); \
-};
+while (STRING->size > 1) { \
+    string_pop2(STRING); \
+}
 
 /*
 ** string is a type of list
