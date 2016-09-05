@@ -3,6 +3,7 @@
 /* date: 30/08/16 */
 
 #include "falk.h"
+#include "table.h"
 #include <stdio.h>
 #include <stdlib.h>
 

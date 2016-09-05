@@ -15,10 +15,13 @@ enum Parse_errors {
 
 typedef struct Parse_instance {
     int error, warning;
+    Tokenlist* result;
+    Lex_instance* lex_instance;
 } Parse_instance;
 
 
 void parse_instance_init(Parse_instance* P);
+void parse(Parse_instance* P, char* input);
 void parse_instance_free(Parse_instance* P);
 
 #endif /* parse_h */

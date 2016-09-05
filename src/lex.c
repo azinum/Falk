@@ -71,17 +71,19 @@ void lex(Lex_instance* L, char* input) {
             list_push(item, temp_token);
         }
     }
-
-    /* push last item to output */
-    list_push(L->result, (Token){item->value});
     
+    char* tmp = new(char);
+    strcpy(tmp, item->value);
+    /* push last item to output */
+    list_push(L->result, (Token){tmp});
+    
+    list_free(item);
+    
+#if LEX_DEBUG
     for (int i = 0; i < L->result->top; i++) {
         puts(L->result->value[i].token);
     }
-    
-    printf("\n");
-    
-    list_free(item);
+#endif
 }
 
 

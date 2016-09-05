@@ -11,6 +11,10 @@ void parse_instance_init(Parse_instance* P) {
     P->warning = 0;
 }
 
-void parse_instance_free(Parse_instance* P) {
+void parse(Parse_instance* P, char* input) {
+    lex(P->lex_instance, input);
+}
 
+void parse_instance_free(Parse_instance* P) {
+    
 }

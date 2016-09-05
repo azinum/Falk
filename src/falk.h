@@ -18,7 +18,6 @@
 #define MAXINPUT 512
 
 typedef struct Falk_instance {
-    Lex_instance* lex_instance;
     Parse_instance* parse_instance;
 } Falk_instance;
 
