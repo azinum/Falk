@@ -9,8 +9,15 @@
 void parse_instance_init(Parse_instance* P) {
     P->error = PARSE_NO_ERROR;
     P->warning = 0;
+    P->line = 0;
     P->result = new(Tokenlist);
     list_init(P->result);
+    P->stack = new(Tokenlist);
+    list_init(P->stack);
+}
+
+void check_precedence(Parse_instance* P) {
+    
 }
 
 /*
@@ -21,38 +28,71 @@ void parse(Parse_instance* P, char* input) {
     lex(P->lex_instance, input);
     Tokenlist* lexed = P->lex_instance->result;
     
+    Token current;
     for (int i = 0; i < lexed->top; i++) {
-        switch (lexed->value[i].op) {
-            
+        current = lexed->value[i];
+        switch (current.op) {
+
             case OP_ADD:
-                puts("op_add");
-                break;
-                
             case OP_SUB:
-                puts("op_sub");
-                break;
-                
             case OP_MUL:
-                puts("op_mul");
+            case OP_DIV:
+            case OP_EQ_ASSIGN: {
+                list_push(P->stack, current);
+                check_precedence(P);
+            }
                 break;
                 
-            case OP_DIV:
-                puts("op_div");
+            case TOK_LEFT_P: {
+                list_push(P->stack, current);
+            }
+                break;
+                
+            case TOK_RIGHT_P: {
+                while (P->stack->top != 0) {
+                    list_pop2(P->stack);
+                    if (list_get_top(P->stack).op == TOK_LEFT_P)
+                        break;
+                }
+                if (list_get_top(P->stack).op != TOK_LEFT_P) {
+                    parse_throw_error(P, PERR_BLOCK_NO_MATCH);
+                    break;
+                }
+            }
                 break;
                 
             case T_IDENTIFIER: {
-                puts("identifier");
+                /* can be function, push to stack */
+                list_push(P->stack, current);
             }
                 break;
+            
             case T_NUMBER: {
-                puts("number");
+                list_push(P->result, current);
             }
                 break;
                 
-            default:
+            case TOK_NEWLINE: {
+                P->line++;
+            }
+                break;
+            
+            default: {
+                /* error? */
+            }
                 break;
         }
     }
+    
+    for (int i = 0; i < P->result->top; i++) {
+        puts(P->result->value[i].token);
+    }
+}
+
+void parse_throw_error(Parse_instance* P, unsigned char error) {
+    P->error = error;
+    printf("(ParseError) %s\n", parse_error_info[P->error]);
+    P->error = PARSE_NO_ERROR;
 }
 
 void parse_instance_free(Parse_instance* P) {

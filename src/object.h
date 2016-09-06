@@ -62,7 +62,7 @@ enum Instructions {
     I_GOTO,     /* goto ip. args: 1 */
     I_JUMP,     /* goto ip - jump. args: 1 */
     
-    TOK_NEWLINE = 255,  /* not an instruction / op code */
+    TOK_NEWLINE,  /* not an instruction / op code */
     TOK_LEFT_P,     /* left parenthesis "(" */
     TOK_RIGHT_P,
     TOK_LEFT_CURLY_BRACKET,
@@ -83,7 +83,7 @@ static Token tokens[] = {
     {"}", TOK_RIGHT_CURLY_BRACKET},
     {",", TOK_COMMA},
     {":", TOK_COLON},
-//    {"\n", TOK_NEWLINE},
+    {"\n", TOK_NEWLINE},
 };
 
 

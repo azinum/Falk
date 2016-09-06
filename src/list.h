@@ -69,6 +69,9 @@ while (LIST->size > 1) { \
 */
 #define list_set_top(LIST, VALUE) LIST->value[LIST->top] = VALUE
 
+
+#define list_get_top(LIST) (LIST->value[LIST->top])
+
 /*
 ** push item to list
 */
@@ -90,6 +93,11 @@ free(LIST);
 */
 #define list_pop(LIST) \
 LIST->value[--LIST->top] = 0; \
+list_realloc(LIST, -1)
+
+
+#define list_pop2(LIST) \
+LIST->top--; \
 list_realloc(LIST, -1)
 
 /*
