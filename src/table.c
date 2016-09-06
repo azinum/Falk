@@ -17,3 +17,15 @@ int hash(const char* key) {
     
     return hashvalue;
 }
+
+void* table_find(HashTable* table, char* key) {
+    int hashed = hash(key);
+    HTValue h;
+    for (int i = 0; i < table->top; i++) {
+        h = table->items[i];
+        if (h.key == hashed) {
+            return h.value;
+        }
+    }
+    return NULL;
+}

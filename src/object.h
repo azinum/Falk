@@ -40,10 +40,11 @@ typedef struct Object {
 
 typedef struct Token {
     char* token;
-    int op;
+    unsigned int op;
 } Token;
 
 enum Instructions {
+    OP_NULL,
     OP_ADD,
     OP_SUB,
     OP_MUL,
@@ -54,15 +55,19 @@ enum Instructions {
     OP_LEFT_SHIFT,  /* << */
     OP_RIGHT_SHIFT,  /* >> */
     
-    OP_IDENTIFIER,
+    T_IDENTIFIER,
+    T_NUMBER,
+    T_STRING,
     
-    TOK_NEWLINE = 255,  /* normal instructions goes from 0-255 due to BYTE format (unsigned char) */
+    I_GOTO,     /* goto ip. args: 1 */
+    I_JUMP,     /* goto ip - jump. args: 1 */
+    
+    TOK_NEWLINE = 255,  /* not an instruction / op code */
     TOK_LEFT_P,     /* left parenthesis "(" */
     TOK_RIGHT_P,
     TOK_LEFT_CURLY_BRACKET,
     TOK_RIGHT_CURLY_BRACKET,
     TOK_COMMA,
-    TOK_PERIOD,
     TOK_COLON,
 };
 
@@ -77,8 +82,7 @@ static Token tokens[] = {
     {"{", TOK_LEFT_CURLY_BRACKET},
     {"}", TOK_RIGHT_CURLY_BRACKET},
     {",", TOK_COMMA},
-    {".", TOK_PERIOD},
-    {":", TOK_COLON}
+    {":", TOK_COLON},
 //    {"\n", TOK_NEWLINE},
 };
 

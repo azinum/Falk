@@ -26,6 +26,10 @@ typedef struct Lex_instance {
     Token op;   /* current operator */
 } Lex_instance;
 
+/*
+** allowed characters for identifiers
+*/
+static const char* allowed_characters = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm_";
 
 void lex(Lex_instance* L, char* input);
 
@@ -34,5 +38,11 @@ void lex_instance_init(Lex_instance* L);
 void lex_instance_free(Lex_instance* L);
 
 unsigned char is_operator(char token);
+
+unsigned char get_opcode(char token);
+
+unsigned char is_identifier(char* token);
+
+void push_item(Lex_instance* L, Token item);
 
 #endif /* lex_h */
