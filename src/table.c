@@ -5,8 +5,8 @@
 
 #include "table.h"
 
-int hash(const char* key) {
-    int hashvalue = 2387;
+unsigned long hash(const char* key) {
+    unsigned long hashvalue = 5381;
     
     int i = 0;
     
@@ -20,7 +20,7 @@ int hash(const char* key) {
 }
 
 void* table_find(HashTable* table, char* key) {
-    int hashed = hash(key);
+    unsigned long hashed = hash(key);
     HTValue h;
     for (int i = 0; i < table->top; i++) {
         h = table->items[i];

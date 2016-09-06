@@ -42,7 +42,7 @@ TABLE->top++
 **     *(int*)value = 5;
 */
 typedef struct HTValue {
-    int key;
+    unsigned long key;
     void* value;
 } HTValue;
 
@@ -56,7 +56,7 @@ typedef struct HashTable {
 } HashTable;
 
 
-int hash(const char* key);
+unsigned long hash(const char* key);
 
 void* table_find(HashTable* table, char* key);
 
