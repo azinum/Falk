@@ -35,6 +35,8 @@ TABLE->top++
 
 #define table_is_safe(TABLE) (TABLE->size > TABLE->top)
 
+#define table_tovalue(TARGET) ((HTValue*)TARGET)
+
 /*
 ** key and value for hashtable
 ** value can be anything, need to be converted on use
@@ -58,8 +60,10 @@ typedef struct HashTable {
 
 unsigned long hash(const char* key);
 
-void* table_find(HashTable* table, char* key);
+HTValue* table_find(HashTable* table, char* key);
 
-void* table_get(HashTable* table, int index);
+HTValue* table_get(HashTable* table, int index);
+
+unsigned char table_replace(HashTable* table, char* key, void* value);
 
 #endif /* table_h */
