@@ -97,7 +97,7 @@ void lex(Lex_instance* L, char* input) {
             default: {
                 if (is_operator(temp_token)) {
                     char* tmp = new(char);
-                    strcpy(tmp, item->value);
+                    string_copy_from_null(tmp, item->value);
                     list_push(L->result, ((Token){tmp}));
                     string_clear(item);
                     list_push(item, temp_token);
@@ -110,7 +110,7 @@ void lex(Lex_instance* L, char* input) {
                 
                 if (temp_token == ' ') {
                     char* tmp = new(char);
-                    strcpy(tmp, item->value);
+                    string_copy_from_null(tmp, item->value);
                     list_push(L->result, ((Token){tmp}));
                     string_clear(item);
                 } else {
@@ -122,11 +122,12 @@ void lex(Lex_instance* L, char* input) {
     }
     
     char* tmp = new(char);
-    strcpy(tmp, item->value);
-    /* push last item to output */
-    list_push(L->result, (Token){tmp});
+    string_copy_from_null(tmp, item->value);
     
     list_free(item);
+    
+    /* push last item to output */
+    list_push(L->result, (Token){tmp});
     
     for (int i = 0; i < L->result->top; i++) {
         /* find token instruction/type */

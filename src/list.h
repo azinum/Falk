@@ -100,16 +100,7 @@ for (int i = 0; i < arr_size(VALUE) - 1; i++) { \
     list_push(STRING, VALUE[i]); \
 }
 
-/*
-** depreciated!
-** list_pop is more significant
-*/
 #define string_pop(STRING) \
-STRING->value[STRING->top] = '\0'; \
-mem_realloc(STRING, (--STRING->size) * sizeof(char)); \
-STRING->top--
-
-#define string_pop2(STRING) \
 STRING->value[--STRING->top] = '\0'; \
 list_realloc(STRING, -1)
 
@@ -121,8 +112,16 @@ puts(STRING->value)
 */
 #define string_clear(STRING) \
 while (STRING->size > 1) { \
-    string_pop2(STRING); \
+    string_pop(STRING); \
 }
+
+/*
+** "normal" strings (char*)
+** need to allocate memory for new string
+*/
+#define string_copy_from_null(TARGET, STRING) \
+mem_realloc(TARGET, strlen(STRING)); \
+strcpy(TARGET, STRING)
 
 /*
 ** string is a type of list

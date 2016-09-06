@@ -40,6 +40,15 @@ void parse(Parse_instance* P, char* input) {
                 puts("op_div");
                 break;
                 
+            case T_IDENTIFIER: {
+                puts("identifier");
+            }
+                break;
+            case T_NUMBER: {
+                puts("number");
+            }
+                break;
+                
             default:
                 break;
         }
