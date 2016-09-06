@@ -6,13 +6,14 @@
 #include "table.h"
 
 int hash(const char* key) {
-    int hashvalue = 0;
+    int hashvalue = 2387;
     
     int i = 0;
     
-    while (i++ < (int)strlen(key)) {
+    while (i < (int)strlen(key)) {
         hashvalue <<= 8;
-        hashvalue += key[i];
+        hashvalue += (int)key[i];
+        i++;
     }
     
     return hashvalue;

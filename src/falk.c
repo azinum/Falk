@@ -4,6 +4,7 @@
 
 
 #include "falk.h"
+#include "table.h"
 
 void falk_instance_init(Falk_instance* F) {
     F->parse_instance = new(Parse_instance);
@@ -20,7 +21,8 @@ void falk_getinput(Falk_instance* F) {
     while (1) {
         printf(FALK_PROMPT);
         if (getline(&input, &size, stdin) > -1) {
-            parse(F->parse_instance, input);
+            printf("%i\n", hash(input));
+            // parse(F->parse_instance, input);
         } else
             break;
     }
