@@ -50,15 +50,19 @@ unsigned char get_opcode(char token) {
 unsigned char is_identifier(char* token) {
     int tokenlen = (int)strlen(token);
     int allowedlen = (int)strlen(allowed_characters);
+    int validc = 0;     /* how many characters in string is valid? */
     /* if invalid then return 0 */
-    for (int i = 0; i < allowedlen; i++) {
-        for (int j = 0; j < tokenlen; j++) {
-            if (token[i] != allowed_characters[j] && j >= tokenlen - 1)
-                return 0;
+    for (int i = 0; i < tokenlen; i++) {
+        for (int j = 0; j < allowedlen; j++) {
+            if (token[i] == allowed_characters[j])
+                validc++;
         }
     }
     
-    return 1;
+    if (validc == tokenlen)     /* number of valid characters must be same as input string length */
+        return 1;
+    
+    return 0;
 }
 
 void push_item(Lex_instance* L, Token item) {
