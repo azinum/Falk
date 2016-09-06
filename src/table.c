@@ -29,3 +29,13 @@ void* table_find(HashTable* table, char* key) {
     }
     return NULL;
 }
+
+/*
+** we can now use table as standard list
+*/
+void* table_get(HashTable* table, int index) {
+    if (table_is_safe(table) && index <= table->top) {
+        return table->items[index].value;
+    }
+    return NULL;
+}

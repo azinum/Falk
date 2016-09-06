@@ -33,6 +33,8 @@ TABLE->items[TABLE->top].value = VALUE; \
 TABLE->items[TABLE->top].key = hash(KEY); \
 TABLE->top++
 
+#define table_is_safe(TABLE) (TABLE->size > TABLE->top)
+
 /*
 ** key and value for hashtable
 ** value can be anything, need to be converted on use
@@ -57,5 +59,7 @@ typedef struct HashTable {
 int hash(const char* key);
 
 void* table_find(HashTable* table, char* key);
+
+void* table_get(HashTable* table, int index);
 
 #endif /* table_h */
