@@ -70,7 +70,9 @@ while (LIST->size > 1) { \
 #define list_set_top(LIST, VALUE) LIST->value[LIST->top] = VALUE
 
 
-#define list_get_top(LIST) (LIST->value[LIST->top])
+#define list_get_top(LIST) (LIST->value[LIST->top - 1])
+
+#define list_get(LIST, INDEX) (LIST->value[INDEX])
 
 /*
 ** push item to list
@@ -128,7 +130,7 @@ while (STRING->size > 1) { \
 ** need to allocate memory for new string
 */
 #define string_copy_from_null(TARGET, STRING) \
-mem_realloc(TARGET, strlen(STRING)); \
+mem_realloc(TARGET, strlen(STRING) + 1); \
 strcpy(TARGET, STRING)
 
 /*

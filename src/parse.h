@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include "lex.h"
 
+#define PARSE_DEBUG 0
+
 enum Associativities {
     ASSO_LEFT_RIGHT,
     ASSO_RIGHT_LEFT,
@@ -46,7 +48,7 @@ typedef struct Parse_instance {
     int line;
     Tokenlist* result;
     Lex_instance* lex_instance;
-    Tokenlist* stack;
+    Tokenlist* stack;   /* we use the stack for keeping operators and keywords */
 } Parse_instance;
 
 

@@ -41,7 +41,7 @@ unsigned char is_operator(char token);
 
 unsigned char get_opcode(char token);
 
-unsigned char is_identifier(char* token);
+unsigned char is_identifier(const char* token);
 
 void push_item(Lex_instance* L, Token item);
 

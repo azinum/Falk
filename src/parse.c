@@ -31,8 +31,8 @@ void parse(Parse_instance* P, char* input) {
     Token current;
     for (int i = 0; i < lexed->top; i++) {
         current = lexed->value[i];
+        
         switch (current.op) {
-
             case OP_ADD:
             case OP_SUB:
             case OP_MUL:
@@ -49,31 +49,35 @@ void parse(Parse_instance* P, char* input) {
                 break;
                 
             case TOK_RIGHT_P: {
+                /* While stack is not empty and left parenthese is not detected,
+                ** push top value of stack and then pop top value.
+                */
+                
                 while (P->stack->top != 0) {
-                    list_pop2(P->stack);
-                    if (list_get_top(P->stack).op == TOK_LEFT_P)
+                    if (list_get_top(P->stack).op == TOK_LEFT_P) {
+                        list_pop2(P->stack);    /* pop left parenthese */
                         break;
-                }
-                if (list_get_top(P->stack).op != TOK_LEFT_P) {
-                    parse_throw_error(P, PERR_BLOCK_NO_MATCH);
-                    break;
+                    }
+                    list_push(P->result, list_get_top(P->stack));
+                    list_pop2(P->stack);
                 }
             }
                 break;
                 
+            /* can be function, push to stack */
             case T_IDENTIFIER: {
-                /* can be function, push to stack */
-                list_push(P->stack, current);
+
             }
                 break;
             
             case T_NUMBER: {
-                list_push(P->result, current);
+                /* push to output */
             }
                 break;
                 
             case TOK_NEWLINE: {
                 P->line++;
+                printf("ln: %i\n", P->line);
             }
                 break;
             
@@ -84,9 +88,19 @@ void parse(Parse_instance* P, char* input) {
         }
     }
     
+    /*
+    ** push rest of stack (only temporary, when parser detect end of expression,
+    ** it will push all operators on stack till we detect another end or similar to that)
+    */
+    while (P->stack->size > 1) {
+        list_push(P->result, list_get_top(P->stack));
+        list_pop2(P->stack);
+    }
+    
     for (int i = 0; i < P->result->top; i++) {
         puts(P->result->value[i].token);
     }
+
 }
 
 void parse_throw_error(Parse_instance* P, unsigned char error) {

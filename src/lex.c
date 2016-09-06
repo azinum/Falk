@@ -47,7 +47,7 @@ unsigned char get_opcode(char token) {
 /*
 ** check if token is valid identifier
 */
-unsigned char is_identifier(char* token) {
+unsigned char is_identifier(const char* token) {
     int tokenlen = (int)strlen(token);
     int allowedlen = (int)strlen(allowed_characters);
     int validc = 0;     /* how many characters in string is valid? */
