@@ -129,6 +129,14 @@ void parse(Parse_instance* P, char* input) {
     for (int i = 0; i < P->result->top; i++) {
         puts(P->result->value[i].token);
     }
+    
+    for (int i = 0; i < P->result->top; i++) {
+        list_pop2(P->result);
+    }
+    
+    for (int i = 0; i < P->lex_instance->result->top; i++) {
+        list_pop2(P->lex_instance->result);
+    }
 }
 
 

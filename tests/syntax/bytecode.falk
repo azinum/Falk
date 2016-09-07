@@ -1,0 +1,33 @@
+# bytecode.falk
+# converting input to bytecode
+
+# this expression
+a = 5 + 3;
+
+# will be converted as
+PUSHIDF, "a",   # push identifier
+PUSHK, 5,   # push constant
+PUSHK, 3,
+OP_ADD,     # add them together and push result
+OP_EQUALS_ASSIGN,   # set value of result to 'a'
+XEND    # expression end
+
+# while loop
+test = 0;
+while (test < 1000) {
+    test += 1;
+}
+
+# converted =>
+PUSHIDF, "test",
+PUSHK, 0, OP_EQUALS_ASSIGN, XEND,
+WHILE_HEAD_BEGIN,
+PUSHIDF, "test",
+PUSHK, 1000,
+OP_LT,      # less than
+WHILE_BEGIN,    # check head value, if true then continue, else goto end of loop
+PUSHIDF, "test",
+PUSHK, 1000,
+OP_ADD_ASSIGN,
+XEND,
+WHILE_END

@@ -65,9 +65,6 @@ unsigned char is_identifier(const char* token) {
     return 0;
 }
 
-void push_item(Lex_instance* L, Token item) {
-    list_push(L->result, item);
-}
 
 /*
 ** main function for lexer

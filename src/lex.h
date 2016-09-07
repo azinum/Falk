@@ -67,8 +67,6 @@ unsigned char get_opcode(char token);
 
 unsigned char is_identifier(const char* token);
 
-void push_item(Lex_instance* L, Token item);
-
 void lex_throw_error(Lex_instance* L, unsigned char error);
 
 #endif /* lex_h */
