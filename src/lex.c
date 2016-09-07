@@ -12,7 +12,7 @@
 void lex_instance_init(Lex_instance* L) {
     L->error = LEX_NO_ERROR;
     L->warning = 0;
-    L->line = 0;
+    L->line = 1;
     L->result = new(Tokenlist);
     list_init(L->result);
 }
@@ -97,6 +97,14 @@ void lex(Lex_instance* L, char* input) {
                 L->line++;
             }
                 break;
+            
+            /*
+            ** check for matching token
+            ** if there is no match, throw an error
+            */
+            CHECK_BLOCK('(', ')', LEXERR_INVALID_BLOCK);
+            CHECK_BLOCK('{', '}', LEXERR_INVALID_BLOCK);
+            CHECK_BLOCK('[', ']', LEXERR_INVALID_BLOCK);
                 
             default: {
                 if (is_operator(temp_token)) {
@@ -156,6 +164,10 @@ void lex(Lex_instance* L, char* input) {
 #endif
 }
 
+void lex_throw_error(Lex_instance* L, unsigned char error) {
+    printf("(LexError) At line: %i. %s.\n", L->line, lex_error_info[error]);
+    L->error = LEX_NO_ERROR;
+}
 
 /*
 ** free a lex instance

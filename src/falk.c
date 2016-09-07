@@ -14,19 +14,57 @@ void falk_instance_init(Falk_instance* F) {
 }
 
 
-void falk_getinput(Falk_instance* F) {
-    char* input = NULL;
-    unsigned long size = 0;
-    
-    while (1) {
-        printf(FALK_PROMPT);
-        if (getline(&input, &size, stdin) > -1) {
+void falk_execute(Falk_instance* F) {
+    if (F->argc == 2) {     /* open file */
+        char* input = read_file(F->argv[1]);
+        if (input != NULL)
             parse(F->parse_instance, input);
-        } else
-            break;
+    } else {
+        char* input = NULL;
+        unsigned long size = 0;
+        
+        while (1) {
+            printf(FALK_PROMPT);
+            if (getline(&input, &size, stdin) > -1) {
+                parse(F->parse_instance, input);
+            } else
+                break;
+        }
+    }
+    falk_instance_free(F);
+}
+
+char* read_file(const char* fname) {
+    char* buffer = NULL;
+    long ssize, rsize;   /* string, read size*/
+    FILE* f = fopen(fname, "r");
+    
+    if (!f) {
+        printf("Could not open file \"%s\".\n", fname);
+        return NULL;
+    }
+
+    fseek(f, 0, SEEK_END);
+    
+    ssize = ftell(f);
+    
+    rewind(f);
+    
+    buffer = newx(char, ssize + 1);
+    
+    rsize = fread(buffer, sizeof(char), ssize, f);
+    
+    buffer[ssize] = '\0';
+    
+    if (ssize != rsize) {
+        free(buffer);
+        buffer = NULL;
     }
     
-    falk_instance_free(F);
+    fclose(f);
+
+    
+    return buffer;
 }
 
 void falk_instance_free(Falk_instance* F) {

@@ -24,7 +24,8 @@ typedef struct Falk_instance {
 } Falk_instance;
 
 void falk_instance_init(Falk_instance* F);
-void falk_getinput(Falk_instance* F);
+void falk_execute(Falk_instance* F);
 void falk_instance_free(Falk_instance* F);
+char* read_file(const char* fname);
 
 #endif /* falk_h */

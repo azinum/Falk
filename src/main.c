@@ -13,6 +13,6 @@ int main(int argc, const char* argv[]) {
     F->argc = argc;
     F->argv = argv;
     falk_instance_init(F);
-    falk_getinput(F);
+    falk_execute(F);
     return 0;
 }

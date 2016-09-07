@@ -13,6 +13,24 @@
 
 #define LEX_DEBUG 0
 
+#define CHECK_BLOCK(BEGIN, END, ERR) \
+case BEGIN : { \
+    int delta = 0; \
+    int ni = i; \
+    char next; \
+    while (ni < inputlim) { \
+        next = input[ni++]; \
+        if (next == BEGIN) \
+            delta++; \
+        if (next == END)\
+            delta--; \
+        if (delta == 0) \
+            break; \
+    } \
+    if (delta > 0) \
+        lex_throw_error(L, ERR); \
+}\
+
 enum Lex_errors {
     LEX_NO_ERROR,
     LEXERR_INVALID_TOKEN,
@@ -25,6 +43,12 @@ typedef struct Lex_instance {
     Tokenlist* result;  /* final lexed product */
     Token op;   /* current operator */
 } Lex_instance;
+
+static const char* lex_error_info[] = {
+    "",
+    "Invalid token",
+    "Block does not match"
+};
 
 /*
 ** allowed characters for identifiers
@@ -44,5 +68,7 @@ unsigned char get_opcode(char token);
 unsigned char is_identifier(const char* token);
 
 void push_item(Lex_instance* L, Token item);
+
+void lex_throw_error(Lex_instance* L, unsigned char error);
 
 #endif /* lex_h */

@@ -16,9 +16,40 @@ void parse_instance_init(Parse_instance* P) {
     list_init(P->stack);
 }
 
-void check_precedence(Parse_instance* P) {
+
+Operator get_operator(unsigned char op) {
+    Operator ret = {};
     
+    for (int i = 0; i < arr_size(operators); i++) {
+        ret = operators[i];
+        if (ret.op == op) {
+            return ret;
+        }
+    }
+    
+    return ret;
 }
+
+
+void check_precedence(Parse_instance* P) {
+    if (P->stack->top >= 2) {
+        Operator op0 = get_operator(list_get_top(P->stack).op);
+        Operator op1 = get_operator(list_get_from_top(P->stack, -1).op);
+        
+        if (op1.op == TOK_LEFT_P)   /* do not read left parathese */
+            return;
+        
+        if (op1.prec >= op0.prec && op0.asso == ASSO_LR) {
+            list_push(P->result, list_get_from_top(P->stack, -1));
+            list_pop2(P->stack);
+            list_pop2(P->stack);
+            list_push(P->stack, list_get_top(P->stack));
+            return;
+        }
+    
+    }
+}
+
 
 /*
 ** the shunting yard algorithm will be used in parser
@@ -52,7 +83,6 @@ void parse(Parse_instance* P, char* input) {
                 /* While stack is not empty and left parenthese is not detected,
                 ** push top value of stack and then pop top value.
                 */
-                
                 while (P->stack->top != 0) {
                     if (list_get_top(P->stack).op == TOK_LEFT_P) {
                         list_pop2(P->stack);    /* pop left parenthese */
@@ -64,20 +94,19 @@ void parse(Parse_instance* P, char* input) {
             }
                 break;
                 
-            /* can be function, push to stack */
             case T_IDENTIFIER: {
-
+                list_push(P->result, current);
             }
                 break;
             
             case T_NUMBER: {
                 /* push to output */
+                list_push(P->result, current);
             }
                 break;
                 
             case TOK_NEWLINE: {
                 P->line++;
-                printf("ln: %i\n", P->line);
             }
                 break;
             
@@ -100,8 +129,8 @@ void parse(Parse_instance* P, char* input) {
     for (int i = 0; i < P->result->top; i++) {
         puts(P->result->value[i].token);
     }
-
 }
+
 
 void parse_throw_error(Parse_instance* P, unsigned char error) {
     P->error = error;
@@ -109,6 +138,9 @@ void parse_throw_error(Parse_instance* P, unsigned char error) {
     P->error = PARSE_NO_ERROR;
 }
 
+
 void parse_instance_free(Parse_instance* P) {
     list_free(P->result);
+    list_free(P->stack);
+    free(P);
 }

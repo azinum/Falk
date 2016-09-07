@@ -74,6 +74,8 @@ while (LIST->size > 1) { \
 
 #define list_get(LIST, INDEX) (LIST->value[INDEX])
 
+#define list_get_from_top(LIST, DELTA) (LIST->value[(LIST->top - 1) + DELTA])
+
 /*
 ** push item to list
 */

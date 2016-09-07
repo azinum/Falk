@@ -10,6 +10,7 @@
 #include <string.h>
 
 #define new(TYPE) ((TYPE*)malloc(sizeof(TYPE)))
+#define newx(TYPE, SIZE) ((TYPE*)malloc(SIZE * sizeof(TYPE)))
 
 /*
 ** when using C99 we need to use __typeof__ keyword
