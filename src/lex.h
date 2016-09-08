@@ -13,23 +13,6 @@
 
 #define LEX_DEBUG 0
 
-#define CHECK_BLOCK(BEGIN, END, ERR) \
-case BEGIN : { \
-    int delta = 0; \
-    int ni = i; \
-    char next; \
-    while (ni < inputlim) { \
-        next = input[ni++]; \
-        if (next == BEGIN) \
-            delta++; \
-        if (next == END)\
-            delta--; \
-        if (delta == 0) \
-            break; \
-    } \
-    if (delta > 0) \
-        lex_throw_error(L, ERR); \
-}\
 
 enum Lex_errors {
     LEX_NO_ERROR,

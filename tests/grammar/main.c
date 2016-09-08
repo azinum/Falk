@@ -10,7 +10,7 @@
 */
 
 /*
-** some sort of mask maybe used
+** some sort of mask may be used
 */
 enum Things {
     ADD = 2 << 0,

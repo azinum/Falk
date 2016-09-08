@@ -81,6 +81,14 @@ void lex(Lex_instance* L, char* input) {
     
     char temp_token;
     int inputlim = (int)strlen(input);
+    /*
+    ** bracket count (how many extra brackets there are)
+    ** if counter is not equal to 0, (same amount of brackets) then we got a mismatch
+    */
+    int parenc, curlybc, normalbc;
+    parenc = 0;
+    curlybc = 0;
+    normalbc = 0;
     
     for (int i = 0; i < inputlim; i++) {
         temp_token = input[i];
@@ -95,13 +103,35 @@ void lex(Lex_instance* L, char* input) {
             }
                 break;
             
-            /*
-            ** check for matching token
-            ** if there is no match, throw an error
-            */
-            CHECK_BLOCK('(', ')', LEXERR_INVALID_BLOCK);
-            CHECK_BLOCK('{', '}', LEXERR_INVALID_BLOCK);
-            CHECK_BLOCK('[', ']', LEXERR_INVALID_BLOCK);
+            case '(': {
+                parenc++;
+            }
+                break;
+                
+            case ')': {
+                parenc--;
+            }
+                break;
+                
+            case '{': {
+                curlybc++;
+            }
+                break;
+                
+            case '}': {
+                curlybc--;
+            }
+                break;
+                
+            case '[': {
+                normalbc++;
+            }
+                break;
+            
+            case ']': {
+                normalbc--;
+            }
+                break;
                 
             default: {
                 if (is_operator(temp_token)) {
@@ -128,6 +158,10 @@ void lex(Lex_instance* L, char* input) {
             }
                 break;
         }
+    }
+    
+    if (parenc != 0 || curlybc != 0 || normalbc != 0) {
+        lex_throw_error(L, LEXERR_INVALID_BLOCK);
     }
     
     char* tmp = new(char);
