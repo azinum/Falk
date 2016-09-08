@@ -91,22 +91,7 @@ void lex(Lex_instance* L, char* input) {
     normalbc = 0;
     
     for (int i = 0; i < inputlim; i++) {
-        temp_token = input[i];
-        
-        if (parenc < 0 || curlybc  < 0 || normalbc < 0)
-            lex_throw_error(L, LEXERR_INVALID_BLOCK);
-        
-        switch (temp_token) {
-            case '#': {     /* comment */
-                while (i++ < inputlim || input[i] == '\n');
-            }
-                break;
-        
-            case '\n': {
-                L->line++;
-            }
-                break;
-            
+        switch (input[i]) {
             case '(': {
                 parenc++;
             }
@@ -131,9 +116,36 @@ void lex(Lex_instance* L, char* input) {
                 normalbc++;
             }
                 break;
-            
+                
             case ']': {
                 normalbc--;
+            }
+                break;
+                
+            default:
+                break;
+        }
+    }
+    
+    if (parenc != 0 || curlybc != 0 || normalbc != 0) {
+        lex_throw_error(L, LEXERR_INVALID_BLOCK);
+        return;
+    }
+    
+    for (int i = 0; i < inputlim; i++) {
+        temp_token = input[i];
+        
+        if (parenc < 0 || curlybc  < 0 || normalbc < 0)
+            lex_throw_error(L, LEXERR_INVALID_BLOCK);
+        
+        switch (temp_token) {
+            case '#': {     /* comment */
+                while (i++ < inputlim || input[i] == '\n');
+            }
+                break;
+        
+            case '\n': {
+                L->line++;
             }
                 break;
                 
@@ -162,10 +174,6 @@ void lex(Lex_instance* L, char* input) {
             }
                 break;
         }
-    }
-    
-    if (parenc != 0 || curlybc != 0 || normalbc != 0) {
-        lex_throw_error(L, LEXERR_INVALID_BLOCK);
     }
     
     char* tmp = new(char);
