@@ -92,6 +92,10 @@ void lex(Lex_instance* L, char* input) {
     
     for (int i = 0; i < inputlim; i++) {
         temp_token = input[i];
+        
+        if (parenc < 0 || curlybc  < 0 || normalbc < 0)
+            lex_throw_error(L, LEXERR_INVALID_BLOCK);
+        
         switch (temp_token) {
             case '#': {     /* comment */
                 while (i++ < inputlim || input[i] == '\n');
