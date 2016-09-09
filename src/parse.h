@@ -60,7 +60,7 @@ typedef struct Parse_instance {
 
 void parse_instance_init(Parse_instance* P);
 
-void parse(Parse_instance* P, char* input);
+int parse(Parse_instance* P, char* input);
 
 void parse_throw_error(Parse_instance* P, unsigned char error);
 

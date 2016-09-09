@@ -38,7 +38,7 @@ static const char* lex_error_info[] = {
 */
 static const char* allowed_characters = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm_";
 
-void lex(Lex_instance* L, char* input);
+int lex(Lex_instance* L, char* input);
 
 void lex_instance_init(Lex_instance* L);
 

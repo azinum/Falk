@@ -73,9 +73,9 @@ unsigned char is_identifier(const char* token) {
 ** the string is for knowing how the token looks like, the number is describing the token
 ** get description from enum: Instructions, at "object.h"
 */
-void lex(Lex_instance* L, char* input) {
+int lex(Lex_instance* L, char* input) {
     if (strlen(input) <= 1)
-        return;
+        return 0;
     String* item = new(String);
     list_init(item);
     
@@ -129,7 +129,7 @@ void lex(Lex_instance* L, char* input) {
     
     if (parenc != 0 || curlybc != 0 || normalbc != 0) {
         lex_throw_error(L, LEXERR_INVALID_BLOCK);
-        return;
+        return 0;
     }
     
     for (int i = 0; i < inputlim; i++) {
@@ -205,6 +205,7 @@ void lex(Lex_instance* L, char* input) {
             puts(current.token);
     }
 #endif
+    return 1;
 }
 
 void lex_throw_error(Lex_instance* L, unsigned char error) {

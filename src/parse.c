@@ -53,10 +53,11 @@ void check_precedence(Parse_instance* P) {
 
 /*
 ** the shunting yard algorithm will be used in parser
-** main reason is that it is simple and using a parser generator is not very optimal
+** main reason is that it is simple and using a parser generator is not very optimal, full control is what we want
 */
-void parse(Parse_instance* P, char* input) {
-    lex(P->lex_instance, input);
+int parse(Parse_instance* P, char* input) {
+    if(!lex(P->lex_instance, input))
+        return 0;
     Tokenlist* lexed = P->lex_instance->result;
     
     Token current;
@@ -127,16 +128,14 @@ void parse(Parse_instance* P, char* input) {
     }
     
     for (int i = 0; i < P->result->top; i++) {
-        puts(P->result->value[i].token);
-    }
-    
-    for (int i = 0; i < P->result->top; i++) {
-        list_pop2(P->result);
+        printf("> %s\n", P->result->value[i].token);
     }
     
     for (int i = 0; i < P->lex_instance->result->top; i++) {
         list_pop2(P->lex_instance->result);
     }
+    
+    return 1;
 }
 
 
