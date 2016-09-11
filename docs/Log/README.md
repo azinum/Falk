@@ -15,3 +15,33 @@ Varje data struktur består av ett tecken / ord och en beskrivning av tecknet.
 En lexer är som ett riktigt språks lexikon, leta upp ett ord och hitta betydelsen.
 
 Till nästa vecka så kommer jag börja med parser.
+
+
+
+
+### V36 - 2016/9/9
+
+Jag har denna vecka påbörjat att göra en parser. En parsers uppgift är att omvandla en ingång av tecken till någon form av träd.
+Trädet är definerat av språkets grammatik. Grammatiken bestämmer sen syntaxen.
+Varje språk har sin egna grammatik.
+Språk har detta för att beskriva hur syntaxen ska vara formad och för att datorn ska lätt kunna behandla det användaren vill åstadkomma.
+
+##### Exempel
+Vi kanske vill göra en enkel uträkning.
+Hur gör vi för att parsa detta?
+``` ruby
+=> 3 + 2
+```
+Resultatet på detta exempel blir:
+``` ruby
+=> 3 2 +
+```
+Varför?
+Jo, för att datorn ska kunna räkna ut detta så använder vi oss av en stack.
+När vi ser ett nummer, då lägger vi in nummret på stacken.
+Om vi ser en operator, då räknar vi ut värden som ligger på stacken.
+Såhär funkar en virtuell maskin i princip.
+
+Min parser kommer använda sig av the Shunting Yard algorithim, eller järnvägsalgoritmen och en hemmagjord grammatik.
+Den använder sig av operatörer och icke-operatörer. Varje operatör har en prioritet och associativitet.
+Med hjälp av en prioritet och associativitet så kan man lätt sortera ingången av kod till ett syntax träd.
