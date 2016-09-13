@@ -13,11 +13,11 @@ void parse_instance_init(Parse_instance* P) {
     list_init(P->result);
     P->stack = new(Tokenlist);
     list_init(P->stack);
-    P->rules = newx(Rule, 4);
-    P->rules->fc = 4;
-    (P->rules++)->flags = create_flagset(3, IF, EXPRESSION, BODY | END, ELSE | NONE);
-    (P->rules++)->flags = create_flagset(3, WHILE, EXPRESSION, BODY | END);
-    (P->rules++)->flags = create_flagset(3, FUNC, EXPRESSION, BODY | END);
+    P->rules = new(RuleList);
+    list_init(P->rules);
+    list_push(P->rules, ((Rule){create_flagset(4, IF, EXPRESSION, BODY | END, ELSE | NONE), 4}));
+    list_push(P->rules, ((Rule){create_flagset(3, WHILE, EXPRESSION, BODY | END), 3}));
+    list_push(P->rules, ((Rule){create_flagset(3, FUNC, EXPRESSION, BODY | END), 3}));
 }
 
 
@@ -126,17 +126,21 @@ int parse(Parse_instance* P, char* input) {
     ** push rest of stack (only temporary, when parser detect end of expression,
     ** it will push all operators on stack till we detect another end or similar to that)
     */
-    while (P->stack->size > 1) {
+    while (P->stack->top > 0) {
         list_push(P->result, list_get_top(P->stack));
         list_pop2(P->stack);
     }
     
-    for (int i = 0; i < P->result->top; i++) {
-        printf("> %s\n", P->result->value[i].token);
+    while (P->lex_instance->result->top > 0) {
+        list_pop2(P->lex_instance->result);
     }
     
-    for (int i = 0; i < P->lex_instance->result->top; i++) {
-        list_pop2(P->lex_instance->result);
+    while (P->result->top > 0) {
+        list_pop2(P->result);
+    }
+    
+    for (int i = 0; i < P->result->top; i++) {
+        printf("> %s\n", P->result->value[i].token);
     }
     
     return 1;

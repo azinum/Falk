@@ -44,6 +44,8 @@ typedef struct Rule {
     int fc;     /* flag count */
 } Rule;
 
+list_define(RuleList, Rule);
+
 typedef struct Operator {
     unsigned char op;   /* what operator? OP_ADD, OP_SUB e.t.c */
     unsigned char asso;     /* associativity */
@@ -75,7 +77,7 @@ typedef struct Parse_instance {
     Tokenlist* result;
     Lex_instance* lex_instance;
     Tokenlist* stack;   /* we use the stack for keeping operators and keywords */
-    Rule* rules;
+    RuleList* rules;
 } Parse_instance;
 
 void parse_instance_init(Parse_instance* P);

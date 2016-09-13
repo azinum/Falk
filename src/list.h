@@ -50,7 +50,7 @@ TARGET->size += SIZE
 
 
 #define list_clear(LIST) \
-while (LIST->size > 1) { \
+while (LIST->top > 0) { \
     list_pop(LIST); \
 }
 
