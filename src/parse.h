@@ -7,6 +7,7 @@
 #define parse_h
 
 #include <stdio.h>
+#include <stdarg.h>
 #include "lex.h"
 #include "table.h"
 
@@ -22,6 +23,26 @@ enum Parse_errors {
     PARSE_NO_ERROR,
     PERR_BLOCK_NO_MATCH,     /* block does not match */
 };
+
+/*
+ ** flags for grammar checking
+ */
+enum Gflags {
+    NONE        = 1 << 0,
+    IF          = 1 << 1,
+    ELSE        = 1 << 2,
+    WHILE       = 1 << 3,
+    FUNC        = 1 << 4,
+    EXPRESSION  = 1 << 5,
+    BODY        = 1 << 6,
+    END         = 1 << 7,
+    ANY = NONE | IF | ELSE | WHILE | FUNC | EXPRESSION | BODY | END
+};
+
+typedef struct Rule {
+    int* flags;     /* array of flags */
+    int fc;     /* flag count */
+} Rule;
 
 typedef struct Operator {
     unsigned char op;   /* what operator? OP_ADD, OP_SUB e.t.c */
@@ -48,15 +69,14 @@ static const char* parse_error_info[] = {
     "Block does not match"
 };
 
-
 typedef struct Parse_instance {
     int error, warning;
     int line;
     Tokenlist* result;
     Lex_instance* lex_instance;
     Tokenlist* stack;   /* we use the stack for keeping operators and keywords */
+    Rule* rules;
 } Parse_instance;
-
 
 void parse_instance_init(Parse_instance* P);
 
@@ -68,8 +88,8 @@ void parse_instance_free(Parse_instance* P);
 
 void check_precedence(Parse_instance* P);
 
-void add_operators(Parse_instance* P);
-
 Operator get_operator(unsigned char op);
+
+int* create_flagset(int flagc, ...);
 
 #endif /* parse_h */

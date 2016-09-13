@@ -5,7 +5,6 @@
 
 #include "parse.h"
 
-
 void parse_instance_init(Parse_instance* P) {
     P->error = PARSE_NO_ERROR;
     P->warning = 0;
@@ -14,6 +13,11 @@ void parse_instance_init(Parse_instance* P) {
     list_init(P->result);
     P->stack = new(Tokenlist);
     list_init(P->stack);
+    P->rules = newx(Rule, 4);
+    P->rules->fc = 4;
+    (P->rules++)->flags = create_flagset(3, IF, EXPRESSION, BODY | END, ELSE | NONE);
+    (P->rules++)->flags = create_flagset(3, WHILE, EXPRESSION, BODY | END);
+    (P->rules++)->flags = create_flagset(3, FUNC, EXPRESSION, BODY | END);
 }
 
 
@@ -138,6 +142,16 @@ int parse(Parse_instance* P, char* input) {
     return 1;
 }
 
+int* create_flagset(int flagc, ...) {
+    int* result = newx(int, flagc);
+    va_list args;
+    va_start(args, flagc);
+    
+    for (int i = 0; i < flagc; i++)
+        result[i] = va_arg(args, int);
+    
+    return result;
+}
 
 void parse_throw_error(Parse_instance* P, unsigned char error) {
     P->error = error;
