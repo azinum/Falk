@@ -44,10 +44,11 @@ void check_precedence(Parse_instance* P) {
             return;
         
         if (op1.prec >= op0.prec && op0.asso == ASSO_LR) {
+            Token top = list_get_top(P->stack);
             list_push(P->result, list_get_from_top(P->stack, -1));
             list_pop2(P->stack);
             list_pop2(P->stack);
-            list_push(P->stack, list_get_top(P->stack));
+            list_push(P->stack, top);
             return;
         }
     
@@ -136,7 +137,7 @@ int parse(Parse_instance* P, char* input) {
     }
     
     for (int i = 0; i < P->result->top; i++) {
-        printf("%s, %i\n", P->result->value[i].token, P->result->value[i].op);
+        printf("%s ", P->result->value[i].token);
     }
     
     puts("");
