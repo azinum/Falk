@@ -5,6 +5,8 @@
 #include "object.h"
 
 unsigned char is_number(const char* string) {
+    if (strlen(string) <= 0)
+        return 0;
     char* end;
     strtod(string, &end);
 

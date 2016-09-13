@@ -135,12 +135,14 @@ int parse(Parse_instance* P, char* input) {
         list_pop2(P->lex_instance->result);
     }
     
-    while (P->result->top > 0) {
-        list_pop2(P->result);
+    for (int i = 0; i < P->result->top; i++) {
+        printf("%s, %i\n", P->result->value[i].token, P->result->value[i].op);
     }
     
-    for (int i = 0; i < P->result->top; i++) {
-        printf("> %s\n", P->result->value[i].token);
+    puts("");
+    
+    while (P->result->top > 0) {
+        list_pop2(P->result);
     }
     
     return 1;

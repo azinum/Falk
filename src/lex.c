@@ -49,6 +49,8 @@ unsigned char get_opcode(char token) {
 */
 unsigned char is_identifier(const char* token) {
     int tokenlen = (int)strlen(token);
+    if (tokenlen <= 0)
+        return 0;
     int allowedlen = (int)strlen(allowed_characters);
     int validc = 0;     /* how many characters in string is valid? */
     /* if invalid then return 0 */
@@ -209,7 +211,7 @@ int lex(Lex_instance* L, char* input) {
 }
 
 void lex_throw_error(Lex_instance* L, unsigned char error) {
-    printf("(LexError) At line: %i. %s.\n", L->line, lex_error_info[error]);
+    printf("(LexError) %s.\n", lex_error_info[error]);
     L->error = LEX_NO_ERROR;
 }
 
