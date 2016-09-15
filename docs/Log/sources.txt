@@ -2,3 +2,4 @@ RubyConf 2015 - Inside Ruby's VM (30/08/16) https://www.youtube.com/watch?v=CT8J
 Hash function for string (06/09/16) http://stackoverflow.com/questions/7666509/hash-function-for-string
 Read file (07/09/16) http://stackoverflow.com/questions/3463426/in-c-how-should-i-read-a-text-file-and-print-all-strings
 Linked List (15/09/16) http://www.learn-c.org/en/Linked_lists
+Doubly Linked List (15/09/16) http://www.thelearningpoint.net/computer-science/data-structures-doubly-linked-list-with-c-program-source-code

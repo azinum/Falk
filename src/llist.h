@@ -24,23 +24,29 @@ typedef struct NAME { \
 LLIST->next = NULL; \
 LLIST->prev = NULL; \
 
+/*
+** create a new node
+*/
+#define llist_create_node(NODE) \
+NODE->next, NODE->prev = new(typeof(*NODE)); \
 
 /*
 ** add new item to linked list
 */
 #define llist_push(LLIST, VALUE) { \
-    typeof(*LLIST)* current##LLIST = LLIST; \
-    typeof(*LLIST)* prev##LLIST = LLIST; \
-    while ((current##LLIST->next != NULL)) { \
-        prev##LLIST = current##LLIST; \
-        current##LLIST = current##LLIST->next; \
+    typeof(*LLIST)* newnode = new(typeof(*LLIST)); \
+    typeof(*LLIST)* current = LLIST; \
+    if (LLIST == NULL) { \
+        LLIST = newnode; \
     } \
-    current##LLIST->next = new(typeof(*LLIST)); \
-    current##LLIST->next->value = VALUE; \
-    current##LLIST->next->next = NULL; \
-    current##LLIST->next->prev = prev##LLIST; \
+    while ((current->next != NULL)) { \
+        current = current->next; \
+    } \
+    newnode->next = NULL; \
+    current->next = newnode; \
+    newnode->prev = current; \
+    newnode->value = VALUE; \
 }
-
 
 /*
 ** insert value at specific index on list
@@ -50,8 +56,6 @@ LLIST->prev = NULL; \
     int count = 0; \
     typeof(*LLIST)* current##LLIST = LLIST; \
     while ((current##LLIST->next != NULL)) { \
-        current##LLIST = current##LLIST->next; \
-        count++; \
         if (count == INDEX) { \
             typeof(*LLIST)* toassign = new(typeof(*LLIST)); \
             toassign->prev = current##LLIST; \
@@ -59,12 +63,43 @@ LLIST->prev = NULL; \
             current##LLIST->next = toassign; \
             toassign->value = VALUE; \
         } \
+        current##LLIST = current##LLIST->next; \
+        count++; \
     }\
 }
 
+
 /*
-** pop last item in list
+** remove a link from list at an index
+** do {...} while(0); is used so that we can break out of macro scope
 */
-#define llist_pop(LLIST)
+#define llist_erase(LLIST, INDEX) { \
+    do { \
+        typeof(*LLIST)* current = LLIST; \
+        int count = 0; \
+        if (INDEX < count) break; \
+        while (current->next != NULL) { \
+            current = current->next; \
+            if (count == INDEX) { \
+                if (current->prev != NULL) { \
+                    if (current->next != NULL) \
+                        current->prev->next = current->next; \
+                    else \
+                        current->prev->next = NULL; \
+                } \
+                if (current->next != NULL) { \
+                    if (current->prev != NULL) { \
+                        current->next->prev = current->prev; \
+                    } else \
+                        current->next = NULL; \
+                } \
+                free(current); \
+                current = NULL; \
+                break; \
+            } \
+            count++; \
+        } \
+    } while(0); \
+}
 
 #endif /* llist_h */
