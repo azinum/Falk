@@ -55,6 +55,10 @@ void check_precedence(Parse_instance* P) {
     }
 }
 
+int parse_grammar(Parse_instance* P, Tokenlist* to_parse) {
+    /* ... */
+    return 0;
+}
 
 /*
 ** the shunting yard algorithm will be used in parser

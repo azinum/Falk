@@ -94,4 +94,6 @@ Operator get_operator(unsigned char op);
 
 int* create_flagset(int flagc, ...);
 
+int parse_grammar(Parse_instance* P, Tokenlist* to_parse);
+
 #endif /* parse_h */

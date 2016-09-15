@@ -13,6 +13,7 @@
 #include "parse.h"
 #include "object.h"
 #include "list.h"
+#include "llist.h"
 
 #define FALK_PROMPT "=> "
 #define MAXINPUT 512
