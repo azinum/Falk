@@ -54,16 +54,16 @@ NODE->next, NODE->prev = new(typeof(*NODE)); \
 */
 #define llist_insert(LLIST, INDEX, VALUE) { \
     int count = 0; \
-    typeof(*LLIST)* current##LLIST = LLIST; \
-    while ((current##LLIST->next != NULL)) { \
+    typeof(*LLIST)* current = LLIST; \
+    while ((current->next != NULL)) { \
         if (count == INDEX) { \
             typeof(*LLIST)* toassign = new(typeof(*LLIST)); \
-            toassign->prev = current##LLIST; \
-            toassign->next = current##LLIST->next; \
-            current##LLIST->next = toassign; \
+            toassign->prev = current; \
+            toassign->next = current->next; \
+            current->next = toassign; \
             toassign->value = VALUE; \
         } \
-        current##LLIST = current##LLIST->next; \
+        current = current->next; \
         count++; \
     }\
 }
@@ -101,5 +101,26 @@ NODE->next, NODE->prev = new(typeof(*NODE)); \
         } \
     } while(0); \
 }
+
+
+/*
+** remove last item in list
+*/
+#define llist_pop(LLIST) { \
+    typeof(*LLIST)* current = LLIST; \
+    while (1) { \
+        if (current->next == NULL) { \
+            current->prev->next = NULL; \
+            free(current); \
+            current = NULL; \
+            break; \
+        } \
+        current = current->next; \
+    } \
+}
+
+
+
+
 
 #endif /* llist_h */
