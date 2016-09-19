@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "vm.h"
 #include "parse.h"
 #include "object.h"
 #include "list.h"
@@ -20,6 +21,7 @@
 
 typedef struct Falk_instance {
     Parse_instance* parse_instance;
+    VM_instance* vm_instance;
     int argc;
     const char** argv;
 } Falk_instance;

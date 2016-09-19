@@ -44,6 +44,12 @@ typedef struct Token {
     unsigned int op;
 } Token;
 
+
+typedef struct Variable {
+    Object value;
+    int refc;   /* reference count, in use of pointers */
+} Variable;
+
 enum Instructions {
     OP_NULL,
     OP_ADD,

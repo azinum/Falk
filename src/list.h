@@ -105,6 +105,14 @@ LIST->top--; \
 list_realloc(LIST, -1)
 
 /*
+** spop => stack pop
+** list_spop is an optimized / fast version of list_pop
+** what it does is, when popping an element, not giving any memory to OS but decrementing top index of stack
+*/
+#define list_spop(LIST) \
+--LIST->top; \
+
+/*
 ** instead of pushing one character at a time, we can now push a full string onto our target string
 */
 #define string_push(STRING, VALUE) \

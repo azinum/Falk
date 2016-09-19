@@ -11,10 +11,14 @@ void falk_instance_init(Falk_instance* F) {
     parse_instance_init(F->parse_instance);
     F->parse_instance->lex_instance = new(Lex_instance);
     lex_instance_init(F->parse_instance->lex_instance);
+    F->vm_instance = new(VM_instance);
+    VM_init(F->vm_instance);
 }
 
 
 void falk_execute(Falk_instance* F) {
+    VM_execute(F->vm_instance);
+    goto exec_end;
     if (F->argc == 2) {     /* open file */
         char* input = read_file(F->argv[1]);
         if (input != NULL)
@@ -31,6 +35,8 @@ void falk_execute(Falk_instance* F) {
                 break;
         }
     }
+    
+exec_end:
     falk_instance_free(F);
 }
 
@@ -70,6 +76,7 @@ char* read_file(const char* fname) {
 void falk_instance_free(Falk_instance* F) {
     parse_instance_free(F->parse_instance);
     lex_instance_free(F->parse_instance->lex_instance);
+    VM_instance_free(F->vm_instance);
     free(F);
 }
 
