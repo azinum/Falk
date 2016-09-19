@@ -69,6 +69,14 @@ while (LIST->top > 0) { \
 */
 #define list_set_top(LIST, VALUE) LIST->value[LIST->top] = VALUE
 
+/*
+** assign value to an index of list
+*/
+#define list_set(LIST, INDEX, VALUE) \
+if (LIST->top > INDEX) LIST->value[INDEX] = VALUE
+
+#define list_set_from_top(LIST, DELTA, VALUE) \
+list_set(LIST, LIST->top + DELTA, VALUE)
 
 #define list_get_top(LIST) (LIST->value[LIST->top - 1])
 

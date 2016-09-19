@@ -9,54 +9,57 @@ void VM_init(VM_instance* VM) {
     VM->init = 1;
     VM->stack = new(Stack);
     list_init(VM->stack);
-    VM->ins = newx(void*, 28);
+    VM->ins = new(Instruction_list);
+    list_init(VM->ins);
+    VM->program = newx(void*, 28);
 }
 
-int VM_execute(VM_instance* VM) {
-    VM->ins = ins_add_instructions(3, 0,
-        &&VM_ADD,
-        &&VM_SUB,
-        &&VM_DIV,
-        &&VM_MUL,
-        &&VM_PUSHK,
-        &&VM_PUSHIDF,
-        &&VM_EXIT
-    );
+int VM_execute(VM_instance* VM, char* input) {
+    Lex_instance* lex_instance = new(Lex_instance);
+    lex_instance_init(lex_instance);
     
-    Object test;
-    test.value.number = 5;
-    test.type = T_NUMBER;
+    list_push(VM->ins, &&VM_ADD);
+    list_push(VM->ins, &&VM_SUB);
+    list_push(VM->ins, &&VM_DIV);
+    list_push(VM->ins, &&VM_MUL);
+    list_push(VM->ins, &&VM_PUSHK);
+    list_push(VM->ins, &&VM_PUSHIDF);
+    list_push(VM->ins, &&VM_EXIT);
     
-    VM->program = ins_add_instructions(3, 0,
-                                       &&VM_PUSHK, &test, &&VM_EXIT);
+    if (!lex(lex_instance, input))
+        return 0;
     
-    VM->ip = VM->program;
+    VM->ip = new(void*);
+    
+    VM->ip = to_ins(VM, lex_instance->result);
     
     goto **VM->ip;
     
     vmcase(VM_PUSHK,
-        puts("PushK");
         list_push(VM->stack, *(Object*)*(VM->ip + 1));
-        printf("%i\n", (int)list_get_top(VM->stack).value.number);
         VM->ip++;
     );
     vmcase(VM_PUSHIDF,
-        puts("PushIDF");
+        
     );
     vmcase(VM_ADD,
-        puts("Add");
+        if (VM->stack->top > 2) {
+            list_get_from_top(VM->stack, -1).value.number = op_arith(list_get_from_top(VM->stack, -1), list_get_top(VM->stack), +);
+            list_spop(VM->stack);
+        }
     );
     vmcase(VM_SUB,
-       puts("Sub");
+       
     );
     vmcase(VM_DIV,
-       puts("Div");
+       
     );
     vmcase(VM_MUL,
-        puts("Mul");
+        
     );
     vmcase(VM_EXIT,
-       puts("Exit");
+        printf("%i\n", (int)list_get_top(VM->stack).value.number);
+       puts("EXIT");
        return 1;
     );
     
@@ -76,15 +79,25 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
         
         switch (current.op) {
             case T_NUMBER: {
-                result[rtop++] = VM->ins[VMI_PUSHK];
-                result[rtop++] = new(Object);
-                ((Object*)result[rtop])->type = T_NUMBER;
-                ((Object*)result[rtop])->value.number = to_number(current.token);
+                result[rtop++] = list_get(VM->ins, VMI_PUSHK);
+                Object* number = new(Object);
+                number->type = T_NUMBER;
+                number->value.number = to_number(current.token);
+                result[rtop++] = number;
             }
+                break;
+                
+            case OP_ADD: {
+                result[rtop++] = list_get(VM->ins, VMI_ADD);
+            }
+                break;
+                
+            default:
                 break;
         }
     }
     
+    result[rtop] = list_get(VM->ins, VMI_EXIT);
     return result;
 }
 

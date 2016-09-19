@@ -17,8 +17,6 @@ void falk_instance_init(Falk_instance* F) {
 
 
 void falk_execute(Falk_instance* F) {
-    VM_execute(F->vm_instance);
-    goto exec_end;
     if (F->argc == 2) {     /* open file */
         char* input = read_file(F->argv[1]);
         if (input != NULL)
@@ -30,13 +28,13 @@ void falk_execute(Falk_instance* F) {
         while (1) {
             printf(FALK_PROMPT);
             if (getline(&input, &size, stdin) > -1) {
-                parse(F->parse_instance, input);
+                /* parse(F->parse_instance, input); */
+                VM_execute(F->vm_instance, input);
             } else
                 break;
         }
     }
     
-exec_end:
     falk_instance_free(F);
 }
 

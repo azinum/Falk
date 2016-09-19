@@ -9,13 +9,19 @@
 #include <stdarg.h>
 #include "list.h"
 #include "object.h"
+#include "lex.h"
 
 list_define(Stack, Object);
+list_define(Instruction_list, void*);
 
 #define vmcase(CASE, BODY) { \
     CASE : { BODY ; } \
     goto **(++VM->ip); \
 }
+
+
+#define op_arith(L, R, OP) \
+(((L.type | R.type) == T_NUMBER) ? (L.value.number OP R.value.number) : (0))
 
 /*
 ** WARNING!
@@ -36,11 +42,11 @@ typedef struct VM_instance {
     unsigned char init;     /* is VM initialized? */
     void** program;     /* program itself */
     void** ip;      /* pointer to an instruction */
-    void** ins;     /* all instructions */
+    Instruction_list* ins;     /* all instructions */
     Stack* stack;   /* list of objects */
 } VM_instance;
 
-int VM_execute(VM_instance* VM);
+int VM_execute(VM_instance* VM, char* input);
 
 void VM_init(VM_instance* VM);
 
