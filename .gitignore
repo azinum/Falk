@@ -10,3 +10,5 @@
 *.plist
 
 .DS_Store
+
+*.xcbkptlist

@@ -10,9 +10,18 @@
 #include <stdarg.h>
 #include "lex.h"
 #include "table.h"
+#include "llist.h"
 
 #define PARSE_DEBUG 0
 
+/*
+** define a doubly linked list with token type
+*/
+llist_define(TokenLL, Token);
+
+/*
+** every operator has their own associativity
+*/
 enum Associativities {
     ASSO_LR = 5,
     ASSO_RL,
@@ -25,8 +34,8 @@ enum Parse_errors {
 };
 
 /*
- ** flags for grammar checking
- */
+** flags for grammar checking
+*/
 enum Gflags {
     NONE        = 1 << 0,
     IF          = 1 << 1,
@@ -40,7 +49,7 @@ enum Gflags {
 };
 
 typedef struct Rule {
-    int* flags;     /* array of flags */
+    int* flags;     /* array of flags (first flag is the rule itself) */
     int fc;     /* flag count */
 } Rule;
 
@@ -78,6 +87,7 @@ typedef struct Parse_instance {
     Lex_instance* lex_instance;
     Tokenlist* stack;   /* we use the stack for keeping operators and keywords */
     RuleList* rules;
+    TokenLL* resultll;  /* result as linked list */
 } Parse_instance;
 
 void parse_instance_init(Parse_instance* P);

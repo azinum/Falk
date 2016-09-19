@@ -7,6 +7,11 @@
 
 #include <stdio.h>
 
+
+#define llist_new(NAME, LL) \
+LL* NAME = new(LL); \
+llist_init(NAME)
+
 /*
 ** define doubly linked list
 */

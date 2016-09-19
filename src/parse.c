@@ -15,9 +15,12 @@ void parse_instance_init(Parse_instance* P) {
     list_init(P->stack);
     P->rules = new(RuleList);
     list_init(P->rules);
-    list_push(P->rules, ((Rule){create_flagset(4, IF, EXPRESSION, BODY | END, ELSE | NONE), 4}));
+    list_push(P->rules, ((Rule){create_flagset(4, IF, EXPRESSION, BODY | END, ELSE | END), 4}));
     list_push(P->rules, ((Rule){create_flagset(3, WHILE, EXPRESSION, BODY | END), 3}));
     list_push(P->rules, ((Rule){create_flagset(3, FUNC, EXPRESSION, BODY | END), 3}));
+    
+    P->resultll = new(TokenLL);
+    llist_init(P->resultll);
 }
 
 
@@ -40,7 +43,7 @@ void check_precedence(Parse_instance* P) {
         Operator op0 = get_operator(list_get_top(P->stack).op);
         Operator op1 = get_operator(list_get_from_top(P->stack, -1).op);
         
-        if (op1.op == TOK_LEFT_P)   /* do not read left parathese */
+        if (op1.op == TOK_LEFT_P)   /* do not read left parenthese */
             return;
         
         if (op1.prec >= op0.prec && op0.asso == ASSO_LR) {
@@ -56,7 +59,48 @@ void check_precedence(Parse_instance* P) {
 }
 
 int parse_grammar(Parse_instance* P, Tokenlist* to_parse) {
-    /* ... */
+    /*
+    ** special cases is tagged as ^ e.g.
+    ** if (expression) {...} ->
+    ** if e^(expression) b^{...}
+    */
+    
+    llist_new(result, TokenLL);
+    Token token;
+    for (int i = 0; i < to_parse->top; i++) {
+        token = to_parse->value[i];
+        
+        switch (token.op) {
+            case TOK_LEFT_P: {
+                /* tag as expression */
+                llist_push(result, ((Token){"e^", EXPRESSION}));
+                llist_push(result, token);
+            }
+                break;
+                
+            case TOK_LEFT_CURLY_BRACKET: {
+                /* tag as body */
+                llist_push(result, ((Token){"b^", BODY}));
+                llist_push(result, token);
+            }
+                break;
+            
+            default: {
+                llist_push(result, token);
+                /* do not need to tag */
+            }
+                break;
+        }
+    }
+    
+    TokenLL* it = result;
+    
+    while (it->next != NULL) {
+        it = it->next;
+        printf("%s ", it->value.token);
+    }
+    puts("");
+    
     return 0;
 }
 
@@ -68,6 +112,9 @@ int parse(Parse_instance* P, char* input) {
     if(!lex(P->lex_instance, input))
         return 0;
     Tokenlist* lexed = P->lex_instance->result;
+    
+    if (!parse_grammar(P, lexed))
+        return 0;
     
     Token current;
     for (int i = 0; i < lexed->top; i++) {

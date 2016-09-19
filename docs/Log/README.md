@@ -45,3 +45,47 @@ Såhär funkar en virtuell maskin i princip.
 Min parser kommer använda sig av the Shunting Yard algorithim, eller järnvägsalgoritmen och en hemmagjord grammatik.
 Den använder sig av operatörer och icke-operatörer. Varje operatör har en prioritet och associativitet.
 Med hjälp av en prioritet och associativitet så kan man lätt sortera ingången av kod till ett syntax träd.
+
+
+
+
+### V37 - 2016/9/16
+Denna vecka har jag börjat med att göra grammatik till mitt språk.
+Jag har en lista med regler som parsern kollar igenom och gör en viss felsökning och lite manipulationer på ingången av kod.
+Detta steg, parsingen och grammatiken är det svåraste att utveckla när man skapar ett språk.
+Jag har en idé om hur man kan göra detta.
+
+Såhär tänkte jag forma språkets regler:
+``` ruby
+(IF, EXPR, BODY | END);
+(WHILE, EXPR, BODY | END);
+(FUNC, EXPR, BODY | END);
+```
+När parsern upptäcker if ordet, då kollar den igenom reglerna för if.
+Så, efter if, då måste man använda en expression, efter expression måste man antingen ha en 'body' eller 'end'.
+Man markerar eller med den binära operatorn OR (|).
+Allt man gör är att använda så kallat flaggor eller mask.
+
+Exempelvis:
+``` ruby
+BODY    = 00001000
+END     = 00000100
+```
+När man gör OR operatorn över dom två nummrerna så får vi ett resultat:
+``` ruby
+    00001000
+OR  00000100
+    00001100
+```
+
+För att kolla om det finns en flagga i ett nummer så använder man operatorn AND (&).
+``` ruby
+    00001100
+AND 00000100
+    00000100
+```
+Här ser vi att det matchar.
+
+
+Jag tänker till nästa vecka börja utveckla den virtuella maskinen.
+Just nu ska jag forska mera om parser och hur man formar ett språks syntax.
