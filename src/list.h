@@ -54,6 +54,11 @@ while (LIST->top > 0) { \
     list_pop(LIST); \
 }
 
+#define list_clear2(LIST) \
+while (LIST->top > 0) { \
+    list_pop2(LIST); \
+}
+
 /*
 ** for increasing list size if we need to
 */

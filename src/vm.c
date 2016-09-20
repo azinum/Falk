@@ -29,8 +29,6 @@ int VM_execute(VM_instance* VM, char* input) {
     if (!lex(lex_instance, input))
         return 0;
     
-    VM->ip = new(void*);
-    
     VM->ip = to_ins(VM, lex_instance->result);
     
     goto **VM->ip;
@@ -43,24 +41,31 @@ int VM_execute(VM_instance* VM, char* input) {
         
     );
     vmcase(VM_ADD,
-        if (VM->stack->top > 2) {
-            list_get_from_top(VM->stack, -1).value.number = op_arith(list_get_from_top(VM->stack, -1), list_get_top(VM->stack), +);
-            list_spop(VM->stack);
-        }
+        /* 
+        ** if we can do arithmetic operation,
+        ** jump to next ins, else: throw error message
+        */
+        num_arith(+);
+        VM_throw_error(VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_ADD");
     );
     vmcase(VM_SUB,
-       
+        num_arith(-);
+        VM_throw_error(VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_SUB");
     );
     vmcase(VM_DIV,
-       
+        num_arith(/);
+        VM_throw_error(VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_DIV");
     );
     vmcase(VM_MUL,
-        
+        num_arith(*);
+        VM_throw_error(VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_MUL");
     );
     vmcase(VM_EXIT,
-        printf("%i\n", (int)list_get_top(VM->stack).value.number);
-       puts("EXIT");
-       return 1;
+        if (VM->stack->top > 0) {
+           printf("%i\n", (int)list_get_top(VM->stack).value.number);
+           list_clear2(VM->stack);
+        }
+        return 1;
     );
     
     return 0;
@@ -87,9 +92,20 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
             }
                 break;
                 
-            case OP_ADD: {
+            case OP_ADD:
                 result[rtop++] = list_get(VM->ins, VMI_ADD);
-            }
+                break;
+                
+            case OP_SUB:
+                result[rtop++] = list_get(VM->ins, VMI_SUB);
+                break;
+                
+            case OP_DIV:
+                result[rtop++] = list_get(VM->ins, VMI_DIV);
+                break;
+                
+            case OP_MUL:
+                result[rtop++] = list_get(VM->ins, VMI_MUL);
                 break;
                 
             default:
@@ -99,6 +115,11 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
     
     result[rtop] = list_get(VM->ins, VMI_EXIT);
     return result;
+}
+
+
+void VM_throw_error(int error, int cause, const char* msg) {
+    printf("%s%s; %s\n", VM_error_messages[error], VM_error_cause_messages[cause], msg);
 }
 
 void** ins_add_instructions(int insc, void* ins, ...) {

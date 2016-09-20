@@ -23,6 +23,13 @@ list_define(Instruction_list, void*);
 #define op_arith(L, R, OP) \
 (((L.type | R.type) == T_NUMBER) ? (L.value.number OP R.value.number) : (0))
 
+#define num_arith(OP) \
+if (VM->stack->top >= 2) { \
+    list_get_from_top(VM->stack, -1).value.number = op_arith(list_get_from_top(VM->stack, -1), list_get_top(VM->stack), OP); \
+    list_spop(VM->stack); \
+    goto **(++VM->ip); \
+}
+
 /*
 ** WARNING!
 ** order reserved
@@ -36,6 +43,39 @@ enum VM_instructions {
     VMI_PUSHIDF,
     
     VMI_EXIT
+};
+
+enum VM_errors {
+    VM_NO_ERROR = 0,
+    VM_ERR_STACK,
+    VM_ERR_ARITH,
+};
+
+enum VM_error_causes {
+    VM_ERRC_NONE,
+    /* stack */
+    VM_ERRC_STACK_NOT_ENOUGH_ITEMS,
+    VM_ERRC_STACK_OVERFLOW,
+    VM_ERRC_STACK_NOT_INIT,
+    /* arith */
+    VM_ERRC_ARITH_INVALID_TYPES,
+};
+
+static const char* VM_error_messages[] = {
+    "",
+    "Stack error: ",
+    "Arithmetic error: ",
+};
+
+static const char* VM_error_cause_messages[] = {
+    "",
+    /* messages for stack */
+    "Not enough items on stack",
+    "StackOverflow",
+    "Stack has not been initialized yet",
+    
+    /* arithmetic error causes */
+    "Invalid types on arithmetic operation",
 };
 
 typedef struct VM_instance {
@@ -55,5 +95,7 @@ void VM_instance_free(VM_instance* VM);
 void** ins_add_instructions(int insc, void* ins, ...);
 
 void** to_ins(VM_instance* VM, Tokenlist* list);
+
+void VM_throw_error(int error, int cause, const char* msg);
 
 #endif /* vm_h */
