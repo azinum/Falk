@@ -12,6 +12,20 @@ void VM_init(VM_instance* VM) {
     VM->ins = new(Instruction_list);
     list_init(VM->ins);
     VM->program = newx(void*, 28);
+    
+    VM->global = new(Scope);
+    VM->global->global = VM->global;
+    VM->global->variables = new(HashTable);
+    table_init(VM->global->variables);
+
+    /* CREATE VARIABLE BEGIN */
+    Variable* test = new(Variable);
+    variable_init(test, number = 5, T_NUMBER);
+    Object* obj = new(Object);
+    obj->type = T_VAR;
+    obj->value.ptr = test;
+    table_push(VM->global->variables, "test", obj);
+    /* CREATE VARIABLE END */
 }
 
 int VM_execute(VM_instance* VM, char* input) {
@@ -26,10 +40,14 @@ int VM_execute(VM_instance* VM, char* input) {
     list_push(VM->ins, &&VM_PUSHIDF);
     list_push(VM->ins, &&VM_EXIT);
     
-    if (!lex(lex_instance, input))
+    if (!lex(lex_instance, input)) {
         return 0;
+    }
     
     VM->ip = to_ins(VM, lex_instance->result);
+    
+    if (!VM->ip)
+        return 0;
     
     goto **VM->ip;
     
@@ -38,7 +56,23 @@ int VM_execute(VM_instance* VM, char* input) {
         VM->ip++;
     );
     vmcase(VM_PUSHIDF,
-        
+        char* name = ((Object*)*((VM->ip + 1)))->value.string;
+        Variable* var;
+        if (table_find(VM->global->variables, name) != NULL) {
+            /*
+            ** variable exist
+            ** optimize: create opcode (VM_PUSHP, addr)
+            */
+            var = ((Variable*)((Object*)(table_find(VM->global->variables, name)->value)))->var_value.value.ptr;
+            list_push(VM->stack, var->var_value);
+        } else {
+            /*
+            ** variable does not exist
+            ** create variable
+            ** optimize code
+            */
+        }
+        VM->ip++;
     );
     vmcase(VM_ADD,
         /* 
@@ -62,14 +96,15 @@ int VM_execute(VM_instance* VM, char* input) {
     );
     vmcase(VM_EXIT,
         if (VM->stack->top > 0) {
-           printf("%i\n", (int)list_get_top(VM->stack).value.number);
-           list_clear2(VM->stack);
+            printf("%i\n", (int)list_get_top(VM->stack).value.number);
+            list_clear2(VM->stack);
         }
         return 1;
     );
     
     return 0;
 }
+
 
 /*
 ** convert input of tokens to an array of instructions
@@ -89,6 +124,15 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
                 number->type = T_NUMBER;
                 number->value.number = to_number(current.token);
                 result[rtop++] = number;
+            }
+                break;
+                
+            case T_IDENTIFIER: {
+                result[rtop++] = list_get(VM->ins, VMI_PUSHIDF);
+                Object* idf = new(Object);
+                idf->type = T_IDENTIFIER;
+                idf->value.string = current.token;
+                result[rtop++] = idf;
             }
                 break;
                 
@@ -136,6 +180,8 @@ void** ins_add_instructions(int insc, void* ins, ...) {
     return result;
 }
 
+
 void VM_instance_free(VM_instance* VM) {
     list_free(VM->stack);
+    free(VM);
 }

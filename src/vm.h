@@ -10,6 +10,7 @@
 #include "list.h"
 #include "object.h"
 #include "lex.h"
+#include "table.h"
 
 list_define(Stack, Object);
 list_define(Instruction_list, void*);
@@ -78,12 +79,18 @@ static const char* VM_error_cause_messages[] = {
     "Invalid types on arithmetic operation",
 };
 
+typedef struct Scope {
+    struct Scope* global;
+    HashTable* variables;
+} Scope;
+
 typedef struct VM_instance {
     unsigned char init;     /* is VM initialized? */
     void** program;     /* program itself */
     void** ip;      /* pointer to an instruction */
     Instruction_list* ins;     /* all instructions */
     Stack* stack;   /* list of objects */
+    Scope* global;  /* global scope */
 } VM_instance;
 
 int VM_execute(VM_instance* VM, char* input);

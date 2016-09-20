@@ -28,10 +28,15 @@ TABLE->size += SIZE
 
 #define table_push(TABLE, KEY, VALUE) \
 table_realloc(TABLE, 1); \
-TABLE->items[TABLE->top].value = new(typeof(VALUE)); \
+TABLE->items[TABLE->top].value = new(typeof(*VALUE)); \
 TABLE->items[TABLE->top].value = VALUE; \
 TABLE->items[TABLE->top].key = hash(KEY); \
 TABLE->top++
+
+#define table_push_object(TABLE, KEY, VALUE, TYPE) { \
+    object_create(obj##key, VALUE, TYPE); \
+    table_push(TABLE, KEY, obj##key); \
+}
 
 #define table_is_safe(TABLE) (TABLE->size > TABLE->top)
 

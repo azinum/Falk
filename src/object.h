@@ -12,6 +12,18 @@
 #define new(TYPE) ((TYPE*)malloc(sizeof(TYPE)))
 #define newx(TYPE, SIZE) ((TYPE*)malloc(SIZE * sizeof(TYPE)))
 
+#define object_create(NAME, VALUE, TYPE) \
+Object* NAME = new(Object); \
+NAME->value.VALUE; \
+NAME->type = TYPE
+
+
+#define variable_init(VAR, VALUE, TYPE) { \
+    VAR->var_value.value.VALUE; \
+    VAR->var_value.type = TYPE; \
+    VAR->refc = 0; \
+}
+
 /*
 ** when using C99 we need to use __typeof__ keyword
 ** now rewritten so that we can use the normal typeof
@@ -30,6 +42,7 @@
 #define TOKEN_SIZE_MAX 3
 
 typedef union Value {
+    char* string;
     double number;
     void* ptr;
 } Value;
@@ -39,19 +52,19 @@ typedef struct Object {
     unsigned char type;
 } Object;
 
+typedef struct Variable {
+    Object var_value;
+    int refc;   /* reference count, in use of pointers */
+} Variable;
+
 typedef struct Token {
     char* token;
     unsigned int op;
 } Token;
 
 
-typedef struct Variable {
-    Object value;
-    int refc;   /* reference count, in use of pointers */
-} Variable;
-
 enum Instructions {
-    OP_NULL,
+    OP_NULL = 0,
     OP_ADD,
     OP_SUB,
     OP_MUL,
@@ -65,6 +78,9 @@ enum Instructions {
     T_IDENTIFIER,
     T_NUMBER,
     T_STRING,
+    T_SCOPE,
+    T_NULL,
+    T_VAR,
     
     I_GOTO,     /* goto ip. args: 1 */
     I_JUMP,     /* goto ip - jump. args: 1 */
