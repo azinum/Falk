@@ -3,6 +3,7 @@
 /* date: 30/08/16 */
 
 #include "object.h"
+#include "table.h"
 
 unsigned char is_number(const char* string) {
     if (strlen(string) <= 0)
@@ -27,6 +28,7 @@ double to_number(const char* string) {
 }
 
 void print_object(Object object) {
+begin:
     switch (object.type) {
         case T_NUMBER: {
             printf("%.6g\n", object.value.number);
@@ -39,12 +41,27 @@ void print_object(Object object) {
             break;
             
         case T_SCOPE: {
-            printf("Scope @: %i\n", (int)object.value.ptr);
+            printf("Scope @: 0x%i\n", (int)object.value.ptr);
         }
             break;
-            
+        
+        case T_NULL: {
+            puts("null");
+        }
+            break;
+        
+        case T_VAR: {
+            if (object.value.ptr != NULL) {
+                object = (*(TValue*)object.value.ptr).tval;
+                goto begin;
+            } else {
+                puts("Undefined");
+            }
+        }
+            break;
+        
         default: {
-            printf("Unknown data @: %i\n", (int)object.value.ptr);
+            printf("Extern data @: 0x%i\n", (int)object.value.ptr);
         }
             break;
     }

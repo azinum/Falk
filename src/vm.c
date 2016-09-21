@@ -19,13 +19,16 @@ void VM_init(VM_instance* VM) {
     table_init(VM->global->variables);
     
     table_push_object(VM->global->variables, "global", ptr = VM->global, T_SCOPE);
+    table_push_object(VM->global->variables, "null", ptr = NULL, T_NULL);
     table_push_object(VM->global->variables, "pi", number = 3.14159265359, T_NUMBER);
+    table_push_object(VM->global->variables, "vm", ptr = &VM, -1);
 }
 
 int VM_execute(VM_instance* VM, char* input) {
     Lex_instance* lex_instance = new(Lex_instance);
     lex_instance_init(lex_instance);
     
+    list_push(VM->ins, &&VM_EQ_ASSIGN);
     list_push(VM->ins, &&VM_ADD);
     list_push(VM->ins, &&VM_SUB);
     list_push(VM->ins, &&VM_DIV);
@@ -45,56 +48,63 @@ int VM_execute(VM_instance* VM, char* input) {
     
     goto **VM->ip;
     
-    vmcase(VM_PUSHK,
+    vmcase(VM_EQ_ASSIGN, {
+        /*
+        ** left hand side of assignment MUST be variable
+        ** if not true, throw an error
+        */
+    });
+    vmcase(VM_PUSHK, {
         list_push(VM->stack, *(Object*)*(VM->ip + 1));
         VM->ip++;
-    );
-    vmcase(VM_PUSHIDF,
+    });
+    vmcase(VM_PUSHIDF, {
         char* name = ((Object*)*((VM->ip + 1)))->value.string;
-        TValue* var;
         if (table_find(VM->global->variables, name) != NULL) {
             /*
             ** variable exist
             ** optimize: create opcode (VM_PUSHP, addr)
             */
-            var = table_find(VM->global->variables, name);
-            list_push(VM->stack, var->tval);
+            tobject_create(obj, ptr = table_find(VM->global->variables, name), T_VAR);
+            list_push(VM->stack, obj);
+            printf("Found variable (%s).\n", name);
         } else {
             /*
             ** variable does not exist
             ** create variable
             ** optimize code
             */
+            table_push_object(VM->global->variables, name, ptr = NULL, T_NULL);
         }
         VM->ip++;
-    );
-    vmcase(VM_ADD,
+    });
+    vmcase(VM_ADD, {
         /* 
         ** if we can do arithmetic operation,
         ** jump to next instruction, else: throw error message
         */
         num_arith(+);
         VM_throw_error(VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_ADD");
-    );
-    vmcase(VM_SUB,
+    });
+    vmcase(VM_SUB, {
         num_arith(-);
         VM_throw_error(VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_SUB");
-    );
-    vmcase(VM_DIV,
+    });
+    vmcase(VM_DIV, {
         num_arith(/);
         VM_throw_error(VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_DIV");
-    );
-    vmcase(VM_MUL,
+    });
+    vmcase(VM_MUL, {
         num_arith(*);
         VM_throw_error(VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_MUL");
-    );
-    vmcase(VM_EXIT,
+    });
+    vmcase(VM_EXIT, {
         if (VM->stack->top > 0) {
             print_object(list_get_top(VM->stack));
             list_clear2(VM->stack);
         }
         return 1;
-    );
+    });
     
     return 0;
 }

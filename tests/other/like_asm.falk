@@ -1,0 +1,7 @@
+
+test pi = ; # create variable test with value 'pi' 3.14...
+
+a 0 = ;
+a 1000 < while
+# ... #
+13 - jump

@@ -27,11 +27,12 @@ Object NAME; \
 NAME.value.VALUE; \
 NAME.type = TYPE;
 
-#define table_push_object(TABLE, KEY, VALUE, TYPE) \
-Object TYPE##obj; \
-TYPE##obj.value.VALUE; \
-TYPE##obj.type = TYPE; \
-table_push(TABLE, KEY, TYPE##obj)
+#define table_push_object(TABLE, KEY, VALUE, TYPE) { \
+Object obj; \
+obj.value.VALUE; \
+obj.type = TYPE; \
+table_push(TABLE, KEY, obj); \
+}
 
 /*
 ** key and value for hashtable
@@ -40,7 +41,7 @@ table_push(TABLE, KEY, TYPE##obj)
 typedef struct TValue {
     unsigned long key;
     struct Object tval;
-    int refc;   /* do not remove TValue if refc > 0 */
+    unsigned int refc;   /* do not remove TValue if refc > 0 */
 } TValue;
 
 /*

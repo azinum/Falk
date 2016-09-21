@@ -36,6 +36,7 @@ if (VM->stack->top >= 2) { \
 ** order reserved
 */
 enum VM_instructions {
+    VMI_EQ_ASSIGN,
     VMI_ADD,
     VMI_SUB,
     VMI_DIV,
