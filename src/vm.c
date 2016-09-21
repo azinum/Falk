@@ -140,6 +140,9 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
                 result[rtop++] = idf;
             }
                 break;
+            case OP_EQ_ASSIGN:
+                result[rtop++] = list_get(VM->ins, VMI_EQ_ASSIGN);
+                break;
                 
             case OP_ADD:
                 result[rtop++] = list_get(VM->ins, VMI_ADD);
