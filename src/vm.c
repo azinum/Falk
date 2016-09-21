@@ -46,7 +46,7 @@ int VM_execute(VM_instance* VM, char* input) {
     if (!VM->ip)
         return 0;
     
-    goto **VM->ip;
+    vm_begin;
     
     vmcase(VM_EQ_ASSIGN, {
         /*

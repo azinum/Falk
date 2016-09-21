@@ -21,9 +21,11 @@ list_define(Instruction_list, void*);
 ** VM debugging here
 */
 #if VM_DEBUG
-#define vm_next VM_debug_print_vmi(VM, *(VM->ip + 1)); goto **(++VM->ip);
+#define vm_begin VM_debug_print_vmi(VM, *(VM->ip)); goto **(VM->ip)
+#define vm_next VM_debug_print_vmi(VM, *(VM->ip + 1)); goto **(++VM->ip)
 #define vm_skip(N) VM_debug_print_vmi(VM, *(VM->ip + 1)); (VM->ip += N)
 #else
+#define vm_begin goto **(VM->ip)
 #define vm_next goto **(++VM->ip)
 #define vm_skip(N) (VM->ip += N)
 #endif
