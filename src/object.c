@@ -25,3 +25,27 @@ double to_number(const char* string) {
     
     return number;
 }
+
+void print_object(Object object) {
+    switch (object.type) {
+        case T_NUMBER: {
+            printf("%.6g\n", object.value.number);
+        }
+            break;
+            
+        case T_CSTRING: {
+            printf("%s\n", object.value.string);
+        }
+            break;
+            
+        case T_SCOPE: {
+            printf("Scope @: %i\n", (int)object.value.ptr);
+        }
+            break;
+            
+        default: {
+            printf("Unknown data @: %i\n", (int)object.value.ptr);
+        }
+            break;
+    }
+}

@@ -17,13 +17,6 @@ Object* NAME = new(Object); \
 NAME->value.VALUE; \
 NAME->type = TYPE
 
-
-#define variable_init(VAR, VALUE, TYPE) { \
-    VAR->var_value.value.VALUE; \
-    VAR->var_value.type = TYPE; \
-    VAR->refc = 0; \
-}
-
 /*
 ** when using C99 we need to use __typeof__ keyword
 ** now rewritten so that we can use the normal typeof
@@ -52,11 +45,6 @@ typedef struct Object {
     unsigned char type;
 } Object;
 
-typedef struct Variable {
-    Object var_value;
-    int refc;   /* reference count, in use of pointers */
-} Variable;
-
 typedef struct Token {
     char* token;
     unsigned int op;
@@ -75,11 +63,12 @@ enum Instructions {
     OP_LEFT_SHIFT,  /* << */
     OP_RIGHT_SHIFT,  /* >> */
     
+    T_NULL,
     T_IDENTIFIER,
     T_NUMBER,
     T_STRING,
+    T_CSTRING,
     T_SCOPE,
-    T_NULL,
     T_VAR,
     
     I_GOTO,     /* goto ip. args: 1 */
@@ -113,5 +102,7 @@ static Token tokens[] = {
 unsigned char is_number(const char* string);
 
 double to_number(const char* string);
+
+void print_object(Object object);
 
 #endif /* object_h */

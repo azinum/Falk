@@ -12,12 +12,14 @@ void VM_init(VM_instance* VM) {
     VM->ins = new(Instruction_list);
     list_init(VM->ins);
     VM->program = newx(void*, 28);
-    /*
+    
     VM->global = new(Scope);
     VM->global->global = VM->global;
     VM->global->variables = new(HashTable);
     table_init(VM->global->variables);
-    */
+    
+    table_push_object(VM->global->variables, "global", ptr = VM->global, T_SCOPE);
+    table_push_object(VM->global->variables, "pi", number = 3.14159265359, T_NUMBER);
 }
 
 int VM_execute(VM_instance* VM, char* input) {
@@ -49,12 +51,14 @@ int VM_execute(VM_instance* VM, char* input) {
     );
     vmcase(VM_PUSHIDF,
         char* name = ((Object*)*((VM->ip + 1)))->value.string;
-        /* Variable* var; */
+        TValue* var;
         if (table_find(VM->global->variables, name) != NULL) {
             /*
             ** variable exist
             ** optimize: create opcode (VM_PUSHP, addr)
             */
+            var = table_find(VM->global->variables, name);
+            list_push(VM->stack, var->tval);
         } else {
             /*
             ** variable does not exist
@@ -86,7 +90,7 @@ int VM_execute(VM_instance* VM, char* input) {
     );
     vmcase(VM_EXIT,
         if (VM->stack->top > 0) {
-            printf("%i\n", (int)list_get_top(VM->stack).value.number);
+            print_object(list_get_top(VM->stack));
             list_clear2(VM->stack);
         }
         return 1;

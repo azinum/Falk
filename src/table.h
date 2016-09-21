@@ -13,13 +13,25 @@
 #define table_init(TABLE) \
 TABLE->size = 1; \
 TABLE->top = 0; \
-TABLE->items = new(TValue);
+TABLE->items = new(TValue)
+
 
 #define table_is_safe(TABLE) (TABLE->size > TABLE->top)
 
 #define table_realloc(TABLE, SIZE) \
 TABLE->items = (TValue*)realloc(TABLE->items, (TABLE->size * sizeof(TValue)) + ((SIZE + 1) * sizeof(TValue))); \
 TABLE->size += SIZE
+
+#define tobject_create(NAME, VALUE, TYPE) \
+Object NAME; \
+NAME.value.VALUE; \
+NAME.type = TYPE;
+
+#define table_push_object(TABLE, KEY, VALUE, TYPE) \
+Object TYPE##obj; \
+TYPE##obj.value.VALUE; \
+TYPE##obj.type = TYPE; \
+table_push(TABLE, KEY, TYPE##obj)
 
 /*
 ** key and value for hashtable
@@ -28,6 +40,7 @@ TABLE->size += SIZE
 typedef struct TValue {
     unsigned long key;
     struct Object tval;
+    int refc;   /* do not remove TValue if refc > 0 */
 } TValue;
 
 /*
