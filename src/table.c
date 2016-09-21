@@ -25,9 +25,9 @@ unsigned long hash(const char* key) {
 /*
 ** find item in table, return NULL if not found
 */
-HTValue* table_find(HashTable* table, char* key) {
+TValue* table_find(HashTable* table, char* key) {
     unsigned long hashed = hash(key);
-    HTValue* h;
+    TValue* h;
     for (int i = 0; i < table->top; i++) {
         h = &table->items[i];
         if (h->key == hashed) {
@@ -40,22 +40,41 @@ HTValue* table_find(HashTable* table, char* key) {
 /*
 ** we can now use table as standard list
 */
-HTValue* table_get(HashTable* table, int index) {
-    if (table_is_safe(table) && index <= table->top) {
+TValue* table_get(HashTable* table, int index) {
+    if (table_is_safe(table) && index < table->top) {
         return &table->items[index];
     }
     return NULL;
 }
 
 /*
+** push value to table
+*/
+unsigned char table_push(HashTable* table, char* key, Object value) {
+    TValue* tval = table_find(table, key);
+    if (tval != NULL) {
+        /* replace value */
+        tval->tval = value;
+        return 1;
+    } else {
+        /* create new item in table */
+        table_realloc(table, 1);
+        table->items[table->top].tval = value;
+        table->items[table->top++].key = hash(key);
+        return 1;
+    }
+    return 0;
+}
+
+/*
 ** replace value from key
 ** will return 0 if no key match
 */
-unsigned char table_replace(HashTable* table, char* key, void* value) {
-    HTValue* item;
+unsigned char table_replace(HashTable* table, char* key, Object value) {
+    TValue* item;
     if ((item = table_find(table, key)) != NULL) {  /* find item in table */
         /* key is matching */
-        item->value = value;
+        item->tval = value;
         return 1;
     }
     return 0;

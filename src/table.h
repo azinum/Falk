@@ -10,48 +10,25 @@
 #include "object.h"
 #include "list.h"
 
-#define table_define(NAME, TYPE) \
-typedef struct NAME { \
-    int key; \
-    TYPE value; \
-} NAME
-
 #define table_init(TABLE) \
 TABLE->size = 1; \
 TABLE->top = 0; \
-TABLE->items = new(HTValue)
-
-
-#define table_realloc(TABLE, SIZE) \
-TABLE->items = (typeof(*TABLE->items)*)realloc(TABLE->items, (TABLE->size * sizeof(typeof(*TABLE->items))) + ((SIZE + 1) * sizeof(typeof(*TABLE->items)))); \
-TABLE->size += SIZE
-
-#define table_push(TABLE, KEY, VALUE) \
-table_realloc(TABLE, 1); \
-TABLE->items[TABLE->top].value = new(typeof(*VALUE)); \
-TABLE->items[TABLE->top].value = VALUE; \
-TABLE->items[TABLE->top].key = hash(KEY); \
-TABLE->top++
-
-#define table_push_object(TABLE, KEY, VALUE, TYPE) { \
-    object_create(obj##key, VALUE, TYPE); \
-    table_push(TABLE, KEY, obj##key); \
-}
+TABLE->items = new(TValue);
 
 #define table_is_safe(TABLE) (TABLE->size > TABLE->top)
 
-#define table_tovalue(TARGET) ((HTValue*)TARGET)
+#define table_realloc(TABLE, SIZE) \
+TABLE->items = (TValue*)realloc(TABLE->items, (TABLE->size * sizeof(TValue)) + ((SIZE + 1) * sizeof(TValue))); \
+TABLE->size += SIZE
 
 /*
 ** key and value for hashtable
-** value can be anything, need to be converted on use
-** e.g:
-**     *(int*)value = 5;
+** Table Value
 */
-typedef struct HTValue {
+typedef struct TValue {
     unsigned long key;
-    void* value;
-} HTValue;
+    struct Object tval;
+} TValue;
 
 /*
 ** simple hashtable implementation
@@ -59,16 +36,18 @@ typedef struct HTValue {
 typedef struct HashTable {
     unsigned int size;
     unsigned int top;
-    HTValue* items;
+    TValue* items;
 } HashTable;
 
 
 unsigned long hash(const char* key);
 
-HTValue* table_find(HashTable* table, char* key);
+TValue* table_find(HashTable* table, char* key);
 
-HTValue* table_get(HashTable* table, int index);
+TValue* table_get(HashTable* table, int index);
 
-unsigned char table_replace(HashTable* table, char* key, void* value);
+unsigned char table_push(HashTable* table, char* key, Object value);
+
+unsigned char table_replace(HashTable* table, char* key, Object value);
 
 #endif /* table_h */

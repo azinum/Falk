@@ -12,20 +12,12 @@ void VM_init(VM_instance* VM) {
     VM->ins = new(Instruction_list);
     list_init(VM->ins);
     VM->program = newx(void*, 28);
-    
+    /*
     VM->global = new(Scope);
     VM->global->global = VM->global;
     VM->global->variables = new(HashTable);
     table_init(VM->global->variables);
-
-    /* CREATE VARIABLE BEGIN */
-    Variable* test = new(Variable);
-    variable_init(test, number = 5, T_NUMBER);
-    Object* obj = new(Object);
-    obj->type = T_VAR;
-    obj->value.ptr = test;
-    table_push(VM->global->variables, "test", obj);
-    /* CREATE VARIABLE END */
+    */
 }
 
 int VM_execute(VM_instance* VM, char* input) {
@@ -57,14 +49,12 @@ int VM_execute(VM_instance* VM, char* input) {
     );
     vmcase(VM_PUSHIDF,
         char* name = ((Object*)*((VM->ip + 1)))->value.string;
-        Variable* var;
+        /* Variable* var; */
         if (table_find(VM->global->variables, name) != NULL) {
             /*
             ** variable exist
             ** optimize: create opcode (VM_PUSHP, addr)
             */
-            var = ((Variable*)((Object*)(table_find(VM->global->variables, name)->value)))->var_value.value.ptr;
-            list_push(VM->stack, var->var_value);
         } else {
             /*
             ** variable does not exist
