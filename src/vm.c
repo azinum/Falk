@@ -56,10 +56,11 @@ int VM_execute(VM_instance* VM, char* input) {
     });
     vmcase(VM_PUSHK, {
         list_push(VM->stack, *(Object*)*(VM->ip + 1));
-        VM->ip++;
+        vm_skip(1);
     });
     vmcase(VM_PUSHIDF, {
-        char* name = ((Object*)*((VM->ip + 1)))->value.string;
+        Object* next = ((Object*)*((VM->ip + 1)));
+        char* name = next->value.string;
         if (table_find(VM->global->variables, name) != NULL) {
             /*
             ** variable exist
@@ -74,7 +75,7 @@ int VM_execute(VM_instance* VM, char* input) {
             ** create variable
             ** optimize code
             */
-            table_push_object(VM->global->variables, name, ptr = NULL, T_NULL);
+            /* table_push_object(VM->global->variables, name, ptr = NULL, T_NULL); */
         }
         VM->ip++;
     });
@@ -184,6 +185,20 @@ void** ins_add_instructions(int insc, void* ins, ...) {
     return result;
 }
 
+
+/*
+** find and print Virtual Machine instruction
+*/
+void VM_debug_print_vmi(VM_instance* VM, void* vmi) {
+    for (int i = 0; i < VM->ins->top; i++) {
+        if (list_get(VM->ins, i) == vmi) {
+            /* found */
+            puts(VMI_info[i]);
+            return;
+        }
+    }
+    puts("VMI is not defined");
+}
 
 void VM_instance_free(VM_instance* VM) {
     list_free(VM->stack);

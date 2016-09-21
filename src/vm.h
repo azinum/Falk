@@ -12,12 +12,27 @@
 #include "lex.h"
 #include "table.h"
 
+#define VM_DEBUG 1
+
 list_define(Stack, Object);
 list_define(Instruction_list, void*);
 
+/*
+** VM debugging here
+*/
+#if VM_DEBUG
+#define vm_next VM_debug_print_vmi(VM, *(VM->ip + 1)); goto **(++VM->ip);
+#define vm_skip(N) VM_debug_print_vmi(VM, *(VM->ip + 1)); (VM->ip += N)
+#else
+#define vm_next goto **(++VM->ip)
+#define vm_skip(N) (VM->ip += N)
+#endif
+
+#define vm_jump(N) goto **(VM->ip += N)
+
 #define vmcase(CASE, BODY) { \
     CASE : { BODY ; } \
-    goto **(++VM->ip); \
+    vm_next; \
 }
 
 
@@ -45,6 +60,17 @@ enum VM_instructions {
     VMI_PUSHIDF,
     
     VMI_EXIT
+};
+
+static const char* VMI_info[] = {
+    "VMI_EQ_ASSIGN",
+    "VMI_ADD",
+    "VMI_SUB",
+    "VMI_DIV",
+    "VMI_MUL",
+    "VMI_PUSHK",
+    "VMI_PUSHIDF",
+    "VMI_EXIT",
 };
 
 enum VM_errors {
@@ -105,5 +131,7 @@ void** ins_add_instructions(int insc, void* ins, ...);
 void** to_ins(VM_instance* VM, Tokenlist* list);
 
 void VM_throw_error(int error, int cause, const char* msg);
+
+void VM_debug_print_vmi(VM_instance* VM, void* vmi);
 
 #endif /* vm_h */
