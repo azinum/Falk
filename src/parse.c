@@ -111,7 +111,12 @@ int parse_grammar(Parse_instance* P, Tokenlist* to_parse) {
 int parse(Parse_instance* P, char* input) {
     if(!lex(P->lex_instance, input))
         return 0;
-    Tokenlist* lexed = P->lex_instance->result;
+    /*
+    ** create copy of lexed
+    */
+    Tokenlist* lexed = new(Tokenlist);
+    list_init(lexed);
+    *lexed = *P->lex_instance->result;
     
     if (!parse_grammar(P, lexed))
         return 0;
