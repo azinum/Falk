@@ -12,7 +12,7 @@
 #include "lex.h"
 #include "table.h"
 
-#define VM_DEBUG 1
+#define VM_DEBUG 0
 
 list_define(Stack, Object);
 list_define(Instruction_list, void*);
@@ -24,10 +24,13 @@ list_define(Instruction_list, void*);
 #define vm_begin VM_debug_print_vmi(VM, *(VM->ip)); goto **(VM->ip)
 #define vm_next VM_debug_print_vmi(VM, *(VM->ip + 1)); goto **(++VM->ip)
 #define vm_skip(N) VM_debug_print_vmi(VM, *(VM->ip + 1)); (VM->ip += N)
+#define VM_PRINT_EXTRA_INFO \
+printf("Stack top: %i, vars: %i\n", VM->stack->top, VM->global->variables->top);
 #else
 #define vm_begin goto **(VM->ip)
 #define vm_next goto **(++VM->ip)
 #define vm_skip(N) (VM->ip += N)
+#define VM_PRINT_EXTRA_INFO
 #endif
 
 #define vm_jump(N) goto **(VM->ip += N)

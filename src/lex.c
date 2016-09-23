@@ -76,7 +76,7 @@ unsigned char is_identifier(const char* token) {
 ** get description from enum: Instructions, at "object.h"
 */
 int lex(Lex_instance* L, char* input) {
-    if (strlen(input) <= 1)
+    if (strlen(input) < 1)
         return 0;
     String* item = new(String);
     list_init(item);
@@ -154,7 +154,7 @@ int lex(Lex_instance* L, char* input) {
             default: {
                 if (is_operator(temp_token)) {
                     char* tmp = new(char);
-                    string_copy_from_null(tmp, item->value);
+                    string_copy(tmp, item->value);
                     list_push(L->result, ((Token){tmp}));
                     string_clear(item);
                     list_push(item, temp_token);
@@ -167,7 +167,7 @@ int lex(Lex_instance* L, char* input) {
                 
                 if (temp_token == ' ') {
                     char* tmp = new(char);
-                    string_copy_from_null(tmp, item->value);
+                    string_copy(tmp, item->value);
                     list_push(L->result, ((Token){tmp}));
                     string_clear(item);
                 } else {
@@ -178,13 +178,13 @@ int lex(Lex_instance* L, char* input) {
         }
     }
     
-    char* tmp = new(char);
-    string_copy_from_null(tmp, item->value);
-    
-    list_free(item);
+    char* tmp;
+    string_copy(tmp, item->value);
     
     /* push last item to output */
     list_push(L->result, (Token){tmp});
+    
+    list_free(item);
     
     for (int i = 0; i < L->result->top; i++) {
         /* find token instruction/type */
@@ -204,7 +204,7 @@ int lex(Lex_instance* L, char* input) {
     for (int i = 0; i < L->result->top; i++) {
         current = L->result->value[i];
         if (strcmp(current.token, "\0"))    /* don't print null character */
-            puts(current.token);
+            printf("%s, %i\n", current.token, current.op);
     }
 #endif
     return 1;

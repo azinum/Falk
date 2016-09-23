@@ -61,7 +61,7 @@ begin:
             break;
         
         default: {
-            printf("Extern data @: 0x%i\n", (int)object.value.ptr);
+            printf("Extern data @: 0x%i. Type: %i.\n", (int)object.value.ptr, object.type);
         }
             break;
     }

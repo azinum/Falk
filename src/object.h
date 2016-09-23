@@ -12,6 +12,12 @@
 #define new(TYPE) ((TYPE*)malloc(sizeof(TYPE)))
 #define newx(TYPE, SIZE) ((TYPE*)malloc(SIZE * sizeof(TYPE)))
 
+#define newx_safe(NAME, TYPE, SIZE) { \
+TYPE* tmp = ((TYPE*)malloc(SIZE * sizeof(TYPE))); \
+if (tmp == NULL) puts("Memory failed"); \
+else NAME = tmp; \
+}
+
 #define object_create(NAME, VALUE, TYPE) \
 Object* NAME = new(Object); \
 NAME->value.VALUE; \

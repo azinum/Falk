@@ -6,7 +6,7 @@
 
 
 void VM_init(VM_instance* VM) {
-    VM->init = 1;
+    VM->init = 0;
     VM->stack = new(Stack);
     list_init(VM->stack);
     VM->ins = new(Instruction_list);
@@ -28,25 +28,32 @@ int VM_execute(VM_instance* VM, char* input) {
     Lex_instance* lex_instance = new(Lex_instance);
     lex_instance_init(lex_instance);
     
-    list_push(VM->ins, &&VM_EQ_ASSIGN);
-    list_push(VM->ins, &&VM_ADD);
-    list_push(VM->ins, &&VM_SUB);
-    list_push(VM->ins, &&VM_DIV);
-    list_push(VM->ins, &&VM_MUL);
-    list_push(VM->ins, &&VM_PUSHK);
-    list_push(VM->ins, &&VM_PUSHIDF);
-    list_push(VM->ins, &&VM_EXIT);
-    
     if (!lex(lex_instance, input)) {
         return 0;
     }
     
-    VM->ip = to_ins(VM, lex_instance->result);
+    Tokenlist* lexresult = new(Tokenlist);
+    list_init(lexresult);
+    *lexresult = *lex_instance->result;
+    
+    if (!VM->init) {
+        list_push(VM->ins, &&VM_EQ_ASSIGN);
+        list_push(VM->ins, &&VM_ADD);
+        list_push(VM->ins, &&VM_SUB);
+        list_push(VM->ins, &&VM_DIV);
+        list_push(VM->ins, &&VM_MUL);
+        list_push(VM->ins, &&VM_PUSHK);
+        list_push(VM->ins, &&VM_PUSHIDF);
+        list_push(VM->ins, &&VM_EXIT);
+        VM->init = 1;
+    }
+    
+    VM->ip = to_ins(VM, lexresult);
     
     if (!VM->ip)
         return 0;
     
-    vm_begin;
+    goto **(VM->ip);
     
     vmcase(VM_EQ_ASSIGN, {
         /*
@@ -55,20 +62,21 @@ int VM_execute(VM_instance* VM, char* input) {
         */
     });
     vmcase(VM_PUSHK, {
-        list_push(VM->stack, *(Object*)*(VM->ip + 1));
-        vm_skip(1);
+        list_push(VM->stack, *(Object*)(*(VM->ip + 1)));
+        ++VM->ip;
     });
     vmcase(VM_PUSHIDF, {
-        Object* next = ((Object*)*((VM->ip + 1)));
+        Object* next = (Object*)(*((VM->ip + 1)));
         char* name = next->value.string;
+        printf("name: %s\n", name);
         if (table_find(VM->global->variables, name) != NULL) {
             /*
             ** variable exist
             ** optimize: create opcode (VM_PUSHP, addr)
             */
             tobject_create(obj, ptr = table_find(VM->global->variables, name), T_VAR);
-            list_push(VM->stack, obj);
-            printf("Found variable (%s).\n", name);
+            list_push(VM->stack, *(Object*)obj.value.ptr);
+            printf("Found variable '%s'.\n", name);
         } else {
             /*
             ** variable does not exist
@@ -76,8 +84,9 @@ int VM_execute(VM_instance* VM, char* input) {
             ** optimize code
             */
             /* table_push_object(VM->global->variables, name, ptr = NULL, T_NULL); */
+            puts("Variable not found");
         }
-        VM->ip++;
+        ++VM->ip;
     });
     vmcase(VM_ADD, {
         /* 
@@ -100,6 +109,7 @@ int VM_execute(VM_instance* VM, char* input) {
         VM_throw_error(VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_MUL");
     });
     vmcase(VM_EXIT, {
+        VM_PRINT_EXTRA_INFO;
         if (VM->stack->top > 0) {
             print_object(list_get_top(VM->stack));
             list_clear2(VM->stack);
@@ -115,7 +125,7 @@ int VM_execute(VM_instance* VM, char* input) {
 ** convert input of tokens to an array of instructions
 */
 void** to_ins(VM_instance* VM, Tokenlist* list) {
-    void** result = newx(void*, list->top);
+    void** result = newx(void*, list->top + 1);
     int rtop = 0;
     
     Token current;
@@ -132,11 +142,11 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
             }
                 break;
                 
-            case T_IDENTIFIER: {
+           case T_IDENTIFIER: {
                 result[rtop++] = list_get(VM->ins, VMI_PUSHIDF);
                 Object* idf = new(Object);
                 idf->type = T_IDENTIFIER;
-                idf->value.string = current.token;
+                string_copy(idf->value.string, current.token);
                 result[rtop++] = idf;
             }
                 break;
@@ -161,6 +171,7 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
                 break;
                 
             default:
+                puts("default. break");
                 break;
         }
     }

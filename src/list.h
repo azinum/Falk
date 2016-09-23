@@ -156,6 +156,13 @@ while (STRING->size > 1) { \
 mem_realloc(TARGET, strlen(STRING) + 1); \
 strcpy(TARGET, STRING)
 
+#define string_copy(TARGET, STRING) \
+TARGET = newx(char, strlen(STRING)); \
+for (int i = 0; i < strlen(STRING); i++) { \
+    TARGET[i] = STRING[i]; \
+} \
+TARGET[strlen(STRING)] = '\0';
+
 /*
 ** string is a type of list
 ** list of chars
