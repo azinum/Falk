@@ -41,7 +41,7 @@ begin:
             break;
             
         case T_SCOPE: {
-            printf("Scope @: 0x%i\n", (int)object.value.ptr);
+            printf("Scope @: $%i\n", (int)object.value.ptr);
         }
             break;
         

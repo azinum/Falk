@@ -1,6 +1,8 @@
 # The Falk Programming Language
 
 
+[![HitCount](https://hitt.herokuapp.com/Azinum/Falk.svg)](https://github.com/Azinum/Falk)
+
 ## Goals
 
 #### Fast

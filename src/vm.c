@@ -53,7 +53,7 @@ int VM_execute(VM_instance* VM, char* input) {
     if (!VM->ip)
         return 0;
     
-    goto **(VM->ip);
+    vm_begin;
     
     vmcase(VM_EQ_ASSIGN, {
         /*
@@ -63,19 +63,18 @@ int VM_execute(VM_instance* VM, char* input) {
     });
     vmcase(VM_PUSHK, {
         list_push(VM->stack, *(Object*)(*(VM->ip + 1)));
-        ++VM->ip;
+        vm_skip(1);
     });
     vmcase(VM_PUSHIDF, {
         Object* next = (Object*)(*((VM->ip + 1)));
         char* name = next->value.string;
-        printf("name: %s\n", name);
         if (table_find(VM->global->variables, name) != NULL) {
             /*
             ** variable exist
             ** optimize: create opcode (VM_PUSHP, addr)
             */
-            tobject_create(obj, ptr = table_find(VM->global->variables, name), T_VAR);
-            list_push(VM->stack, *(Object*)obj.value.ptr);
+            // object_create(obj, ptr = table_find(VM->global->variables, name), T_VAR);
+            // list_push(VM->stack, *(Object*)obj);
             printf("Found variable '%s'.\n", name);
         } else {
             /*
@@ -84,9 +83,9 @@ int VM_execute(VM_instance* VM, char* input) {
             ** optimize code
             */
             /* table_push_object(VM->global->variables, name, ptr = NULL, T_NULL); */
-            puts("Variable not found");
+            printf("Variable not found; %s.\n", name);
         }
-        ++VM->ip;
+        vm_skip(1);
     });
     vmcase(VM_ADD, {
         /* 
@@ -138,7 +137,8 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
                 Object* number = new(Object);
                 number->type = T_NUMBER;
                 number->value.number = to_number(current.token);
-                result[rtop++] = number;
+                result[rtop++] = new(Object);
+                *(Object*)result[rtop-1] = *number;
             }
                 break;
                 
@@ -147,7 +147,8 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
                 Object* idf = new(Object);
                 idf->type = T_IDENTIFIER;
                 string_copy(idf->value.string, current.token);
-                result[rtop++] = idf;
+                result[rtop++] = new(Object);
+                *(Object*)result[rtop - 1] = *idf;
             }
                 break;
             case OP_EQ_ASSIGN:
@@ -171,7 +172,6 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
                 break;
                 
             default:
-                puts("default. break");
                 break;
         }
     }
@@ -211,7 +211,7 @@ void VM_debug_print_vmi(VM_instance* VM, void* vmi) {
             return;
         }
     }
-    puts("VMI is not defined");
+    puts("VMI undefined");
 }
 
 void VM_instance_free(VM_instance* VM) {

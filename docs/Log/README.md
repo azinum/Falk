@@ -50,6 +50,7 @@ Med hjälp av en prioritet och associativitet så kan man lätt sortera ingånge
 
 
 ### V37 - 2016/9/16
+
 Denna vecka har jag börjat med att göra grammatik till mitt språk.
 Jag har en lista med regler som parsern kollar igenom och gör en viss felsökning och lite manipulationer på ingången av kod.
 Detta steg, parsingen och grammatiken är det svåraste att utveckla när man skapar ett språk.
@@ -89,3 +90,14 @@ Här ser vi att det matchar.
 
 Jag tänker till nästa vecka börja utveckla den virtuella maskinen.
 Just nu ska jag forska mera om parser och hur man formar ett språks syntax.
+
+
+### V38 - 2016/9/23
+
+Jag har utvecklat en enkel Virtuell Maskin denna vecka. Den kan exekvera instruktioner som använderen skriver in i konsolen.
+Dock så har jag stött på en hel del buggar. Buggarna var 'memory errors', d.v.s minnesfel.
+När användaren skriver in kod till konsolen så har jag gjort något fel när jag kopierar minne från en funktion till en annan.
+Jag ska spåra felen och fixa dom så snabbt jag kan.
+När jag har fixat felen så ska jag lägga till instruktioner så att jag kan spara variabler och redigera variabler.
+Efter det så ska jag fortsätta med parsern. Jag ska leta upp lösningar för hur man gör en parser.
+Jag kan göra en parser men, problemet är, jag vill göra en parser som gör det lätt för en att lägga till nya funktioner.

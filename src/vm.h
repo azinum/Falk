@@ -12,7 +12,7 @@
 #include "lex.h"
 #include "table.h"
 
-#define VM_DEBUG 0
+#define VM_DEBUG 1
 
 list_define(Stack, Object);
 list_define(Instruction_list, void*);
@@ -42,7 +42,7 @@ printf("Stack top: %i, vars: %i\n", VM->stack->top, VM->global->variables->top);
 
 
 #define op_arith(L, R, OP) \
-(((L.type | R.type) == T_NUMBER) ? (L.value.number OP R.value.number) : (0))
+(((L.type | R.type) == T_NUMBER) ? (L.value.number OP R.value.number) : (-1))
 
 #define num_arith(OP) \
 if (VM->stack->top >= 2) { \
