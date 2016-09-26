@@ -2,12 +2,15 @@
 /* author: Azinum */
 /* date: 30/08/16 */
 
+#include <limits.h>
+
 #include "object.h"
 #include "table.h"
 
 unsigned char is_number(const char* string) {
     if (strlen(string) <= 0)
         return 0;
+    
     char* end;
     strtod(string, &end);
 
@@ -18,11 +21,14 @@ unsigned char is_number(const char* string) {
 }
 
 double to_number(const char* string) {
+    if (strlen(string) <= 0)
+        return 0;
+    
     char* end;
     double number = strtod(string, &end);
     
     if (*end != '\0')
-        return -1;
+        return INT8_MIN;
     
     return number;
 }
