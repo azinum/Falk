@@ -29,7 +29,8 @@ void falk_execute(Falk_instance* F) {
             printf(FALK_PROMPT);
             if (getline(&input, &size, stdin) > -1) {
                 /* parse(F->parse_instance, input); */
-                VM_execute(F->vm_instance, input);
+                if (!VM_execute(F->vm_instance, input))
+                    break;
             } else
                 break;
         }

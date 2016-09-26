@@ -12,6 +12,8 @@
 #define new(TYPE) ((TYPE*)malloc(sizeof(TYPE)))
 #define newx(TYPE, SIZE) ((TYPE*)malloc(SIZE * sizeof(TYPE)))
 
+#define refcast(X) (&(X))
+
 #define newx_safe(NAME, TYPE, SIZE) { \
 TYPE* tmp = ((TYPE*)malloc(SIZE * sizeof(TYPE))); \
 if (tmp == NULL) puts("Memory failed"); \

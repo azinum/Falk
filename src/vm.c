@@ -61,12 +61,11 @@ int VM_execute(VM_instance* VM, char* input) {
         */
     });
     vmcase(VM_PUSHK, {
-        /* list_push(VM->stack, *(Object*)(*(VM->ip + 1)));
+        list_push(VM->stack, *(Object*)(*(VM->ip + 1)));
         if (list_get_top(VM->stack).type != T_NUMBER) {
-            VM_throw_error(VM_NO_ERROR, VM_ERRC_NONE, "Invalid constant");
-        } */
-        printf("%.6g\n", (double)(*(Object*)(*(++VM->ip))).value.number);
-//        vm_skip(1);
+            VM_throw_error(VM_ERR_ARITH, VM_ERRC_ARITH_INVALID_TYPES, "@VM_PUSHK");
+        }
+        vm_skip(1);
     });
     vmcase(VM_PUSHIDF, {
         Object* next = (Object*)(*((VM->ip + 1)));
@@ -128,7 +127,9 @@ int VM_execute(VM_instance* VM, char* input) {
 ** convert input of tokens to an array of instructions
 */
 void** to_ins(VM_instance* VM, Tokenlist* list) {
-    void** result = newx(void*, list->top + 1);
+    Instruction_list ilist;
+    list_init(refcast(ilist));
+    void** result;
     int rtop = 0;
     
     Token current;
@@ -138,43 +139,39 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
         switch (current.op) {
             case T_NUMBER: {
                 /* pushk, value */
-                result[rtop++] = list_get(VM->ins, VMI_PUSHK);
-                result[rtop] = new(Object);
-                (*(Object*)(result[rtop])).type = T_NUMBER;
-                (*(Object*)(result[rtop])).value.number = to_number(current.token);
-                printf(":> %.6g\n", to_number(current.token));
-                rtop++;
+                list_push(refcast(ilist), list_get(VM->ins, VMI_PUSHK));
+                list_push(refcast(ilist), new(Object));
+                (*(Object*)list_get_top(refcast(ilist))).type = T_NUMBER;
+                (*(Object*)list_get_top(refcast(ilist))).value.number = to_number(current.token);
             }
                 break;
                 
            case T_IDENTIFIER: {
-                result[rtop++] = list_get(VM->ins, VMI_PUSHIDF);
-                Object* idf = new(Object);
-                idf->type = T_IDENTIFIER;
-                string_copy(idf->value.string, current.token);
-                result[rtop++] = new(Object);
-                *(Object*)result[rtop - 1] = *idf;
+               list_push(refcast(ilist), list_get(VM->ins, VMI_PUSHIDF));
+               list_push(refcast(ilist), new(Object));
+               (*(Object*)list_get_top(refcast(ilist))).type = T_IDENTIFIER;
+               (*(Object*)list_get_top(refcast(ilist))).value.string = current.token;
             }
                 break;
                 
             case OP_EQ_ASSIGN:
-                result[rtop++] = list_get(VM->ins, VMI_EQ_ASSIGN);
+                list_push(refcast(ilist), list_get(VM->ins, VMI_EQ_ASSIGN));
                 break;
                 
             case OP_ADD:
-                result[rtop++] = list_get(VM->ins, VMI_ADD);
+                list_push(refcast(ilist), list_get(VM->ins, VMI_ADD));
                 break;
                 
             case OP_SUB:
-                result[rtop++] = list_get(VM->ins, VMI_SUB);
+                list_push(refcast(ilist), list_get(VM->ins, VMI_SUB));
                 break;
                 
             case OP_DIV:
-                result[rtop++] = list_get(VM->ins, VMI_DIV);
+                list_push(refcast(ilist), list_get(VM->ins, VMI_DIV));
                 break;
                 
             case OP_MUL:
-                result[rtop++] = list_get(VM->ins, VMI_MUL);
+                list_push(refcast(ilist), list_get(VM->ins, VMI_DIV));
                 break;
                 
             default:
@@ -182,7 +179,12 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
         }
     }
     
-    result[rtop] = list_get(VM->ins, VMI_EXIT);
+    list_push(refcast(ilist), list_get(VM->ins, VMI_EXIT));     /* must not forget to exit program */
+    
+    result = newx(void*, ilist.size);
+    for (int i = 0; i < ilist.top; i++)
+        result[i] = list_get(refcast(ilist), i);
+    
     return result;
 }
 

@@ -88,7 +88,8 @@ static const char* VMI_info[] = {
 enum VM_errors {
     VM_NO_ERROR = 0,
     VM_ERR_STACK,
-    VM_ERR_ARITH
+    VM_ERR_ARITH,
+    VM_INS_CONV_ERR,    /* instruction conversion error */
 };
 
 enum VM_error_causes {
@@ -103,19 +104,20 @@ enum VM_error_causes {
 
 static const char* VM_error_messages[] = {
     "",
-    "Stack error: ",
-    "Arithmetic error: ",
+    "Stack Error: ",
+    "Arithmetic Error: ",
+    "Instruction Converion Error: ",
 };
 
 static const char* VM_error_cause_messages[] = {
     "",
     /* messages for stack */
-    "Not enough items on stack",
-    "StackOverflow",
-    "Stack has not been initialized yet",
+    "Not enough items on stack;",
+    "StackOverflow;",
+    "Stack has not been initialized yet;",
     
     /* arithmetic error causes */
-    "Invalid types on arithmetic operation",
+    "Invalid types on arithmetic operation;",
 };
 
 typedef struct Scope {
