@@ -2,6 +2,7 @@
 
 
 [![HitCount](https://hitt.herokuapp.com/Azinum/Falk.svg)](https://github.com/Azinum/Falk)
+[![Build Status](https://travis-ci.org/travis-ci/travis-web.svg?branch=feature-debug-build)](https://travis-ci.org/travis-ci/travis-web)
 
 ## Goals
 
