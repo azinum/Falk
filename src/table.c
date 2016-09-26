@@ -55,14 +55,14 @@ unsigned char table_push(HashTable* table, char* key, Object value) {
     if (tval != NULL) {
         /* replace value */
         tval->tval = value;
-        tval->refc = 0;     /* in case objects is pointing to this object */
+        table->top++;
         return 1;
     } else {
         /* create new item in table */
         table_realloc(table, 1);
         table->items[table->top].tval = value;
         table->items[table->top].key = hash(key);
-        table->items[table->top++].refc = 0;
+        table->top++;
         return 1;
     }
     return 0;

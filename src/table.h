@@ -41,7 +41,6 @@ table_push(TABLE, KEY, obj); \
 typedef struct TValue {
     unsigned long key;
     struct Object tval;
-    unsigned int refc;   /* do not remove TValue if refc > 0 */
 } TValue;
 
 /*

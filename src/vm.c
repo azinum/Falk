@@ -35,7 +35,6 @@ int VM_execute(VM_instance* VM, char* input) {
         return 0;
     }
     
-    
     if (!VM->init) {
         list_push(VM->ins, &&VM_EQ_ASSIGN);
         list_push(VM->ins, &&VM_ADD);
@@ -76,9 +75,9 @@ int VM_execute(VM_instance* VM, char* input) {
             ** variable exist
             ** optimize: create opcode (VM_PUSHP, addr)
             */
-            // object_create(obj, ptr = table_find(VM->global->variables, name), T_VAR);
-            // list_push(VM->stack, *(Object*)obj);
             printf("Found variable '%s'.\n", name);
+//            tobject_create(obj, ptr = table_find(VM->global->variables, name), T_VAR);
+//            list_push(VM->stack, obj);
         } else {
             /*
             ** variable does not exist
@@ -86,7 +85,7 @@ int VM_execute(VM_instance* VM, char* input) {
             ** optimize code
             */
             /* table_push_object(VM->global->variables, name, ptr = NULL, T_NULL); */
-            printf("Variable not found; %s.\n", name);
+            printf("Variable not found; '%s'\n", name);
         }
         vm_skip(1);
     });
