@@ -130,7 +130,6 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
     Instruction_list ilist;
     list_init(refcast(ilist));
     void** result;
-    int rtop = 0;
     
     Token current;
     for (int i = 0; i < list->top; i++) {
@@ -171,7 +170,7 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
                 break;
                 
             case OP_MUL:
-                list_push(refcast(ilist), list_get(VM->ins, VMI_DIV));
+                list_push(refcast(ilist), list_get(VM->ins, VMI_MUL));
                 break;
                 
             default:

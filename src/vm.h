@@ -44,6 +44,9 @@ printf("Stack top: %i, vars: %i\n", VM->stack->top, VM->global->variables->top);
 #define op_arith(L, R, OP) \
 ((op_arith_issafe(L, R) ? (L.value.number OP R.value.number) : (-1))
 
+/*
+** this macro is for type checking, to check if two objects has the same type
+*/
 #define op_arith_issafe(L, R) (L.type | R.type) == T_NUMBER)
 
 /*
