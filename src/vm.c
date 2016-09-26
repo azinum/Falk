@@ -61,11 +61,12 @@ int VM_execute(VM_instance* VM, char* input) {
         */
     });
     vmcase(VM_PUSHK, {
-        list_push(VM->stack, *(Object*)(*(VM->ip + 1)));
+        /* list_push(VM->stack, *(Object*)(*(VM->ip + 1)));
         if (list_get_top(VM->stack).type != T_NUMBER) {
             VM_throw_error(VM_NO_ERROR, VM_ERRC_NONE, "Invalid constant");
-        }
-        vm_skip(1);
+        } */
+        printf("%.6g\n", (double)(*(Object*)(*(++VM->ip))).value.number);
+//        vm_skip(1);
     });
     vmcase(VM_PUSHIDF, {
         Object* next = (Object*)(*((VM->ip + 1)));
@@ -76,16 +77,17 @@ int VM_execute(VM_instance* VM, char* input) {
             ** optimize: create opcode (VM_PUSHP, addr)
             */
             printf("Found variable '%s'.\n", name);
-//            tobject_create(obj, ptr = table_find(VM->global->variables, name), T_VAR);
-//            list_push(VM->stack, obj);
+            object_create(obj, ptr = table_find(VM->global->variables, name), T_VAR);
+            list_push(VM->stack, *(Object*)obj);
+//            list_push(VM->stack, *(Object*)obj.value.ptr);
         } else {
             /*
             ** variable does not exist
             ** create variable
             ** optimize code
             */
-            /* table_push_object(VM->global->variables, name, ptr = NULL, T_NULL); */
             printf("Variable not found; '%s'\n", name);
+//            table_push_object(VM->global->variables, name, ptr = NULL, T_NULL);
         }
         vm_skip(1);
     });
@@ -135,12 +137,13 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
         
         switch (current.op) {
             case T_NUMBER: {
+                /* pushk, value */
                 result[rtop++] = list_get(VM->ins, VMI_PUSHK);
-                Object* number = new(Object);
-                number->type = T_NUMBER;
-                number->value.number = to_number(current.token);
-                result[rtop++] = new(Object);
-                *(Object*)result[rtop-1] = *number;
+                result[rtop] = new(Object);
+                (*(Object*)(result[rtop])).type = T_NUMBER;
+                (*(Object*)(result[rtop])).value.number = to_number(current.token);
+                printf(":> %.6g\n", to_number(current.token));
+                rtop++;
             }
                 break;
                 
@@ -153,6 +156,7 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
                 *(Object*)result[rtop - 1] = *idf;
             }
                 break;
+                
             case OP_EQ_ASSIGN:
                 result[rtop++] = list_get(VM->ins, VMI_EQ_ASSIGN);
                 break;

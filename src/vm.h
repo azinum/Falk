@@ -42,13 +42,20 @@ printf("Stack top: %i, vars: %i\n", VM->stack->top, VM->global->variables->top);
 
 
 #define op_arith(L, R, OP) \
-(((L.type | R.type) == T_NUMBER) ? (L.value.number OP R.value.number) : (-1))
+((op_arith_issafe(L, R) ? (L.value.number OP R.value.number) : (-1))
 
+#define op_arith_issafe(L, R) (L.type | R.type) == T_NUMBER)
+
+/*
+** TODO: throw exception on error 
+*/
 #define num_arith(OP) \
 if (VM->stack->top >= 2) { \
-    list_get_from_top(VM->stack, -1).value.number = op_arith(list_get_from_top(VM->stack, -1), list_get_top(VM->stack), OP); \
-    list_spop(VM->stack); \
-    goto **(++VM->ip); \
+    if (op_arith_issafe(list_get_from_top(VM->stack, -1), list_get_top(VM->stack)) { \
+        list_get_from_top(VM->stack, -1).value.number = op_arith(list_get_from_top(VM->stack, -1), list_get_top(VM->stack), OP); \
+        list_spop(VM->stack); \
+        goto **(++VM->ip); \
+    } \
 }
 
 /*

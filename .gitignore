@@ -12,3 +12,5 @@
 .DS_Store
 
 *.xcbkptlist
+
+test/other/gen
