@@ -13,8 +13,6 @@ void lex_instance_init(Lex_instance* L) {
     L->error = LEX_NO_ERROR;
     L->warning = 0;
     L->line = 1;
-    L->result = new(Tokenlist);
-    list_init(L->result);
 }
 
 
@@ -75,14 +73,19 @@ unsigned char is_identifier(const char* token) {
 ** the string is for knowing how the token looks like, the number is describing the token
 ** get description from enum: Instructions, at "object.h"
 */
-int lex(Lex_instance* L, char* input) {
+Tokenlist* lex(Lex_instance* L, char* input) {
     if (strlen(input) < 1)
-        return 0;
+        return NULL;
     String* item = new(String);
     list_init(item);
     
     char temp_token;
     int inputlim = (int)strlen(input);
+    
+    Tokenlist* result;  /* final lexed product */
+    result = new(Tokenlist);
+    list_init(result);
+    
     /*
     ** bracket count (how many extra brackets there are)
     ** if counter is not equal to 0, (same amount of brackets) then we got a mismatch
@@ -131,7 +134,7 @@ int lex(Lex_instance* L, char* input) {
     
     if (parenc != 0 || curlybc != 0 || normalbc != 0) {
         lex_throw_error(L, LEXERR_INVALID_BLOCK);
-        return 0;
+        return NULL;
     }
     
     for (int i = 0; i < inputlim; i++) {
@@ -155,12 +158,12 @@ int lex(Lex_instance* L, char* input) {
                 if (is_operator(temp_token)) {
                     char* tmp = new(char);
                     string_copy(tmp, item->value);
-                    list_push(L->result, ((Token){tmp}));
+                    list_push(result, ((Token){tmp}));
                     string_clear(item);
                     list_push(item, temp_token);
                     tmp = new(char);
                     *tmp = temp_token;
-                    list_push(L->result, ((Token){tmp, get_opcode(temp_token)}));
+                    list_push(result, ((Token){tmp, get_opcode(temp_token)}));
                     string_clear(item);
                     continue;
                 }
@@ -168,7 +171,7 @@ int lex(Lex_instance* L, char* input) {
                 if (temp_token == ' ') {
                     char* tmp = new(char);
                     string_copy(tmp, item->value);
-                    list_push(L->result, ((Token){tmp}));
+                    list_push(result, ((Token){tmp}));
                     string_clear(item);
                 } else {
                     list_push(item, temp_token);
@@ -182,13 +185,13 @@ int lex(Lex_instance* L, char* input) {
     string_copy(tmp, item->value);
     
     /* push last item to output */
-    list_push(L->result, (Token){tmp});
+    list_push(result, (Token){tmp});
     
     list_free(item);
     
-    for (int i = 0; i < L->result->top; i++) {
+    for (int i = 0; i < result->top; i++) {
         /* find token instruction/type */
-        Token* current = &L->result->value[i];
+        Token* current = &result->value[i];
         if (is_identifier(current->token)) {
             current->op = T_IDENTIFIER;
             continue;
@@ -201,13 +204,13 @@ int lex(Lex_instance* L, char* input) {
     
 #if LEX_DEBUG
     Token current;
-    for (int i = 0; i < L->result->top; i++) {
-        current = L->result->value[i];
+    for (int i = 0; i < result->top; i++) {
+        current = result->value[i];
         if (strcmp(current.token, "\0"))    /* don't print null character */
             printf("%s, %i\n", current.token, current.op);
     }
 #endif
-    return 1;
+    return result;
 }
 
 void lex_throw_error(Lex_instance* L, unsigned char error) {
@@ -219,7 +222,6 @@ void lex_throw_error(Lex_instance* L, unsigned char error) {
 ** free a lex instance
 */
 void lex_instance_free(Lex_instance* L) {
-    list_free(L->result);
     free(L);    /* free whole instance */
 }
 

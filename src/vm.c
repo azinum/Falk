@@ -28,13 +28,13 @@ int VM_execute(VM_instance* VM, char* input) {
     Lex_instance* lex_instance = new(Lex_instance);
     lex_instance_init(lex_instance);
     
-    if (!lex(lex_instance, input)) {
+    Tokenlist* lexresult = new(Tokenlist);
+    list_init(lexresult);
+    *lexresult = *lex(lex_instance, input);
+    if (!lexresult) {
         return 0;
     }
     
-    Tokenlist* lexresult = new(Tokenlist);
-    list_init(lexresult);
-    *lexresult = *lex_instance->result;
     
     if (!VM->init) {
         list_push(VM->ins, &&VM_EQ_ASSIGN);
@@ -63,6 +63,9 @@ int VM_execute(VM_instance* VM, char* input) {
     });
     vmcase(VM_PUSHK, {
         list_push(VM->stack, *(Object*)(*(VM->ip + 1)));
+        if (list_get_top(VM->stack).type != T_NUMBER) {
+            VM_throw_error(VM_NO_ERROR, VM_ERRC_NONE, "Invalid constant");
+        }
         vm_skip(1);
     });
     vmcase(VM_PUSHIDF, {
@@ -182,7 +185,7 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
 
 
 void VM_throw_error(int error, int cause, const char* msg) {
-    printf("%s%s; %s\n", VM_error_messages[error], VM_error_cause_messages[cause], msg);
+    printf("%s%s %s\n", VM_error_messages[error], VM_error_cause_messages[cause], msg);
 }
 
 void** ins_add_instructions(int insc, void* ins, ...) {

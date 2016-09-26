@@ -23,7 +23,6 @@ enum Lex_errors {
 typedef struct Lex_instance {
     int error, warning;  /* current error and warning */
     unsigned int line;  /* to trace our code back if error */
-    Tokenlist* result;  /* final lexed product */
     Token op;   /* current operator */
 } Lex_instance;
 
@@ -38,7 +37,7 @@ static const char* lex_error_info[] = {
 */
 static const char* allowed_characters = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm_";
 
-int lex(Lex_instance* L, char* input);
+Tokenlist* lex(Lex_instance* L, char* input);
 
 void lex_instance_init(Lex_instance* L);
 

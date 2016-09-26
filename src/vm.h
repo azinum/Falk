@@ -12,7 +12,7 @@
 #include "lex.h"
 #include "table.h"
 
-#define VM_DEBUG 1
+#define VM_DEBUG 0
 
 list_define(Stack, Object);
 list_define(Instruction_list, void*);
@@ -81,7 +81,7 @@ static const char* VMI_info[] = {
 enum VM_errors {
     VM_NO_ERROR = 0,
     VM_ERR_STACK,
-    VM_ERR_ARITH,
+    VM_ERR_ARITH
 };
 
 enum VM_error_causes {

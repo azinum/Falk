@@ -116,7 +116,7 @@ int parse(Parse_instance* P, char* input) {
     */
     Tokenlist* lexed = new(Tokenlist);
     list_init(lexed);
-    *lexed = *P->lex_instance->result;
+    /* *lexed = *P->lex_instance->result; */
     
     if (!parse_grammar(P, lexed))
         return 0;
@@ -186,10 +186,6 @@ int parse(Parse_instance* P, char* input) {
     while (P->stack->top > 0) {
         list_push(P->result, list_get_top(P->stack));
         list_pop2(P->stack);
-    }
-    
-    while (P->lex_instance->result->top > 0) {
-        list_pop2(P->lex_instance->result);
     }
     
     for (int i = 0; i < P->result->top; i++) {
