@@ -78,7 +78,7 @@ int VM_execute(VM_instance* VM, char* input) {
             printf("Found variable '%s'.\n", name);
             object_create(obj, ptr = table_find(VM->global->variables, name), T_VAR);
             list_push(VM->stack, *(Object*)obj);
-//            list_push(VM->stack, *(Object*)obj.value.ptr);
+            list_push(VM->stack, *(Object*)obj->value.ptr);
         } else {
             /*
             ** variable does not exist
@@ -148,8 +148,7 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
            case T_IDENTIFIER: {
                list_push(refcast(ilist), list_get(VM->ins, VMI_PUSHIDF));
                list_push(refcast(ilist), new(Object));
-               (*(Object*)list_get_top(refcast(ilist))).type = T_IDENTIFIER;
-               (*(Object*)list_get_top(refcast(ilist))).value.string = current.token;
+               (*(Object*)list_get_top(refcast(ilist))) = (Object){((union Value){}.string = current.token), T_IDENTIFIER};
             }
                 break;
                 

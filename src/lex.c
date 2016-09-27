@@ -59,6 +59,11 @@ unsigned char is_identifier(const char* token) {
         }
     }
     
+    for (int i = 0; i < (int)strlen(allowed_characters_after); i++) {
+        if (token[0] == allowed_characters_after[i])
+            return 0;
+    }
+    
     if (validc == tokenlen)     /* number of valid characters must be same as input string length */
         return 1;
     

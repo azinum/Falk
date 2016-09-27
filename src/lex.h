@@ -35,7 +35,12 @@ static const char* lex_error_info[] = {
 /*
 ** allowed characters for identifiers
 */
-static const char* allowed_characters = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm_";
+static const char* allowed_characters = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm_0123456789";
+
+/*
+** allowed characters after the first letter of identifier
+*/
+static const char* allowed_characters_after = "0123456789";
 
 Tokenlist* lex(Lex_instance* L, char* input);
 
