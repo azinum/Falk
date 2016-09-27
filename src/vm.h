@@ -49,6 +49,12 @@ printf("Stack top: %i, vars: %i\n", VM->stack->top, VM->global->variables->top);
 */
 #define op_arith_issafe(L, R) (L.type | R.type) == T_NUMBER)
 
+
+/*
+** convert var to object
+*/
+#define obj_convert(O) ((O.type == T_VAR) ? (((TValue*)(O.value.ptr))->tval) : (O))
+
 /*
 ** TODO: throw exception on error 
 */
@@ -57,7 +63,13 @@ if (VM->stack->top >= 2) { \
     if (op_arith_issafe(list_get_from_top(VM->stack, -1), list_get_top(VM->stack)) { \
         list_get_from_top(VM->stack, -1).value.number = op_arith(list_get_from_top(VM->stack, -1), list_get_top(VM->stack), OP); \
         list_spop(VM->stack); \
-        goto **(++VM->ip); \
+        vm_next; \
+    } else { \
+        list_get_from_top(VM->stack, -1).value.number = op_arith( \
+            obj_convert(list_get_from_top(VM->stack, -1)), \
+            obj_convert(list_get_top(VM->stack)), OP); \
+        list_spop(VM->stack); \
+        vm_next; \
     } \
 }
 
@@ -130,11 +142,11 @@ typedef struct Scope {
 
 typedef struct VM_instance {
     unsigned char init;     /* is VM initialized? */
-    void** program;     /* program itself */
     void** ip;      /* pointer to an instruction */
     Instruction_list* ins;     /* all instructions */
     Stack* stack;   /* list of objects */
     Scope* global;  /* global scope */
+    Object* dummy;
 } VM_instance;
 
 int VM_execute(VM_instance* VM, char* input);

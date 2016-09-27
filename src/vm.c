@@ -11,7 +11,8 @@ void VM_init(VM_instance* VM) {
     list_init(VM->stack);
     VM->ins = new(Instruction_list);
     list_init(VM->ins);
-    VM->program = newx(void*, 28);
+    VM->dummy = new(Object);
+    VM->dummy->type = T_NULL;
     
     VM->global = new(Scope);
     VM->global->global = VM->global;
@@ -20,6 +21,7 @@ void VM_init(VM_instance* VM) {
     
     table_push_object(VM->global->variables, "global", ptr = VM->global, T_SCOPE);
     table_push_object(VM->global->variables, "null", ptr = NULL, T_NULL);
+    table_push_object(VM->global->variables, "undefined", ptr = NULL, T_NULL);
     table_push_object(VM->global->variables, "pi", number = 3.14159265359, T_NUMBER);
     table_push_object(VM->global->variables, "vm", ptr = &VM, -1);
 }
@@ -54,11 +56,22 @@ int VM_execute(VM_instance* VM, char* input) {
     
     vm_begin;
     
+    /*
+    ** left hand side of assignment MUST be variable
+    ** if not true, throw an error
+    */
     vmcase(VM_EQ_ASSIGN, {
-        /*
-        ** left hand side of assignment MUST be variable
-        ** if not true, throw an error
-        */
+        if (VM->stack->top >= 2) {
+            if (list_get_from_top(VM->stack, -1).type == T_VAR) {
+                /* if we do not do obj_convert then, we assign by reference / pointer */
+                /* it is a feature to be added later */
+                (*(TValue*)(list_get_from_top(VM->stack, -1).value.ptr)).tval = obj_convert(list_get_top(VM->stack));
+            } else {
+                puts("Err");
+            }
+        } else {
+            VM_throw_error(VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_EQ_ASSIGN");
+        }
     });
     vmcase(VM_PUSHK, {
         list_push(VM->stack, *(Object*)(*(VM->ip + 1)));
@@ -75,18 +88,17 @@ int VM_execute(VM_instance* VM, char* input) {
             ** variable exist
             ** optimize: create opcode (VM_PUSHP, addr)
             */
-            printf("Found variable '%s'.\n", name);
-            object_create(obj, ptr = table_find(VM->global->variables, name), T_VAR);
-            list_push(VM->stack, *(Object*)obj);
-            list_push(VM->stack, *(Object*)obj->value.ptr);
+            tobject_create(obj, ptr = table_find(VM->global->variables, name), T_VAR);
+            list_push(VM->stack, obj);
         } else {
             /*
             ** variable does not exist
             ** create variable
             ** optimize code
             */
-            printf("Variable not found; '%s'\n", name);
-//            table_push_object(VM->global->variables, name, ptr = NULL, T_NULL);
+            table_push_object(VM->global->variables, name, ptr = NULL, T_NULL);
+            tobject_create(obj, ptr = table_find(VM->global->variables, name), T_VAR);
+            list_push(VM->stack, obj);
         }
         vm_skip(1);
     });
