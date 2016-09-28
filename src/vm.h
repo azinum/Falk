@@ -49,6 +49,10 @@ printf("Stack top: %i, vars: %i\n", VM->stack->top, VM->global->variables->top);
 */
 #define op_arith_issafe(L, R) ((L.type | R.type) == T_NUMBER))
 
+/*
+** compare type between two objects
+*/
+#define comp_type(A, B, TYPE) ((A.type | B.type) == TYPE)
 
 /*
 ** convert var to object
@@ -70,7 +74,7 @@ if (VM->stack->top >= 2) { \
     list_get_top(VM->stack).type = T_NUMBER; \
     vm_next; \
 } else { \
-    VM_throw_error(VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \
+    VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \
 }
 
 /*
@@ -142,6 +146,7 @@ typedef struct Scope {
 
 typedef struct VM_instance {
     unsigned char init;     /* is VM initialized? */
+    unsigned char exit_on_error;
     void** ip;      /* pointer to an instruction */
     Instruction_list* ins;     /* all instructions */
     Stack* stack;   /* list of objects */
@@ -159,7 +164,7 @@ void** ins_add_instructions(int insc, void* ins, ...);
 
 void** to_ins(VM_instance* VM, Tokenlist* list);
 
-void VM_throw_error(int error, int cause, const char* msg);
+void VM_throw_error(VM_instance* VM, int error, int cause, const char* msg);
 
 void VM_debug_print_vmi(VM_instance* VM, void* vmi);
 

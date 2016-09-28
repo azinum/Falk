@@ -13,6 +13,7 @@ void VM_init(VM_instance* VM) {
     list_init(VM->ins);
     VM->dummy = new(Object);
     VM->dummy->type = T_NULL;
+    VM->exit_on_error = 1;
     
     VM->global = new(Scope);
     VM->global->global = VM->global;
@@ -70,13 +71,13 @@ int VM_execute(VM_instance* VM, char* input) {
                 puts("Err");
             }
         } else {
-            VM_throw_error(VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_EQ_ASSIGN");
+            VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_EQ_ASSIGN");
         }
     });
     vmcase(VM_PUSHK, {
         list_push(VM->stack, *(Object*)(*(VM->ip + 1)));
         if (list_get_top(VM->stack).type != T_NUMBER) {
-            VM_throw_error(VM_ERR_ARITH, VM_ERRC_ARITH_INVALID_TYPES, "@VM_PUSHK");
+            VM_throw_error(VM, VM_ERR_ARITH, VM_ERRC_ARITH_INVALID_TYPES, "@VM_PUSHK");
         }
         vm_skip(1);
     });
@@ -195,8 +196,15 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
 }
 
 
-void VM_throw_error(int error, int cause, const char* msg) {
+void VM_throw_error(VM_instance* VM, int error, int cause, const char* msg) {
     printf("%s%s %s\n", VM_error_messages[error], VM_error_cause_messages[cause], msg);
+    if (VM->exit_on_error) {
+        /*
+        ** TODO: free everything
+        */
+        VM_instance_free(VM);
+        exit(0);
+    }
 }
 
 void** ins_add_instructions(int insc, void* ins, ...) {
