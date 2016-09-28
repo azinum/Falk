@@ -47,30 +47,30 @@ printf("Stack top: %i, vars: %i\n", VM->stack->top, VM->global->variables->top);
 /*
 ** this macro is for type checking, to check if two objects has the same type
 */
-#define op_arith_issafe(L, R) (L.type | R.type) == T_NUMBER)
+#define op_arith_issafe(L, R) ((L.type | R.type) == T_NUMBER))
 
 
 /*
 ** convert var to object
+** if variable is detected, convert it to object
+** else: do nothing with it
 */
-#define obj_convert(O) ((O.type == T_VAR) ? (((TValue*)(O.value.ptr))->tval) : (O))
+#define obj_convert(O) ((O.type == T_VAR) ? ((*(TValue*)(O.value.ptr)).tval) : (O))
 
 /*
-** TODO: throw exception on error 
+** TODO: throw exception on error
 */
-#define num_arith(OP) \
+#define num_arith(OP, MSG) \
 if (VM->stack->top >= 2) { \
-    if (op_arith_issafe(list_get_from_top(VM->stack, -1), list_get_top(VM->stack)) { \
-        list_get_from_top(VM->stack, -1).value.number = op_arith(list_get_from_top(VM->stack, -1), list_get_top(VM->stack), OP); \
-        list_spop(VM->stack); \
-        vm_next; \
-    } else { \
-        list_get_from_top(VM->stack, -1).value.number = op_arith( \
-            obj_convert(list_get_from_top(VM->stack, -1)), \
-            obj_convert(list_get_top(VM->stack)), OP); \
-        list_spop(VM->stack); \
-        vm_next; \
-    } \
+    list_get_from_top(VM->stack, -1).value.number = op_arith( \
+        obj_convert(list_get_from_top(VM->stack, -1)), \
+        obj_convert(list_get_top(VM->stack)), \
+    OP); \
+    list_spop(VM->stack); \
+    list_get_top(VM->stack).type = T_NUMBER; \
+    vm_next; \
+} else { \
+    VM_throw_error(VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \
 }
 
 /*

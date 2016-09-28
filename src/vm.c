@@ -107,20 +107,16 @@ int VM_execute(VM_instance* VM, char* input) {
         ** if we can do arithmetic operation,
         ** jump to next instruction, else: throw error message
         */
-        num_arith(+);
-        VM_throw_error(VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_ADD");
+        num_arith(+, "@VM_ADD");
     });
     vmcase(VM_SUB, {
-        num_arith(-);
-        VM_throw_error(VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_SUB");
+        num_arith(-, "@VM_SUB");
     });
     vmcase(VM_DIV, {
-        num_arith(/);
-        VM_throw_error(VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_DIV");
+        num_arith(/, "@VM_DIV");
     });
     vmcase(VM_MUL, {
-        num_arith(*);
-        VM_throw_error(VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_MUL");
+        num_arith(*, "@VM_MUl");
     });
     vmcase(VM_EXIT, {
         VM_PRINT_EXTRA_INFO;
