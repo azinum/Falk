@@ -61,6 +61,7 @@ typedef struct Token {
 
 enum Instructions {
     OP_NULL = 0,
+    OP_BEGIN,
     OP_ADD,
     OP_SUB,
     OP_MUL,
@@ -70,6 +71,8 @@ enum Instructions {
     
     OP_LEFT_SHIFT,  /* << */
     OP_RIGHT_SHIFT,  /* >> */
+    
+    OP_END,
     
     T_NULL,
     T_IDENTIFIER,

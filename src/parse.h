@@ -45,6 +45,8 @@ enum Gflags {
     EXPRESSION  = 1 << 5,
     BODY        = 1 << 6,
     END         = 1 << 7,
+    OP          = 1 << 8,
+    OPR         = 1 << 9,
     ANY = NONE | IF | ELSE | WHILE | FUNC | EXPRESSION | BODY | END
 };
 
@@ -75,35 +77,44 @@ static Operator operators[] = {
     {-1, -1, -1}
 };
 
+typedef struct Parse_node {
+    int type,
+        prec,
+        asso,
+        *rule;
+} Parse_node;
+
+list_define(PNode_list, Parse_node);
+
 static const char* parse_error_info[] = {
     "", /* no error */
     "Block does not match"
 };
 
 typedef struct Parse_instance {
-    int error, warning;
-    int line;
+    int error, warning, line;
     Tokenlist* result;
     Lex_instance* lex_instance;
     Tokenlist* stack;   /* we use the stack for keeping operators and keywords */
     RuleList* rules;
     TokenLL* resultll;  /* result as linked list */
+    Tokenlist lexed;
 } Parse_instance;
 
 void parse_instance_init(Parse_instance* P);
-
-int parse(Parse_instance* P, char* input);
 
 void parse_throw_error(Parse_instance* P, unsigned char error);
 
 void parse_instance_free(Parse_instance* P);
 
-void check_precedence(Parse_instance* P);
-
 Operator get_operator(unsigned char op);
 
-int* create_flagset(int flagc, ...);
+int* intarr_create(int flagc, ...);
 
-int parse_grammar(Parse_instance* P, Tokenlist* to_parse);
+void parse(Parse_instance* P, char* input);
+
+void parse_expression(Parse_instance* P, int from, int to);
+
+void check_precedence(Parse_instance* P, Tokenlist* stack);
 
 #endif /* parse_h */
