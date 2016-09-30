@@ -5,3 +5,4 @@ Linked List (15/09/16) http://www.learn-c.org/en/Linked_lists
 Doubly Linked List (15/09/16) http://www.thelearningpoint.net/computer-science/data-structures-doubly-linked-list-with-c-program-source-code
 Implementing Programming Languages (16/09/16) http://www.cse.chalmers.se/edu/year/2012/course/DAT150/lectures/plt-book.pdf
 Bitwise Operators and Bit Masks (19/09/16) http://www.vipan.com/htdocs/bitwisehelp.html
+Recursive Parsing (30/09/16) https://en.wikipedia.org/wiki/Recursive_descent_parser

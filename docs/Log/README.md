@@ -101,3 +101,18 @@ Jag ska spåra felen och fixa dom så snabbt jag kan.
 När jag har fixat felen så ska jag lägga till instruktioner så att jag kan spara variabler och redigera variabler.
 Efter det så ska jag fortsätta med parsern. Jag ska leta upp lösningar för hur man gör en parser.
 Jag kan göra en parser men, problemet är, jag vill göra en parser som gör det lätt för en att lägga till nya funktioner.
+
+
+### V39 - 2016/9/30
+
+Denna vecka lyckades jag fixa minnesfelen som skedde i den Virtuella Maskinen.
+Det berodde på att jag inte gav tillräckligt med minne till en viss variabel. Det är fixat nu.
+I virtuella maskinen lade jag till två instruktioner. En instruktion, den försöker leta upp en variabel, om den hittar variabeln då pushar man den på stacken.
+Om variabeln inte hittas, då skapas en ny variabel med värdet ``` null```, d.v.s. inget värde.
+Den andra instruktionen som lades till var tilldelningsoperatorn. Man kan ge en variabel det värdet man vill ha med hjälp av tilldelningsoperatorn ```=```.
+
+Jag har forskat en del denna vecka om hur man formar ett språks syntax. Jag vet nu hur jag ska forma mitt språk. Jag ska forma mitt språk med en [Recursive descent parser](https://en.wikipedia.org/wiki/Recursive_descent_parser).
+Det är tillräkligt enkelt att man kan göra denna parser för hand. Stora språk som [Ruby](https://www.ruby-lang.org/en/) eller [Python](https://www.python.org) använder en parser generator.
+Vad en [Parser Generator](https://en.wikipedia.org/wiki/Comparison_of_parser_generators) gör är att, man kan definiera en rad regler och sen så kompileras sitt program efter dom reglerna.
+Detta är någonting jag absolut inte vill göra. Jag vill ha full kontroll över mitt språk.
+Till nästa vecka så ska jag ha gjort en enkel parser.
