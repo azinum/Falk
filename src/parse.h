@@ -117,4 +117,6 @@ void parse_expression(Parse_instance* P, int from, int to);
 
 void check_precedence(Parse_instance* P, Tokenlist* stack);
 
+Offset* check_next(Parse_instance* P, int steps);
+
 #endif /* parse_h */

@@ -24,6 +24,7 @@ typedef struct Lex_instance {
     int error, warning;  /* current error and warning */
     unsigned int line;  /* to trace our code back if error */
     Token op;   /* current operator */
+    Tokenlist result;
 } Lex_instance;
 
 static const char* lex_error_info[] = {
@@ -42,13 +43,17 @@ static const char* allowed_characters = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasd
 */
 static const char* allowed_characters_after = "0123456789";
 
-Tokenlist* lex(Lex_instance* L, char* input);
+int lex(Lex_instance* L, char* input);
 
 void lex_instance_init(Lex_instance* L);
 
 void lex_instance_free(Lex_instance* L);
 
 unsigned char is_operator(char token);
+
+unsigned char is_keyword(Token token);
+
+unsigned char get_keyword(Token token);
 
 unsigned char get_opcode(char token);
 

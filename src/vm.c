@@ -31,9 +31,14 @@ int VM_execute(VM_instance* VM, char* input) {
     Lex_instance* lex_instance = new(Lex_instance);
     lex_instance_init(lex_instance);
     
+    if (!lex(lex_instance, input)) {
+        return 0;
+    }
+    
     Tokenlist* lexresult = new(Tokenlist);
     list_init(lexresult);
-    *lexresult = *lex(lex_instance, input);
+    *lexresult = lex_instance->result;
+    
     if (!lexresult) {
         return 0;
     }

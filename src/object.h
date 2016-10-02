@@ -58,6 +58,9 @@ typedef struct Token {
     unsigned int op;
 } Token;
 
+typedef struct Offset {
+    int x, y;
+} Offset;
 
 enum Instructions {
     OP_NULL = 0,
@@ -84,6 +87,8 @@ enum Instructions {
     
     I_GOTO,     /* goto ip. args: 1 */
     I_JUMP,     /* goto ip - jump. args: 1 */
+    I_IF,
+    I_WHILE,
     
     TOK_NEWLINE,  /* not an instruction / op code */
     TOK_LEFT_P,     /* left parenthesis "(" */
@@ -107,6 +112,8 @@ static Token tokens[] = {
     {",", TOK_COMMA},
     {":", TOK_COLON},
     {"\n", TOK_NEWLINE},
+    {"if", I_IF},
+    {"while", I_WHILE},
 };
 
 

@@ -13,6 +13,7 @@ void lex_instance_init(Lex_instance* L) {
     L->error = LEX_NO_ERROR;
     L->warning = 0;
     L->line = 1;
+    list_init(refcast(L->result));
 }
 
 
@@ -26,6 +27,24 @@ unsigned char is_operator(char token) {
         }
     }
     free(cmp);
+    return 0;
+}
+
+unsigned char is_keyword(Token token) {
+    for (int i = 0; i < arr_size(tokens); i++) {
+        if (!strcmp(token.token, tokens[i].token)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+unsigned char get_keyword(Token token) {
+    for (int i = 0; i < arr_size(tokens); i++) {
+        if (!strcmp(token.token, tokens[i].token)) {
+            return tokens[i].op;
+        }
+    }
     return 0;
 }
 
@@ -78,9 +97,9 @@ unsigned char is_identifier(const char* token) {
 ** the string is for knowing how the token looks like, the number is describing the token
 ** get description from enum: Instructions, at "object.h"
 */
-Tokenlist* lex(Lex_instance* L, char* input) {
+int lex(Lex_instance* L, char* input) {
     if (strlen(input) < 1)
-        return NULL;
+        return 0;
     String* item = new(String);
     list_init(item);
     
@@ -139,7 +158,7 @@ Tokenlist* lex(Lex_instance* L, char* input) {
     
     if (parenc != 0 || curlybc != 0 || normalbc != 0) {
         lex_throw_error(L, LEXERR_INVALID_BLOCK);
-        return NULL;
+        return 0;
     }
     
     for (int i = 0; i < inputlim; i++) {
@@ -197,6 +216,12 @@ Tokenlist* lex(Lex_instance* L, char* input) {
     for (int i = 0; i < result->top; i++) {
         /* find token instruction/type */
         Token* current = &result->value[i];
+        
+        if (is_keyword(*current)) {
+            current->op = get_keyword(*current);
+            continue;
+        }
+        
         if (is_identifier(current->token)) {
             current->op = T_IDENTIFIER;
             continue;
@@ -215,7 +240,9 @@ Tokenlist* lex(Lex_instance* L, char* input) {
             printf("%s, %i\n", current.token, current.op);
     }
 #endif
-    return result;
+    
+    L->result = *result;
+    return 1;
 }
 
 void lex_throw_error(Lex_instance* L, unsigned char error) {

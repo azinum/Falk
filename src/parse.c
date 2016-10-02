@@ -59,7 +59,6 @@ void check_precedence(Parse_instance* P, Tokenlist* stack) {
     }
 }
 
-
 /*
 ** recursive parsing
 */
@@ -82,8 +81,19 @@ void parse_expression(Parse_instance* P, int from, int to) {
             }
                 break;
                 
+            case T_IDENTIFIER:
             case T_NUMBER: {
                 list_push(P->result, current);
+            }
+                break;
+            
+            case I_IF: {
+                puts("I_IF");
+            }
+                break;
+                
+            case I_WHILE: {
+                puts("I_WHILE");
             }
                 break;
                 
@@ -129,7 +139,9 @@ void parse(Parse_instance* P, char* input) {
     lex_instance_init(lex_instance);
     P->lex_instance = lex_instance;
     
-    P->lexed = *lex(lex_instance, input);
+    lex(lex_instance, input);
+    
+    P->lexed = lex_instance->result;
     
     parse_expression(P, 0, P->lexed.top);
     
@@ -137,8 +149,16 @@ void parse(Parse_instance* P, char* input) {
         printf("%s ", list_get(P->result, i).token);
     }
     puts("");
+    
+    list_clear2(P->result);
 }
 
+
+Offset* check_next(Parse_instance* P, int steps) {
+    Offset* offset = newx(Offset, steps + 1);
+    
+    return offset;
+}
 
 unsigned char is_op(int op) {
     if (op > OP_BEGIN && op < OP_END)
