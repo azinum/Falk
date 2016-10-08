@@ -14,6 +14,8 @@
 
 #define refcast(X) (&(X))
 
+#define null ((void*)0x0)
+
 #define newx_safe(NAME, TYPE, SIZE) { \
 TYPE* tmp = ((TYPE*)malloc(SIZE * sizeof(TYPE))); \
 if (tmp == NULL) puts("Memory failed"); \

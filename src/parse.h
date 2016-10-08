@@ -50,6 +50,24 @@ enum Gflags {
     ANY = NONE | IF | ELSE | WHILE | FUNC | EXPRESSION | BODY | END
 };
 
+
+/*
+** grammar flag info
+*/
+static const char* gf_info[] = {
+    "none",
+    "if",
+    "else",
+    "while",
+    "function",
+    "expression",
+    "body",
+    "end",
+    "op",
+    "operand",
+    "any"
+};
+
 typedef struct Rule {
     int* flags;     /* array of flags (first flag is the rule itself) */
     int fc;     /* flag count */
@@ -117,6 +135,8 @@ void parse_expression(Parse_instance* P, int from, int to);
 
 void check_precedence(Parse_instance* P, Tokenlist* stack);
 
-Offset* check_next(Parse_instance* P, int steps);
+unsigned char* check_next(Parse_instance* P, int index, int steps);
+
+void gf_info_print(unsigned char flag);
 
 #endif /* parse_h */

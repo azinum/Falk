@@ -89,7 +89,7 @@ enum VM_instructions {
     VMI_MUL,
     VMI_PUSHK,
     VMI_PUSHIDF,
-    
+
     VMI_EXIT
 };
 
@@ -134,7 +134,7 @@ static const char* VM_error_cause_messages[] = {
     "Not enough items on stack;",
     "StackOverflow;",
     "Stack has not been initialized yet;",
-    
+
     /* arithmetic error causes */
     "Invalid types on arithmetic operation;",
 };

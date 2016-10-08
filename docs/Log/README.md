@@ -116,3 +116,40 @@ Det är tillräkligt enkelt att man kan göra denna parser för hand. Stora spr�
 Vad en [Parser Generator](https://en.wikipedia.org/wiki/Comparison_of_parser_generators) gör är att, man kan definiera en rad regler och sen så kompileras sitt program efter dom reglerna.
 Detta är någonting jag absolut inte vill göra. Jag vill ha full kontroll över mitt språk.
 Till nästa vecka så ska jag ha gjort en enkel parser.
+
+
+### V40 - 2016/10/8
+
+Under denna vecka så har jag inte jobbat så mycket med själva programmeringen.
+Jag fastnade när jag skulle implementera parsern. Jag hade problem med att skaffa en strategi för hur jag skulle forma parsern.
+Nu har jag suttit och skrivit ner olika strategier och lösningar för problemet. Jag har kommit på hur jag ska göra.
+Som jag nämnde förra veckan så kommer jag använda mig av en sorts recursive parsing (funktionen ropar sig själv). Parsern läser strömmen med tecken och följer gramatiska regler som är definierat sedan innan.
+Den kollar framåt i strömmen med tecken och kollar så att det stämmer överens med reglerna.
+Parsern använder sig också av en sorts produktion. Om den upptäcker två speciella tecken efter varandra så kommer den producera ett tredje tecken.
+
+``` ruby
+
+	A  B  C  D
+a   f  g  h  i
+b   j  k  l  m
+c   n  o  p  q
+d   r  s  t  u
+
+```
+Detta fungerar som en multiplikationstabell.
+``` ruby
+	A + c = A + c + n
+
+	D + a = D + a + i
+```
+Detta är användbart i språket då vi behöver en extra instruktion / tecken efter ett uttryck eller liknande.
+Man kan använda detta när man ska ropa en funktion.
+``` ruby
+test(5 + 5);
+```
+För att ropa en funktion så behöver man en ```identifier``` (namn) och sedan en ```tuple``` (lista med argument kan man säga).
+Då producerar den uttrycket på detta sett:
+``` ruby
+test(5 + 5) callf;
+```
+```callf``` betyder call function eller ropa funktion. Man behöver göra så här för att alla parenteser kommer försvinna, då finns det inget sett att se om det är ett funktionsanrop eller inte.

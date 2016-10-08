@@ -59,6 +59,7 @@ void check_precedence(Parse_instance* P, Tokenlist* stack) {
     }
 }
 
+
 /*
 ** recursive parsing
 */
@@ -106,20 +107,8 @@ void parse_expression(Parse_instance* P, int from, int to) {
                         break;
                     }
                 }
-                parse_expression(P, i + 1, i + next);
+                parse_expression(P, i + 1, i + next+1);
                 i += next;
-            }
-                break;
-                
-            case TOK_RIGHT_P: {
-                while (stack->top > 0) {
-                    if (list_get_top(stack).op == TOK_LEFT_P) {
-                        list_pop2(stack);
-                        break;
-                    }
-                    list_push(P->result, list_get_top(stack));
-                    list_pop2(stack);
-                }
             }
                 break;
             
@@ -151,13 +140,70 @@ void parse(Parse_instance* P, char* input) {
     puts("");
     
     list_clear2(P->result);
+    list_clear2((&(lex_instance->result)));
 }
 
-
-Offset* check_next(Parse_instance* P, int steps) {
-    Offset* offset = newx(Offset, steps + 1);
+/*
+** check following sequence of code
+*/
+unsigned char* check_next(Parse_instance* P, int index, int steps) {
+    list_define(Instr_list, unsigned char);
+    Instr_list list;
+    list_init(refcast(list));
     
-    return offset;
+    while (steps > 0) {    /* while there are steps left */
+        index++;
+        switch (list_get(refcast(P->lex_instance->result), index).op) {
+            case OP_ADD:
+            case OP_SUB:
+            case OP_DIV:
+            case OP_MUL:
+            case OP_EQ_ASSIGN: {
+                list_push(refcast(list), list_get(refcast(P->lex_instance->result), index).op);
+            }
+                break;
+                
+            case I_IF: {
+                list_push(refcast(list), IF);
+            }
+                break;
+            
+            case I_WHILE: {
+                list_push(refcast(list), WHILE);
+            }
+                break;
+                
+            case TOK_LEFT_P: {
+                int delta = 0;  /* how big difference */
+                
+                while (++index < P->lex_instance->result.top) {
+                    if (list_get(refcast(P->lex_instance->result), index).op == TOK_LEFT_P)
+                        delta++;
+
+                    if (list_get(refcast(P->lex_instance->result), index).op == TOK_RIGHT_P)
+                        delta--;
+                    
+                    if (delta == 0) {
+                        break;
+                    }
+                }
+                
+                if (delta != 0) {
+                    parse_throw_error(P, PERR_BLOCK_NO_MATCH);
+                    return null;
+                }
+                
+                list_push(refcast(list), EXPRESSION);
+            }
+                break;
+                
+            default:
+                break;
+        }
+        steps--;
+    }
+    
+    return list.value;
 }
 
 unsigned char is_op(int op) {
@@ -177,10 +223,13 @@ int* intarr_create(int flagc, ...) {
     return result;
 }
 
+
+void gf_info_print(unsigned char flag) {
+    printf("%s\n", gf_info[flag]);
+}
+
 void parse_throw_error(Parse_instance* P, unsigned char error) {
-    P->error = error;
-    printf("(ParseError) %s\n", parse_error_info[P->error]);
-    P->error = PARSE_NO_ERROR;
+    printf("(ParseError) %s\n", parse_error_info[error]);
 }
 
 
