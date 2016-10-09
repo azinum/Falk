@@ -21,6 +21,7 @@ typedef struct Falk_instance {
     VM_instance* vm_instance;
     int argc;
     const char** argv;
+    unsigned char init;
 } Falk_instance;
 
 void falk_instance_init(Falk_instance* F);
@@ -28,5 +29,7 @@ void falk_instance_init(Falk_instance* F);
 void falk_execute(Falk_instance* F);
 
 void falk_instance_free(Falk_instance* F);
+
+int falk_push_number(Falk_instance* F, double number);
 
 #endif /* falk_h */

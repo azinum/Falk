@@ -17,6 +17,7 @@ void falk_instance_init(Falk_instance* F) {
     lex_instance_init(F->parse_instance->lex_instance);
     F->vm_instance = new(VM_instance);
     VM_init(F->vm_instance);
+    F->init = 1;
 }
 
 
@@ -41,6 +42,22 @@ void falk_execute(Falk_instance* F) {
     }
     
     falk_instance_free(F);
+}
+
+/*
+** push number to stack
+*/
+int falk_push_number(Falk_instance* F, double number) {
+    /* if instance of Falk is not initialized, return false */
+    if (!F->init) {
+        return 0;
+    }
+    Object obj;
+    obj.type = T_NUMBER;
+    obj.value.number = number;
+    list_push(F->vm_instance->stack, obj);
+    
+    return 1;   /* success */
 }
 
 void falk_instance_free(Falk_instance* F) {
