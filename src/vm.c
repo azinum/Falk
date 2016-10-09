@@ -3,7 +3,7 @@
 /* date: 19/09/16 */
 
 #include "vm.h"
-
+#include "falk.h"
 
 void VM_init(VM_instance* VM) {
     VM->init = 0;

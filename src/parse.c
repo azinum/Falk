@@ -4,6 +4,7 @@
 
 
 #include "parse.h"
+#include "falk.h"
 
 void parse_instance_init(Parse_instance* P) {
     P->error = PARSE_NO_ERROR;
