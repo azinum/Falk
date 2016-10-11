@@ -14,6 +14,11 @@
 
 #define PARSE_DEBUG 0
 
+#if PARSE_DEBUG
+#define debug_printf(TOPRINT) printf(TOPRINT)
+#else
+#define debug_printf(TOPRINT)
+#endif
 /*
 ** define a doubly linked list with token type
 */
@@ -83,7 +88,8 @@ typedef struct PRule {
 
 static PRule prod_rules[] = {
     {T_IDENTIFIER, EXPRESSION, OP_CALLF},
-    {EXPRESSION, EXPRESSION, OP_CALLF}
+    {EXPRESSION, EXPRESSION, OP_CALLF},
+    {0, 0, 0}
 };
 
 static Operator operators[] = {
@@ -110,7 +116,6 @@ typedef struct Parse_instance {
     Tokenlist* result;
     Lex_instance* lex_instance;
     Tokenlist* stack;   /* we use the stack for keeping operators and keywords */
-    Tokenlist lexed;
 } Parse_instance;
 
 void parse_instance_init(Parse_instance* P);
@@ -120,6 +125,8 @@ void parse_throw_error(Parse_instance* P, unsigned char error);
 void parse_instance_free(Parse_instance* P);
 
 Operator get_operator(unsigned char op);
+
+PRule get_prod_rule(unsigned char a, unsigned char b);
 
 int* intarr_create(int flagc, ...);
 

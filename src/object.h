@@ -12,10 +12,19 @@
 #define new(TYPE) ((TYPE*)malloc(sizeof(TYPE)))
 #define newx(TYPE, SIZE) ((TYPE*)malloc(SIZE * sizeof(TYPE)))
 
+/*
+** reference cast
+*/
 #define refcast(X) (&(X))
 
+/*
+** pointer to null address
+*/
 #define null ((void*)0x0)
 
+/*
+** allocate new memory block and throw memory error if fail
+*/
 #define newx_safe(NAME, TYPE, SIZE) { \
 TYPE* tmp = ((TYPE*)malloc(SIZE * sizeof(TYPE))); \
 if (tmp == NULL) puts("Memory failed"); \
@@ -34,15 +43,6 @@ NAME->type = TYPE
 #ifndef typeof
 #define typeof __typeof__
 #endif
-
-/*
-** token with the most characters
-** tok | size
-** + :   1
-** == :  2
-** <<= : 3
-*/
-#define TOKEN_SIZE_MAX 3
 
 typedef union Value {
     char* string;
