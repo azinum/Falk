@@ -68,18 +68,23 @@ static const char* gf_info[] = {
     "any"
 };
 
-typedef struct Rule {
-    int* flags;     /* array of flags (first flag is the rule itself) */
-    int fc;     /* flag count */
-} Rule;
-
-list_define(RuleList, Rule);
-
 typedef struct Operator {
     unsigned char op;   /* what operator? OP_ADD, OP_SUB e.t.c */
     unsigned char asso;     /* associativity */
     unsigned char prec;     /* operator precedence */
 } Operator;
+
+/*
+** rule for creating extra tokens
+*/
+typedef struct PRule {
+    int a, b, value;    /* a + b = value */
+} PRule;
+
+static PRule prod_rules[] = {
+    {T_IDENTIFIER, EXPRESSION, OP_CALLF},
+    {EXPRESSION, EXPRESSION, OP_CALLF}
+};
 
 static Operator operators[] = {
     /* standard operators */
@@ -95,15 +100,6 @@ static Operator operators[] = {
     {-1, -1, -1}
 };
 
-typedef struct Parse_node {
-    int type,
-        prec,
-        asso,
-        *rule;
-} Parse_node;
-
-list_define(PNode_list, Parse_node);
-
 static const char* parse_error_info[] = {
     "", /* no error */
     "Block does not match"
@@ -114,8 +110,6 @@ typedef struct Parse_instance {
     Tokenlist* result;
     Lex_instance* lex_instance;
     Tokenlist* stack;   /* we use the stack for keeping operators and keywords */
-    RuleList* rules;
-    TokenLL* resultll;  /* result as linked list */
     Tokenlist lexed;
 } Parse_instance;
 
@@ -129,9 +123,11 @@ Operator get_operator(unsigned char op);
 
 int* intarr_create(int flagc, ...);
 
-void parse(Parse_instance* P, char* input);
+int parse(Parse_instance* P, char* input);
 
-void parse_expression(Parse_instance* P, int from, int to);
+int produce(Parse_instance* P);
+
+int parse_expression(Parse_instance* P, int from, int to);
 
 void check_precedence(Parse_instance* P, Tokenlist* stack);
 

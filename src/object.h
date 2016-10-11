@@ -87,10 +87,11 @@ enum Instructions {
     T_SCOPE,
     T_VAR,
     
-    I_GOTO,     /* goto ip. args: 1 */
-    I_JUMP,     /* goto ip - jump. args: 1 */
-    I_IF,
-    I_WHILE,
+    OP_GOTO,     /* goto ip. args: 1 */
+    OP_JUMP,     /* goto ip - jump. args: 1 */
+    OP_IF,
+    OP_WHILE,
+    OP_CALLF,
     
     TOK_NEWLINE,  /* not an instruction / op code */
     TOK_LEFT_P,     /* left parenthesis "(" */
@@ -114,8 +115,8 @@ static Token tokens[] = {
     {",", TOK_COMMA},
     {":", TOK_COLON},
     {"\n", TOK_NEWLINE},
-    {"if", I_IF},
-    {"while", I_WHILE},
+    {"if", OP_IF},
+    {"while", OP_WHILE},
 };
 
 
