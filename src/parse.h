@@ -12,12 +12,12 @@
 #include "table.h"
 #include "llist.h"
 
-#define PARSE_DEBUG 0
+#define PARSE_DEBUG 1
 
 #if PARSE_DEBUG
-#define debug_printf(TOPRINT) printf(TOPRINT)
+#define debug_printf(TOPRINT, ...) printf(TOPRINT, ##__VA_ARGS__)
 #else
-#define debug_printf(TOPRINT)
+#define debug_printf(TOPRINT, ...)
 #endif
 /*
 ** define a doubly linked list with token type
@@ -54,7 +54,6 @@ enum Gflags {
     OPR         = 1 << 9,
     ANY = NONE | IF | ELSE | WHILE | FUNC | EXPRESSION | BODY | END
 };
-
 
 /*
 ** grammar flag info

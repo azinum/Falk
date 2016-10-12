@@ -58,19 +58,28 @@ NODE->next, NODE->prev = new(typeof(*NODE)); \
 ** TODO: add some error checking
 */
 #define llist_insert(LLIST, INDEX, VALUE) { \
-    int count = 0; \
-    typeof(*LLIST)* current = LLIST; \
-    while ((current->next != NULL)) { \
-        if (count == INDEX) { \
-            typeof(*LLIST)* toassign = new(typeof(*LLIST)); \
-            toassign->prev = current; \
-            toassign->next = current->next; \
-            current->next = toassign; \
-            toassign->value = VALUE; \
+    do { \
+        int count = 0; \
+        typeof(*LLIST)* current = LLIST; \
+        while ((current->next != NULL)) { \
+            if (count == INDEX) { \
+                typeof(*LLIST)* toassign = new(typeof(*LLIST)); \
+                toassign->prev = current; \
+                toassign->next = current->next; \
+                current->next = toassign; \
+                toassign->value = VALUE; \
+                break; \
+            } \
+            current = current->next; \
+            count++; \
         } \
-        current = current->next; \
-        count++; \
-    }\
+        if (current->next == NULL) { \
+            current->next = new(typeof(*LLIST)); \
+            current->next->value = VALUE; \
+            current->next->next = NULL; \
+            break; \
+        } \
+    } while (0); \
 }
 
 

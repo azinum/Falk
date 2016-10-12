@@ -14,12 +14,12 @@ void VM_init(VM_instance* VM) {
     VM->dummy = new(Object);
     VM->dummy->type = T_NULL;
     VM->exit_on_error = 1;
-    
+
     VM->global = new(Scope);
     VM->global->global = VM->global;
     VM->global->variables = new(HashTable);
     table_init(VM->global->variables);
-    
+
     table_push_object(VM->global->variables, "global", ptr = VM->global, T_SCOPE);
     table_push_object(VM->global->variables, "null", ptr = NULL, T_NULL);
     table_push_object(VM->global->variables, "undefined", ptr = NULL, T_NULL);
@@ -30,19 +30,19 @@ void VM_init(VM_instance* VM) {
 int VM_execute(VM_instance* VM, char* input) {
     Lex_instance* lex_instance = new(Lex_instance);
     lex_instance_init(lex_instance);
-    
+
     if (!lex(lex_instance, input)) {
         return 0;
     }
-    
+
     Tokenlist* lexresult = new(Tokenlist);
     list_init(lexresult);
     *lexresult = lex_instance->result;
-    
+
     if (!lexresult) {
         return 0;
     }
-    
+
     if (!VM->init) {
         list_push(VM->ins, &&VM_EQ_ASSIGN);
         list_push(VM->ins, &&VM_ADD);
@@ -54,14 +54,14 @@ int VM_execute(VM_instance* VM, char* input) {
         list_push(VM->ins, &&VM_EXIT);
         VM->init = 1;
     }
-    
+
     VM->ip = to_ins(VM, lexresult);
-    
+
     if (!VM->ip)
         return 0;
-    
+
     vm_begin;
-    
+
     /*
     ** left hand side of assignment MUST be variable
     ** if not true, throw an error
@@ -109,7 +109,7 @@ int VM_execute(VM_instance* VM, char* input) {
         vm_skip(1);
     });
     vmcase(VM_ADD, {
-        /* 
+        /*
         ** if we can do arithmetic operation,
         ** jump to next instruction, else: throw error message
         */
@@ -132,7 +132,7 @@ int VM_execute(VM_instance* VM, char* input) {
         }
         return 1;
     });
-    
+
     return 0;
 }
 
@@ -144,11 +144,11 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
     Instruction_list ilist;
     list_init(refcast(ilist));
     void** result;
-    
+
     Token current;
     for (int i = 0; i < list->top; i++) {
         current = list_get(list, i);
-        
+
         switch (current.op) {
             case T_NUMBER: {
                 /* pushk, value */
@@ -158,45 +158,45 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
                 (*(Object*)list_get_top(refcast(ilist))).value.number = to_number(current.token);
             }
                 break;
-                
+
            case T_IDENTIFIER: {
                list_push(refcast(ilist), list_get(VM->ins, VMI_PUSHIDF));
                list_push(refcast(ilist), new(Object));
                (*(Object*)list_get_top(refcast(ilist))) = (Object){((union Value){}.string = current.token), T_IDENTIFIER};
             }
                 break;
-                
+
             case OP_EQ_ASSIGN:
                 list_push(refcast(ilist), list_get(VM->ins, VMI_EQ_ASSIGN));
                 break;
-                
+
             case OP_ADD:
                 list_push(refcast(ilist), list_get(VM->ins, VMI_ADD));
                 break;
-                
+
             case OP_SUB:
                 list_push(refcast(ilist), list_get(VM->ins, VMI_SUB));
                 break;
-                
+
             case OP_DIV:
                 list_push(refcast(ilist), list_get(VM->ins, VMI_DIV));
                 break;
-                
+
             case OP_MUL:
                 list_push(refcast(ilist), list_get(VM->ins, VMI_MUL));
                 break;
-                
+
             default:
                 break;
         }
     }
-    
+
     list_push(refcast(ilist), list_get(VM->ins, VMI_EXIT));     /* must not forget to exit program */
-    
+
     result = newx(void*, ilist.size);
     for (int i = 0; i < ilist.top; i++)
         result[i] = list_get(refcast(ilist), i);
-    
+
     return result;
 }
 
@@ -214,15 +214,15 @@ void VM_throw_error(VM_instance* VM, int error, int cause, const char* msg) {
 
 void** ins_add_instructions(int insc, void* ins, ...) {
     void** result = newx(void*, insc + 1);
-    
+
     va_list args;
     va_start(args, ins);
-    
+
     for (int i = 0; i < insc; i++)
         result[i] = va_arg(args, void*);
-    
+
     va_end(args);
-    
+
     return result;
 }
 

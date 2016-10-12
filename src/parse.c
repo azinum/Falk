@@ -84,26 +84,22 @@ int produce(Parse_instance* P) {
     
     for (int i = 0; i < P->lex_instance->result.top; i++) {
         llist_push(list, list_get(refcast(P->lex_instance->result), i));
-        printf("%i\n", list_get(refcast(P->lex_instance->result), i).op);
     }
-    puts("==============");
     
     unsigned char* check;
     int pushed = 0;     /* extra tokens pushed */
     
     for (int i = 0; i < P->lex_instance->result.top; i++) {
-        check = check_next(P, i, 2);
-        if (!check)     /* to make sure */
+        if (!(check = check_next(P, i, 2)))    /* to make sure we use a valid rule */
             return 0;
         PRule rule = get_prod_rule(check[0], check[1]);
         if (rule.value != 0) {  /* for when rule is not null */
-            llist_insert(list, i + pushed + P->jump + 1, ((Token){"#", rule.value}));
-            printf("%i, %i, %i\n", rule.a, rule.b, rule.value);
+            llist_insert(list, i + pushed + P->jump, ((Token){"#", rule.value}));
             pushed++;   /* increment how many extra tokens pushed */
         }
-    
     }
     
+    puts("");
     TokenLL* it = list;
     while (it->next != NULL) {
         it = it->next;
@@ -216,9 +212,9 @@ unsigned char* check_next(Parse_instance* P, int index, int steps) {
     list_init(refcast(list));
     P->jump = 0;
 
-    while (steps >= 0) {    /* while there are steps left */
-        P->jump++;
-        switch (list_get(refcast(P->lex_instance->result), index).op) {
+    while (steps >= 0 && index < P->lex_instance->result.top) {    /* while there are steps left */
+        int op = list_get(refcast(P->lex_instance->result), index).op;
+        switch (op) {
             case OP_ADD:
             case OP_SUB:
             case OP_DIV:
@@ -256,7 +252,6 @@ unsigned char* check_next(Parse_instance* P, int index, int steps) {
                 int delta = 0;  /* how big difference */
 
                 while (index < P->lex_instance->result.top) {
-                    P->jump++;
                     if (list_get(refcast(P->lex_instance->result), index).op == TOK_LEFT_P)
                         delta++;
 
@@ -268,6 +263,7 @@ unsigned char* check_next(Parse_instance* P, int index, int steps) {
                     }
 
                     index++;
+                    P->jump++;
                 }
 
                 if (delta != 0) {
@@ -283,13 +279,14 @@ unsigned char* check_next(Parse_instance* P, int index, int steps) {
                 break;
 
             default:
-                debug_printf("default ");
                 break;
         }
+        P->jump++;
         steps--;
         index++;
     }
     
+    debug_printf("\n");
     return list.value;
 }
 
