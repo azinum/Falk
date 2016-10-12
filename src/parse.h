@@ -83,7 +83,7 @@ typedef struct Operator {
 ** rule for creating extra tokens
 */
 typedef struct PRule {
-    int a, b, value;    /* a + b = value */
+    unsigned char a, b, value;    /* a + b = value */
 } PRule;
 
 static PRule prod_rules[] = {
@@ -116,11 +116,12 @@ typedef struct Parse_instance {
     Tokenlist* result;
     Lex_instance* lex_instance;
     Tokenlist* stack;   /* we use the stack for keeping operators and keywords */
+    int jump;   /* block size when do look ahead */
 } Parse_instance;
 
 void parse_instance_init(Parse_instance* P);
 
-void parse_throw_error(Parse_instance* P, unsigned char error);
+int parse_throw_error(Parse_instance* P, unsigned char error);
 
 void parse_instance_free(Parse_instance* P);
 

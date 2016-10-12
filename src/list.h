@@ -60,6 +60,13 @@ while (LIST->top > 0) { \
 }
 
 /*
+** stack based list clear
+*/
+#define list_sclear(LIST) \
+while (LIST->top > 0) \
+    list_spop(LIST)
+
+/*
 ** for increasing list size if we need to
 */
 #define list_need_space(LIST) (LIST->top >= LIST->size - 1)
@@ -106,6 +113,12 @@ free(LIST->value); \
 free(LIST);
 
 /*
+** free value in list
+*/
+#define list_val_free(LIST) \
+free(LIST->value)
+
+/*
 ** remove last item in list
 */
 #define list_pop(LIST) \
@@ -134,7 +147,7 @@ for (int i = 0; i < arr_size(VALUE) - 1; i++) { \
 }
 
 #define string_pop(STRING) \
-STRING->value[--STRING->top] = '\0'; \
+STRING->value[STRING->top--] = '\0'; \
 list_realloc(STRING, -1)
 
 #define string_print(STRING) \
@@ -144,7 +157,7 @@ puts(STRING->value)
 ** remove every character in string and free memory @list_realloc
 */
 #define string_clear(STRING) \
-while (STRING->size > 1) { \
+while (STRING->top > 0) { \
     string_pop(STRING); \
 }
 
@@ -156,12 +169,14 @@ while (STRING->size > 1) { \
 mem_realloc(TARGET, strlen(STRING) + 1); \
 strcpy(TARGET, STRING)
 
-#define string_copy(TARGET, STRING) \
-TARGET = newx(char, strlen(STRING)); \
-for (int i = 0; i < strlen(STRING); i++) { \
-    TARGET[i] = STRING[i]; \
+#define string_copy(TARGET, SRC) \
+TARGET = newx(char, strlen(SRC) + 1); \
+int i = 0; \
+while (SRC[i]) { \
+    TARGET[i] = SRC[i]; \
+    i++; \
 } \
-TARGET[strlen(STRING)] = '\0';
+TARGET[i] = '\0'
 
 /*
 ** string is a type of list

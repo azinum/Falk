@@ -14,6 +14,7 @@ void parse_instance_init(Parse_instance* P) {
     list_init(P->result);
     P->stack = new(Tokenlist);
     list_init(P->stack);
+    P->jump = 0;
 }
 
 
@@ -80,21 +81,27 @@ int produce(Parse_instance* P) {
 
     TokenLL* list = new(TokenLL);
     llist_init(list);
-
+    
     for (int i = 0; i < P->lex_instance->result.top; i++) {
         llist_push(list, list_get(refcast(P->lex_instance->result), i));
+        printf("%i\n", list_get(refcast(P->lex_instance->result), i).op);
     }
+    puts("==============");
     
     unsigned char* check;
     int pushed = 0;     /* extra tokens pushed */
     
     for (int i = 0; i < P->lex_instance->result.top; i++) {
         check = check_next(P, i, 2);
+        if (!check)     /* to make sure */
+            return 0;
         PRule rule = get_prod_rule(check[0], check[1]);
         if (rule.value != 0) {  /* for when rule is not null */
+            llist_insert(list, i + pushed + P->jump + 1, ((Token){"#", rule.value}));
             printf("%i, %i, %i\n", rule.a, rule.b, rule.value);
             pushed++;   /* increment how many extra tokens pushed */
         }
+    
     }
     
     TokenLL* it = list;
@@ -102,6 +109,7 @@ int produce(Parse_instance* P) {
         it = it->next;
         printf("%s ", it->value.token);
     }
+    
     puts("");
 
     return 1;
@@ -182,9 +190,9 @@ int parse(Parse_instance* P, char* input) {
 
     if (!produce(P))
         return 0;
-
+    
     return 1;
-
+    /*
     if (!parse_expression(P, 0, P->lex_instance->result.top))
         return 0;
 
@@ -196,6 +204,7 @@ int parse(Parse_instance* P, char* input) {
     list_clear2(P->result);
     list_clear2((&(lex_instance->result)));
     return 1;
+    */
 }
 
 /*
@@ -205,8 +214,10 @@ unsigned char* check_next(Parse_instance* P, int index, int steps) {
     list_define(Instr_list, unsigned char);
     Instr_list list;
     list_init(refcast(list));
+    P->jump = 0;
 
     while (steps >= 0) {    /* while there are steps left */
+        P->jump++;
         switch (list_get(refcast(P->lex_instance->result), index).op) {
             case OP_ADD:
             case OP_SUB:
@@ -245,6 +256,7 @@ unsigned char* check_next(Parse_instance* P, int index, int steps) {
                 int delta = 0;  /* how big difference */
 
                 while (index < P->lex_instance->result.top) {
+                    P->jump++;
                     if (list_get(refcast(P->lex_instance->result), index).op == TOK_LEFT_P)
                         delta++;
 
@@ -259,7 +271,10 @@ unsigned char* check_next(Parse_instance* P, int index, int steps) {
                 }
 
                 if (delta != 0) {
-                    parse_throw_error(P, PERR_BLOCK_NO_MATCH);
+                    list_free(refcast(list));   /* we do not need what we do not use, free it */
+                    if(!parse_throw_error(P, PERR_BLOCK_NO_MATCH)) {
+                        return null;
+                    }
                     return null;
                 }
 
@@ -269,7 +284,6 @@ unsigned char* check_next(Parse_instance* P, int index, int steps) {
 
             default:
                 debug_printf("default ");
-                /* list_push(refcast(list), OP_NULL); */
                 break;
         }
         steps--;
@@ -301,8 +315,9 @@ void gf_info_print(unsigned char flag) {
     printf("%s\n", gf_info[flag]);
 }
 
-void parse_throw_error(Parse_instance* P, unsigned char error) {
+int parse_throw_error(Parse_instance* P, unsigned char error) {
     printf("(ParseError) %s\n", parse_error_info[error]);
+    return 0;
 }
 
 

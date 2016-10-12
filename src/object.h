@@ -114,9 +114,9 @@ static Token tokens[] = {
     {"}", TOK_RIGHT_CURLY_BRACKET},
     {",", TOK_COMMA},
     {":", TOK_COLON},
-    {"\n", TOK_NEWLINE},
     {"if", OP_IF},
     {"while", OP_WHILE},
+    //    {"\n", TOK_NEWLINE},
 };
 
 

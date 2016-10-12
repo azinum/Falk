@@ -100,15 +100,11 @@ unsigned char is_identifier(const char* token) {
 int lex(Lex_instance* L, char* input) {
     if (strlen(input) < 1)
         return 0;
-    String* item = new(String);
-    list_init(item);
+    String item;
+    list_init(refcast(item));
     
     char temp_token;
     int inputlim = (int)strlen(input);
-    
-    Tokenlist* result;  /* final lexed product */
-    result = new(Tokenlist);
-    list_init(result);
     
     /*
     ** bracket count (how many extra brackets there are)
@@ -179,43 +175,50 @@ int lex(Lex_instance* L, char* input) {
                 break;
                 
             default: {
+                /*
+                ** if op then
+                **   push current item
+                **   erase value of current item
+                **   push op to result
+                **   break
+                ** else
+                **   ...
+                */
                 if (is_operator(temp_token)) {
-                    char* tmp = new(char);
-                    string_copy(tmp, item->value);
-                    list_push(result, ((Token){tmp}));
-                    string_clear(item);
-                    list_push(item, temp_token);
-                    tmp = new(char);
-                    *tmp = temp_token;
-                    list_push(result, ((Token){tmp, get_opcode(temp_token)}));
-                    string_clear(item);
-                    continue;
+                    char* copy;
+                    string_copy(copy, item.value);
+                    list_push(refcast(L->result), ((Token){copy}));
+                    list_clear(refcast(item));
+                    copy = newx(char, 2);
+                    copy[0] = temp_token;
+                    copy[1] = '\0';
+                    list_push(refcast(L->result), ((Token){copy}));
+                    break;
                 }
                 
                 if (temp_token == ' ') {
-                    char* tmp = new(char);
-                    string_copy(tmp, item->value);
-                    list_push(result, ((Token){tmp}));
-                    string_clear(item);
-                } else {
-                    list_push(item, temp_token);
+                    char* copy;
+                    string_copy(copy, (refcast(item)->value));
+                    list_push(refcast(L->result), ((Token){copy}));
+                    list_clear(refcast(item));
+                    break;
                 }
+                list_push(refcast(item), temp_token);
             }
                 break;
         }
     }
     
-    char* tmp;
-    string_copy(tmp, item->value);
-    
     /* push last item to output */
-    list_push(result, (Token){tmp});
+    char* copy;
+    string_copy(copy, (refcast(item)->value));
+    list_push(refcast(L->result), (Token){copy});
     
-    list_free(item);
+    list_val_free(refcast(item));
     
-    for (int i = 0; i < result->top; i++) {
+    for (int i = 0; i < refcast(L->result)->top; i++) {
         /* find token instruction/type */
-        Token* current = &result->value[i];
+        Token* current = &refcast(L->result)->value[i];
         
         if (is_keyword(*current)) {
             current->op = get_keyword(*current);
@@ -226,6 +229,7 @@ int lex(Lex_instance* L, char* input) {
             current->op = T_IDENTIFIER;
             continue;
         }
+        
         if (is_number(current->token)) {
             current->op = T_NUMBER;
             continue;
@@ -234,14 +238,26 @@ int lex(Lex_instance* L, char* input) {
     
 #if LEX_DEBUG
     Token current;
-    for (int i = 0; i < result->top; i++) {
-        current = result->value[i];
-        if (strcmp(current.token, "\0"))    /* don't print null character */
-            printf("%s, %i\n", current.token, current.op);
+    for (int i = 0; i < refcast(L->result)->top; i++) {
+        current = refcast(L->result)->value[i];
+        printf("(%s, %i)\n", current.token, current.op);
     }
 #endif
     
-    L->result = *result;
+    /*
+    ** hack to remove all null characters (must fix the real problem)
+    */
+    Tokenlist lexmod;
+    list_init(refcast(lexmod));
+    
+    for (int i = 0; i < L->result.top; i++) {
+        if (list_get(refcast(L->result), i).op != 0) {
+            list_push(refcast(lexmod), list_get(refcast(L->result), i));
+        }
+    }
+    
+    L->result = lexmod;
+    
     return 1;
 }
 
