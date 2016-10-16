@@ -76,22 +76,10 @@ void check_precedence(Parse_instance* P, Tokenlist* stack) {
 */
 int produce(Parse_instance* P) {
     list_define(Intlist, int);
-    Intlist prod_stack;     /* to store temporary types (operator, expression, body) */
-    list_init(refcast(prod_stack));
 
     TokenLL* list = new(TokenLL);
     llist_init(list);
 
-    for (int i = 0; i < P->lex_instance->result.top; i++) {
-        llist_push(list, list_get(refcast(P->lex_instance->result), i));
-    }
-
-    unsigned char* check;
-    int pushed = 0;     /* extra tokens pushed */
-    PRule rule;
-    Intlist topush;
-    list_init(refcast(topush));
-    
     /*
     ** extra token to push @ what index (where)
     */
@@ -103,6 +91,16 @@ int produce(Parse_instance* P) {
     list_define(Value2push_list, struct Value2push);
     Value2push_list val2push;
     list_init(refcast(val2push));
+    
+    for (int i = 0; i < P->lex_instance->result.top; i++) {
+        llist_push(list, list_get(refcast(P->lex_instance->result), i));
+    }
+
+    unsigned char* check;
+    int pushed = 0;     /* extra tokens pushed */
+    PRule rule;
+    Intlist topush;
+    list_init(refcast(topush));
     
     for (int i = 0; i < P->lex_instance->result.top; i++) {
         if (!(check = check_next(P, i, 2))) {    /* to make sure we use a valid rule */
