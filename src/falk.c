@@ -32,7 +32,7 @@ void falk_execute(Falk_instance* F) {
         
         while (1) {
             printf(FALK_PROMPT);
-            if (getline(&input, &size, stdin) > -1) {
+            if (getline(&input, &size, stdin) > 0) {
                 if (!parse(F->parse_instance, input))
                     break;
             } else

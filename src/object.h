@@ -70,7 +70,7 @@ enum Instructions {
     OP_ADD,
     OP_SUB,
     OP_MUL,
-    OP_DIV,
+    OP_DIV,     /* 5 */
     
     OP_EQ_ASSIGN,
     
@@ -79,24 +79,24 @@ enum Instructions {
     
     OP_END,
     
-    T_NULL,
+    T_NULL,     /* 10 */
     T_IDENTIFIER,
     T_NUMBER,
     T_STRING,
     T_CSTRING,
-    T_SCOPE,
+    T_SCOPE,    /* 15 */
     T_VAR,
     
     OP_GOTO,     /* goto ip. args: 1 */
     OP_JUMP,     /* goto ip - jump. args: 1 */
     OP_IF,
-    OP_WHILE,
+    OP_WHILE,    /* 20 */
     OP_CALLF,
     
     TOK_NEWLINE,  /* not an instruction / op code */
     TOK_LEFT_P,     /* left parenthesis "(" */
-    TOK_RIGHT_P,
-    TOK_LEFT_CURLY_BRACKET,
+    TOK_RIGHT_P,    /* right parenthesis ")" */
+    TOK_LEFT_CURLY_BRACKET,     /* 25 */
     TOK_RIGHT_CURLY_BRACKET,
     TOK_COMMA,
     TOK_COLON,

@@ -236,14 +236,6 @@ int lex(Lex_instance* L, char* input) {
         }
     }
     
-#if LEX_DEBUG
-    Token current;
-    for (int i = 0; i < refcast(L->result)->top; i++) {
-        current = refcast(L->result)->value[i];
-        printf("(%s, %i)\n", current.token, current.op);
-    }
-#endif
-    
     /*
     ** hack to remove all null characters (must fix the real problem)
     */
@@ -258,6 +250,13 @@ int lex(Lex_instance* L, char* input) {
     
     L->result = lexmod;
     
+#if LEX_DEBUG
+    Token current;
+    for (int i = 0; i < refcast(L->result)->top; i++) {
+        current = refcast(L->result)->value[i];
+        printf("(%s, %i)\n", current.token, current.op);
+    }
+#endif
     return 1;
 }
 
