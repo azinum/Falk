@@ -194,6 +194,7 @@ int parse_expression(Parse_instance* P, int from, int to) {
                 for (; j < to; j++) {
                     Offset block;
                     next = check_next(P, j, 1);    /* check one step at a time */
+                    list_push(refcast(comp), *next);
                     block.x = j;
                     block.y = P->jump;
                     j = P->jump;
@@ -359,6 +360,11 @@ int* check_next(Parse_instance* P, int index, int steps) {
                     return null;
                 }
                 list_push(refcast(list), BODY);
+            }
+                break;
+                
+            case OP_END: {
+                list_push(refcast(list), END);
             }
                 break;
                 

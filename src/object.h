@@ -108,6 +108,7 @@ static Token tokens[] = {
     {"*", OP_MUL},
     {"/", OP_DIV},
     {"=", OP_EQ_ASSIGN},
+    {";", OP_END},
     {"(", TOK_LEFT_P},
     {")", TOK_RIGHT_P},
     {"{", TOK_LEFT_CURLY_BRACKET},
