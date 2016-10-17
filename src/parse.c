@@ -87,11 +87,11 @@ int produce(Parse_instance* P) {
         int value;     /* rule value itself */
         int where;     /* where to push the rule value token */
     };
-    
+
     list_define(Value2push_list, struct Value2push);
     Value2push_list val2push;
     list_init(refcast(val2push));
-    
+
     for (int i = 0; i < P->lex_instance->result.top; i++) {
         llist_push(list, list_get(refcast(P->lex_instance->result), i));
     }
@@ -101,19 +101,19 @@ int produce(Parse_instance* P) {
     PRule rule;
     Intlist topush;
     list_init(refcast(topush));
-    
+
     for (int i = 0; i < P->lex_instance->result.top; i++) {
         if (!(check = check_next(P, i, 2))) {    /* to make sure we use a valid rule */
             continue;
         }
         rule = get_prod_rule(check[0], check[1]);
-    
+
         if (rule.value != 0) {  /* for when rule is not null */
             list_push(refcast(val2push), ((struct Value2push){rule.value, P->jump + 1}));
             /* llist_insert(list, where, ((Token){"#", rule.value})); */
         }
     }
-    
+
     /*
     ** sort list based on 'where' variable (low -> high)
     */
@@ -129,9 +129,8 @@ int produce(Parse_instance* P) {
             }
         }
     }
-    
+
     for (int i = 0; i < val2push.top; i++) {
-        printf("%i\n", list_get(refcast(val2push), i).where);
         llist_insert(list,
             list_get(refcast(val2push), i).where + pushed,
             ((struct Token){"#", list_get(refcast(val2push), i).value}));
@@ -305,7 +304,7 @@ unsigned char* check_next(Parse_instance* P, int index, int steps) {
                         break;
                     };
                 }
-                
+
                 if (delta != 0) {
                     list_free(refcast(list));   /* we do not need what we do not use, free it */
                     if(!parse_throw_error(P, PERR_BLOCK_NO_MATCH)) {

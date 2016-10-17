@@ -153,3 +153,26 @@ Då producerar den uttrycket på detta sett:
 test(5 + 5) callf;
 ```
 ```callf``` betyder call function eller ropa funktion. Man behöver göra så här för att alla parenteser kommer försvinna, då finns det inget sett att se om det är ett funktionsanrop eller inte.
+
+
+### V41 - 2016/10/16
+
+Jag har denna vecka lyckats med att skapa en 'produktion' funktion.
+Funktionen är till för att skapa extra instruktioner där det behövs. Som jag beskrev förra veckan, denna funktion är viktig.
+Jag kommer denna vecka påbörja den större delen av parsern. Parser kommer generera ett linjärt träd med noder.
+Parsern kommer ha ett optimiserings steg där den tar bort onödiga noder och liknande optimiseringar.
+När man väl har detta linjära träd kan man generera ``` bytecode ```. Vad är bytecode?
+Bytecode i Falk kommer vara en lista med [pointers](http://www.programiz.com/c-programming/c-pointers). En pointer pekar på en adress i ram.
+På dessa adresser så finns antingen en instruktion eller ett värde.
+Vad gör bytecode? Som sagt är bytecode en lista med instruktioner och dom blir exekverade av Virtuella Maskinen.
+Här har vi ett exempel på ett program, kompilerat till bytecode:
+
+``` ruby
+PUSHK 5
+PUSHK 9
+ADD
+EXIT
+```
+
+Vad var det som hände i detta program? ``` PUSHK ``` pushar en konstant på ``` stack ```, denna instruktion tar ett argument.
+Så, man pushar två konstanter på ``` stack ``` och sedan adderar dom och pushar resultatet.

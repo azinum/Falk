@@ -92,6 +92,24 @@ static PRule prod_rules[] = {
     {0, 0, 0}
 };
 
+typedef struct Parse_node {
+    int type,   /* if, while, +, - */
+        asso,   /* x(x) or (x)x */
+        prec,
+        *rule,  /* array of what can follow this type */
+        *prio;  /* priority in which order a rule is parsed */
+} Parse_node;
+
+static Parse_node parse_rules[] = {
+    {OP_MUL, ASSO_LR, 10, NULL, NULL},
+    {OP_MUL, ASSO_LR, 10, NULL, NULL},
+    {OP_ADD, ASSO_LR, 5, NULL, NULL},
+    {OP_SUB, ASSO_LR, 5, NULL, NULL},
+    {OP_EQ_ASSIGN, ASSO_RL, 1, NULL, NULL},
+    {OP_IF, ASSO_NONE, 0, NULL, NULL},
+    {OP_WHILE, ASSO_NONE, 0, NULL, NULL}
+};
+
 static Operator operators[] = {
     /* standard operators */
     {OP_MUL, ASSO_LR, 20},
