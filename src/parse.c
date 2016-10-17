@@ -15,20 +15,15 @@ void parse_instance_init(Parse_instance* P) {
     P->stack = new(Tokenlist);
     list_init(P->stack);
     P->jump = 0;
-}
-
-
-Operator get_operator(unsigned char op) {
-    Operator ret = {};
-
-    for (int i = 0; i < arr_size(operators); i++) {
-        ret = operators[i];
-        if (ret.op == op) {
-            return ret;
-        }
-    }
-
-    return ret;
+    list_init(refcast(P->lexed));
+    
+    /*
+    ** temporary way of initializing rules
+    */
+    parse_rules[5].rule_size = 3;
+    parse_rules[5].rule = intarr_create(parse_rules[5].rule_size, IF, EXPRESSION, BODY | END);     /* rule for if */
+    parse_rules[5].prio = intarr_create(3, 1, 0, 2);    /* low -> high */
+    
 }
 
 PRule get_prod_rule(unsigned char a, unsigned char b) {
@@ -44,23 +39,31 @@ PRule get_prod_rule(unsigned char a, unsigned char b) {
     return rule;
 }
 
+Parse_node get_parse_node(Parse_instance* P, int type) {
+    Parse_node node = {0, 0, 0, NULL, NULL};
+    
+    for (int i = 0; i < arr_size(parse_rules); i++) {
+        if (parse_rules[i].type == type) {
+            node = parse_rules[i];
+        }
+    }
+    return node;
+}
 
 void check_precedence(Parse_instance* P, Tokenlist* stack) {
     if (stack->top >= 2) {
-        Operator op1, op2;
-        op1 = get_operator(list_get_top(stack).op);
-        op2 = get_operator(list_get_from_top(stack, -1).op);
-
-        if (op2.op == TOK_LEFT_P || op1.op == TOK_LEFT_P)
-            return;
-
-        if (op2.prec >= op1.prec && op1.asso == ASSO_LR) {
-            Token top = list_get_top(stack);
-            list_push(P->result, list_get_from_top(stack, -1));
-            list_pop2(stack);
-            list_pop2(stack);
-            list_push(stack, top);
-            return;
+        Parse_node op1, op2;
+        op1 = get_parse_node(P, list_get_top(stack).op);
+        op2 = get_parse_node(P, list_get_from_top(stack, -1).op);
+        if (op1.type != 0 && op2.type != 0) {
+            if (op2.prec >= op1.prec && op1.asso == ASSO_LR) {
+                Token temp = list_get_top(stack);
+                list_push(P->result, list_get_from_top(stack, -1));
+                list_pop2(stack);
+                list_pop2(stack);
+                list_push(stack, temp);
+                return;
+            }
         }
     }
 }
@@ -96,7 +99,7 @@ int produce(Parse_instance* P) {
         llist_push(list, list_get(refcast(P->lex_instance->result), i));
     }
 
-    unsigned char* check;
+    int* check;
     int pushed = 0;     /* extra tokens pushed */
     PRule rule;
     Intlist topush;
@@ -110,7 +113,6 @@ int produce(Parse_instance* P) {
 
         if (rule.value != 0) {  /* for when rule is not null */
             list_push(refcast(val2push), ((struct Value2push){rule.value, P->jump + 1}));
-            /* llist_insert(list, where, ((Token){"#", rule.value})); */
         }
     }
 
@@ -136,16 +138,16 @@ int produce(Parse_instance* P) {
             ((struct Token){"#", list_get(refcast(val2push), i).value}));
         pushed++;
     }
-
+    
     puts("");
     TokenLL* it = list;
     while (it->next != NULL) {
         it = it->next;
+        list_push(refcast(P->lexed), it->value);
         printf("%s ", it->value.token);
     }
 
     puts("");
-
     return 1;
 }
 
@@ -159,7 +161,7 @@ int parse_expression(Parse_instance* P, int from, int to) {
 
     Token current;
     for (int i = from; i < to; i++) {
-        current = list_get(refcast(P->lex_instance->result), i);
+        current = list_get(refcast(P->lexed), i);
 
         switch (current.op) {
             case OP_ADD:
@@ -171,7 +173,8 @@ int parse_expression(Parse_instance* P, int from, int to) {
                 check_precedence(P, stack);
             }
                 break;
-
+                
+            case OP_CALLF:
             case T_IDENTIFIER:
             case T_NUMBER: {
                 list_push(P->result, current);
@@ -179,26 +182,38 @@ int parse_expression(Parse_instance* P, int from, int to) {
                 break;
 
             case OP_IF: {
-                puts("I_IF");
+                /* ... */
+                Parse_node rule = get_parse_node(P, OP_IF);
+                Offset_list block_list;
+                list_init(refcast(block_list));
+                Int_list comp;
+                list_init(refcast(comp));
+                
+                int j = i;
+                int* next = NULL;
+                for (; j < to; j++) {
+                    Offset block;
+                    next = check_next(P, j, 1);    /* check one step at a time */
+                    block.x = j;
+                    block.y = P->jump;
+                    j = P->jump;
+                    list_push(refcast(block_list), block);
+                }
+                int valid = check_validity(P, rule, comp);
+                
+                printf("valid? %i\n", valid);
             }
                 break;
 
             case OP_WHILE: {
-                puts("I_WHILE");
+                /* ... */
             }
                 break;
 
-            /* expression */
             case TOK_LEFT_P: {
-                int current_index = i;
-                int next = current_index;
-                while (next++ < to) {
-                    if (list_get(refcast(P->lex_instance->result), i).op == TOK_RIGHT_P) {
-                        break;
-                    }
-                }
-                parse_expression(P, i + 1, i + next+1);
-                i += next;
+                check_next(P, i, 1);
+                parse_expression(P, i + 1, P->jump);
+                i = P->jump;
             }
                 break;
 
@@ -225,8 +240,7 @@ int parse(Parse_instance* P, char* input) {
     if (!produce(P))
         return 0;
 
-    /*
-    if (!parse_expression(P, 0, P->lex_instance->result.top))
+    if (!parse_expression(P, 0, P->lexed.top))
         return 0;
 
     for (int i = 0; i < P->result->top; i++) {
@@ -235,17 +249,17 @@ int parse(Parse_instance* P, char* input) {
     puts("");
 
     list_clear2(P->result);
-    list_clear2((&(lex_instance->result)));
-    */
+    list_clear2(refcast(lex_instance->result));
+    list_clear2(refcast(P->lexed));
     return 1;
 }
 
 /*
 ** check following sequence of code
 */
-unsigned char* check_next(Parse_instance* P, int index, int steps) {
-    list_define(Instr_list, unsigned char);
-    Instr_list list;
+int* check_next(Parse_instance* P, int index, int steps) {
+    list_define(Instruction_list, int);
+    Instruction_list list;
     list_init(refcast(list));
     P->jump = 0;    /* do extra jump after call (arrange position for extra tokens) */
     int lex_top = P->lex_instance->result.top;
@@ -285,7 +299,8 @@ unsigned char* check_next(Parse_instance* P, int index, int steps) {
                 list_push(refcast(list), WHILE);
             }
                 break;
-
+                
+            /* (...) */
             case TOK_LEFT_P: {
                 debug_printf("expr ");
                 int delta = 1;  /* how big difference */
@@ -315,7 +330,38 @@ unsigned char* check_next(Parse_instance* P, int index, int steps) {
                 list_push(refcast(list), EXPRESSION);
             }
                 break;
-
+                
+            /* {...} */
+            case TOK_LEFT_CURLY_BRACKET: {
+                debug_printf("body ");
+                int delta = 1;
+                
+                while (i++ < lex_top) {
+                    if (list_get(refcast(P->lex_instance->result), i).op == TOK_LEFT_CURLY_BRACKET) {
+                        delta++;
+                    }
+                    
+                    if (list_get(refcast(P->lex_instance->result), i).op == TOK_RIGHT_CURLY_BRACKET) {
+                        delta--;
+                    }
+                    
+                    if (delta == 0) {
+                        P->jump = i;
+                        break;
+                    };
+                }
+                
+                if (delta != 0) {
+                    list_free(refcast(list));
+                    if(!parse_throw_error(P, PERR_BLOCK_NO_MATCH)) {
+                        return null;
+                    }
+                    return null;
+                }
+                list_push(refcast(list), BODY);
+            }
+                break;
+                
             default:
                 break;
         }
@@ -326,6 +372,29 @@ unsigned char* check_next(Parse_instance* P, int index, int steps) {
 
     debug_printf("\n");
     return list.value;
+}
+
+
+int check_validity(Parse_instance* P, Parse_node rule, Int_list comp) {
+    for (int i = 0; i < rule.rule_size; i++) {
+        if (!(list_get(refcast(comp), i) & rule.rule[i])) {
+            return 0;   /* grammatical error */
+        }
+    }
+    return 1;   /* syntax is correct */
+}
+
+/*
+** this function returns a block
+*/
+Offset get_next(Parse_instance* P, int index) {
+    Offset block;
+    
+    for (int i = index; i < P->lexed.top; i++) {
+        
+    }
+    
+    return block;
 }
 
 unsigned char is_op(int op) {

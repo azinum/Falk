@@ -25,6 +25,10 @@
 */
 llist_define(TokenLL, Token);
 
+list_define(Offset_list, Offset);
+
+list_define(Int_list, int);
+
 /*
 ** every operator has their own associativity
 */
@@ -73,12 +77,6 @@ static const char* gf_info[] = {
     "any"
 };
 
-typedef struct Operator {
-    unsigned char op;   /* what operator? OP_ADD, OP_SUB e.t.c */
-    unsigned char asso;     /* associativity */
-    unsigned char prec;     /* operator precedence */
-} Operator;
-
 /*
 ** rule for creating extra tokens
 */
@@ -95,37 +93,28 @@ static PRule prod_rules[] = {
 typedef struct Parse_node {
     int type,   /* if, while, +, - */
         asso,   /* x(x) or (x)x */
-        prec,
+        prec,   /* operator priority */
         *rule,  /* array of what can follow this type */
-        *prio;  /* priority in which order a rule is parsed */
+        *prio,  /* priority in which order a rule is parsed */
+        rule_size;  /* how many items in rule */
 } Parse_node;
 
+/*
+** these are initialized at parse_instance_init
+*/
 static Parse_node parse_rules[] = {
-    {OP_MUL, ASSO_LR, 10, NULL, NULL},
-    {OP_MUL, ASSO_LR, 10, NULL, NULL},
-    {OP_ADD, ASSO_LR, 5, NULL, NULL},
-    {OP_SUB, ASSO_LR, 5, NULL, NULL},
-    {OP_EQ_ASSIGN, ASSO_RL, 1, NULL, NULL},
-    {OP_IF, ASSO_NONE, 0, NULL, NULL},
-    {OP_WHILE, ASSO_NONE, 0, NULL, NULL}
-};
-
-static Operator operators[] = {
-    /* standard operators */
-    {OP_MUL, ASSO_LR, 20},
-    {OP_DIV, ASSO_LR, 20},
-    {OP_SUB, ASSO_LR, 19},
-    {OP_ADD, ASSO_LR, 19},
-    {OP_EQ_ASSIGN, ASSO_RL, 1},
-    /* other */
-    {T_IDENTIFIER, ASSO_NONE, -1},
-    {TOK_LEFT_P, ASSO_NONE, -1},
-    {TOK_RIGHT_P, ASSO_NONE, -1},
-    {-1, -1, -1}
+/*  type,   asso,   prec,   rule,   prio,   rule size   */
+    {OP_MUL, ASSO_LR, 10, NULL, NULL, 0},
+    {OP_MUL, ASSO_LR, 10, NULL, NULL, 0},
+    {OP_ADD, ASSO_LR, 5, NULL, NULL, 0},
+    {OP_SUB, ASSO_LR, 5, NULL, NULL, 0},
+    {OP_EQ_ASSIGN, ASSO_RL, 1, NULL, NULL, 0},
+    {OP_IF, ASSO_NONE, 0, NULL, NULL, 0},
+    {OP_WHILE, ASSO_NONE, 0, NULL, NULL, 0}
 };
 
 static const char* parse_error_info[] = {
-    "", /* no error */
+    "",     /* no error */
     "Block does not match"
 };
 
@@ -133,7 +122,8 @@ typedef struct Parse_instance {
     int error, warning, line;
     Tokenlist* result;
     Lex_instance* lex_instance;
-    Tokenlist* stack;   /* we use the stack for keeping operators and keywords */
+    Tokenlist lexed;    /* manipulated lex result */
+    Tokenlist* stack;   /* stack for dealing operators */
     int jump;   /* block size when do look ahead */
 } Parse_instance;
 
@@ -143,9 +133,9 @@ int parse_throw_error(Parse_instance* P, unsigned char error);
 
 void parse_instance_free(Parse_instance* P);
 
-Operator get_operator(unsigned char op);
-
 PRule get_prod_rule(unsigned char a, unsigned char b);
+
+Parse_node get_parse_node(Parse_instance* P, int type);
 
 int* intarr_create(int flagc, ...);
 
@@ -157,7 +147,11 @@ int parse_expression(Parse_instance* P, int from, int to);
 
 void check_precedence(Parse_instance* P, Tokenlist* stack);
 
-unsigned char* check_next(Parse_instance* P, int index, int steps);
+int* check_next(Parse_instance* P, int index, int steps);
+
+Offset get_next(Parse_instance* P, int index);
+
+int check_validity(Parse_instance* P, Parse_node rule, Int_list comp);
 
 void gf_info_print(unsigned char flag);
 
