@@ -40,7 +40,14 @@ enum Associativities {
 
 enum Parse_errors {
     PARSE_NO_ERROR,
-    PERR_BLOCK_NO_MATCH,     /* block does not match */
+    PARSE_ERR_BLOCK_NO_MATCH,     /* block does not match */
+    PARSE_ERR_SYNTAXERROR,
+};
+
+static const char* parse_error_info[] = {
+    "",     /* no error */
+    "Block does not match",
+    "SyntaxError"
 };
 
 /*
@@ -113,11 +120,6 @@ static Parse_node parse_rules[] = {
     {OP_WHILE, ASSO_NONE, 0, NULL, NULL, 0}
 };
 
-static const char* parse_error_info[] = {
-    "",     /* no error */
-    "Block does not match"
-};
-
 typedef struct Parse_instance {
     int error, warning, line;
     Tokenlist* result;
@@ -125,6 +127,7 @@ typedef struct Parse_instance {
     Tokenlist lexed;    /* manipulated lex result */
     Tokenlist* stack;   /* stack for dealing operators */
     int jump;   /* block size when do look ahead */
+    int lim;    /* do not parse beyond this */
 } Parse_instance;
 
 void parse_instance_init(Parse_instance* P);
@@ -143,15 +146,17 @@ int parse(Parse_instance* P, char* input);
 
 int produce(Parse_instance* P);
 
-int parse_expression(Parse_instance* P, int from, int to);
+int parse_expression(Parse_instance* P, unsigned int from, unsigned int to);
 
 void check_precedence(Parse_instance* P, Tokenlist* stack);
 
 int* check_next(Parse_instance* P, int index, int steps);
 
-Offset get_next(Parse_instance* P, int index);
+int check_current(Parse_instance* P, int index);
 
 int check_validity(Parse_instance* P, Parse_node rule, Int_list comp);
+
+Offset_list get_next(Parse_instance* P, int index, int steps);
 
 void gf_info_print(unsigned char flag);
 

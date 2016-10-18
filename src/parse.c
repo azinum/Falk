@@ -155,12 +155,15 @@ int produce(Parse_instance* P) {
 /*
 ** recursive parsing
 */
-int parse_expression(Parse_instance* P, int from, int to) {
+int parse_expression(Parse_instance* P, unsigned int from, unsigned int to) {
     Tokenlist* stack = new(Tokenlist);
     list_init(stack);
 
     Token current;
     for (int i = from; i < to; i++) {
+        if (i > P->lim) {   /* reached limit: parsing done */
+            return 1;
+        }
         current = list_get(refcast(P->lexed), i);
 
         switch (current.op) {
@@ -189,6 +192,8 @@ int parse_expression(Parse_instance* P, int from, int to) {
                 Int_list comp;
                 list_init(refcast(comp));
                 
+                get_next(P, i, rule.rule_size);
+                
                 int* next = NULL;
                 for (int j = i; j < to; j++) {
                     next = check_next(P, j, rule.rule_size);    /* check one step at a time */
@@ -197,8 +202,12 @@ int parse_expression(Parse_instance* P, int from, int to) {
                     }
                 }
                 
-                int valid = check_validity(P, rule, comp);
-                
+                int valid = check_validity(P, rule, comp);  /* check if syntax i correct */
+                if (!valid) {   /* syntax is not valid, throw an error */
+                    parse_throw_error(P, PARSE_ERR_SYNTAXERROR);
+                } else {    /* syntax is valid, continue */
+                    
+                }
                 printf("valid? %i\n", valid);
             }
                 break;
@@ -210,7 +219,9 @@ int parse_expression(Parse_instance* P, int from, int to) {
 
             case TOK_LEFT_P: {
                 check_next(P, i, 1);
-                parse_expression(P, i + 1, P->jump);
+                if (parse_expression(P, i + 1, P->jump-1)) {
+                    return 1;
+                }
                 i = P->jump;
             }
                 break;
@@ -237,7 +248,8 @@ int parse(Parse_instance* P, char* input) {
 
     if (!produce(P))
         return 0;
-
+    
+    P->lim = P->lexed.top;
     if (!parse_expression(P, 0, P->lexed.top))
         return 0;
 
@@ -272,13 +284,13 @@ int* check_next(Parse_instance* P, int index, int steps) {
             case OP_MUL:
             case OP_EQ_ASSIGN: {
                 debug_printf("op ");
-                list_push(refcast(list), op);
+                list_push(refcast(list), OP);
             }
                 break;
 
             case T_NUMBER: {
                 debug_printf("number ");
-                list_push(refcast(list), op);
+                list_push(refcast(list), OPR);
             }
                 break;
 
@@ -322,7 +334,7 @@ int* check_next(Parse_instance* P, int index, int steps) {
 
                 if (delta != 0) {
                     list_free(refcast(list));   /* we do not need what we do not use, free it */
-                    if(!parse_throw_error(P, PERR_BLOCK_NO_MATCH)) {
+                    if(!parse_throw_error(P, PARSE_ERR_BLOCK_NO_MATCH)) {
                         return null;
                     }
                     return null;
@@ -353,7 +365,7 @@ int* check_next(Parse_instance* P, int index, int steps) {
                 
                 if (delta != 0) {
                     list_free(refcast(list));
-                    if(!parse_throw_error(P, PERR_BLOCK_NO_MATCH)) {
+                    if(!parse_throw_error(P, PARSE_ERR_BLOCK_NO_MATCH)) {
                         return null;
                     }
                     return null;
@@ -379,6 +391,17 @@ int* check_next(Parse_instance* P, int index, int steps) {
     return list.value;
 }
 
+/*
+** check type at this index
+*/
+int check_current(Parse_instance* P, int index) {
+    int* check, ret;
+    check = check_next(P, index, 1);
+    ret = *check;
+    free(check);
+    return ret;
+}
+
 
 int check_validity(Parse_instance* P, Parse_node rule, Int_list comp) {
     for (int i = 0; i < rule.rule_size; i++) {
@@ -390,16 +413,23 @@ int check_validity(Parse_instance* P, Parse_node rule, Int_list comp) {
 }
 
 /*
-** this function returns a block
+** this function returns blocks
 */
-Offset get_next(Parse_instance* P, int index) {
-    Offset block;
-    
-    for (int i = index; i < P->lexed.top; i++) {
-        
+Offset_list get_next(Parse_instance* P, int index, int steps) {
+    Offset_list blocks;
+    list_init(refcast(blocks));
+    /*
+    ** current block type
+    */
+    int block;
+    while (steps > 0) {
+        block = check_current(P, index);
+        list_push(refcast(blocks), ((Offset){index, P->jump}));
+        index = P->jump + 1;
+        steps--;
     }
     
-    return block;
+    return blocks;
 }
 
 unsigned char is_op(int op) {
