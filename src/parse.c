@@ -189,17 +189,14 @@ int parse_expression(Parse_instance* P, int from, int to) {
                 Int_list comp;
                 list_init(refcast(comp));
                 
-                int j = i;
                 int* next = NULL;
-                for (; j < to; j++) {
-                    Offset block;
-                    next = check_next(P, j, 1);    /* check one step at a time */
-                    list_push(refcast(comp), *next);
-                    block.x = j;
-                    block.y = P->jump;
-                    j = P->jump;
-                    list_push(refcast(block_list), block);
+                for (int j = i; j < to; j++) {
+                    next = check_next(P, j, rule.rule_size);    /* check one step at a time */
+                    for (int i = 0; i < rule.rule_size; i++) {
+                        list_push(refcast(comp), next[i]);
+                    }
                 }
+                
                 int valid = check_validity(P, rule, comp);
                 
                 printf("valid? %i\n", valid);
@@ -292,11 +289,13 @@ int* check_next(Parse_instance* P, int index, int steps) {
                 break;
 
             case OP_IF: {
+                debug_printf("if ");
                 list_push(refcast(list), IF);
             }
                 break;
 
             case OP_WHILE: {
+                debug_printf("while ");
                 list_push(refcast(list), WHILE);
             }
                 break;
@@ -318,7 +317,7 @@ int* check_next(Parse_instance* P, int index, int steps) {
                     if (delta == 0) {
                         P->jump = i;
                         break;
-                    };
+                    }
                 }
 
                 if (delta != 0) {
@@ -349,7 +348,7 @@ int* check_next(Parse_instance* P, int index, int steps) {
                     if (delta == 0) {
                         P->jump = i;
                         break;
-                    };
+                    }
                 }
                 
                 if (delta != 0) {
