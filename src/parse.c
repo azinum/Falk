@@ -195,12 +195,14 @@ int parse_expression(Parse_instance* P, unsigned int from, unsigned int to) {
                 case OP_IF: {
                     /* ... */
                     Parse_node rule = get_parse_node(P, current.op);
-                    Offset_list block_list;
+                    Offset_list block_list, block_list_unsorted;
                     list_init(refcast(block_list));
+                    list_init(refcast(block_list_unsorted));
                     Int_list comp;
                     list_init(refcast(comp));
                     
                     block_list = get_next(P, i, rule.rule_size);
+                    block_list_unsorted = block_list;
                     
                     int* next = NULL;
                     for (int j = i; j < to; j++) {
@@ -233,11 +235,11 @@ int parse_expression(Parse_instance* P, unsigned int from, unsigned int to) {
                             list_push(P->result, current);  /* do not parse same rule again */
                             continue;
                         }
-                        if (!parse_expression(P, block.x + 1, block.y)) {
+                        if (!parse_expression(P, block.x + 1, block.y + 1)) {
                             return 0;
                         }
                     }
-                    i = P->jump;
+                    i = list_get_top(refcast(block_list_unsorted)).y + 1;   /* jump to last block */
                 }
                     break;
 

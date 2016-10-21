@@ -55,16 +55,14 @@ static const char* parse_error_info[] = {
 */
 enum Gflags {
     NONE        = 1 << 0,
-    IF          = 1 << 1,
-    ELSE        = 1 << 2,
-    WHILE       = 1 << 3,
-    FUNC        = 1 << 4,
-    EXPRESSION  = 1 << 5,
-    BODY        = 1 << 6,
-    END         = 1 << 7,
-    OP          = 1 << 8,
-    OPR         = 1 << 9,
-    ANY = NONE | IF | ELSE | WHILE | FUNC | EXPRESSION | BODY | END
+    ELSE        = 1 << 1,
+    FUNC        = 1 << 2,
+    EXPRESSION  = 1 << 3,
+    BODY        = 1 << 4,
+    END         = 1 << 5,
+    OP          = 1 << 6,
+    OPR         = 1 << 7,
+    ANY = NONE | ELSE | FUNC | EXPRESSION | BODY | END
 };
 
 /*
