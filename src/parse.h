@@ -158,6 +158,8 @@ int check_validity(Parse_instance* P, Parse_node rule, Int_list comp);
 
 Offset_list get_next(Parse_instance* P, int index, int steps);
 
+unsigned char is_op(int op);
+
 void gf_info_print(unsigned char flag);
 
 #endif /* parse_h */

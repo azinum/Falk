@@ -92,6 +92,8 @@ enum Instructions {
     OP_IF,
     OP_WHILE,    /* 20 */
     OP_CALLF,
+    OP_SCOPE_BEGIN,
+    OP_SCOPE_END,
     
     TOK_NEWLINE,  /* not an instruction / op code */
     TOK_LEFT_P,     /* left parenthesis "(" */
