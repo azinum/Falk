@@ -1,0 +1,30 @@
+#
+# example.falk
+# Author: Azinum
+# Date: 2016-10-21
+#
+# Basic syntax test
+#
+
+Math = {
+   pi = 3.14159265359;
+
+   # requires a reference to target variable
+   add = func(@target, a, b) {
+      # Basic type check
+      if (typeof(a) == "number" && typeof(b) == "number") {
+         # variable is modified outside this scope
+         target = a + b;
+         # success: do not throw error
+         return;
+      }
+      throw("TypeError", "Two numbers are required", "@Math:add");
+   }
+
+   fib = func(n) {
+      if (n < 2) {
+         return abs(n);
+      }
+      return (fib(n - 1) + fib(n - 2));
+   }
+}
