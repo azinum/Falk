@@ -95,19 +95,19 @@ static PRule prod_rules[] = {
     {0, 0, 0}
 };
 
-typedef struct Parse_node {
+typedef struct Parse_rule {
     int type,   /* if, while, +, - */
         asso,   /* x(x) or (x)x */
         prec,   /* operator priority */
         *rule,  /* array of what can follow this type */
         *prio,  /* priority in which order a rule is parsed */
         rule_size;  /* how many items in rule */
-} Parse_node;
+} Parse_rule;
 
 /*
 ** these are initialized at parse_instance_init
 */
-static Parse_node parse_rules[] = {
+static Parse_rule parse_rules[] = {
 /*  type,   asso,   prec,   rule,   prio,   rule size   */
     {OP_MUL, ASSO_LR, 10, NULL, NULL, 0},
     {OP_MUL, ASSO_LR, 10, NULL, NULL, 0},
@@ -120,10 +120,11 @@ static Parse_node parse_rules[] = {
 
 typedef struct Parse_instance {
     int error, warning, line;
+    unsigned char exit_on_error;
     Tokenlist* result;
     Lex_instance* lex_instance;
     Tokenlist lexed;    /* manipulated lex result */
-    Tokenlist* stack;   /* stack for dealing operators */
+    Tokenlist* stack;   /* stack for dealing with operators */
     int jump;   /* block size when do look ahead */
     int lim;    /* do not parse beyond this */
 } Parse_instance;
@@ -136,7 +137,7 @@ void parse_instance_free(Parse_instance* P);
 
 PRule get_prod_rule(unsigned char a, unsigned char b);
 
-Parse_node get_parse_node(Parse_instance* P, int type);
+Parse_rule get_parse_node(Parse_instance* P, int type);
 
 int* intarr_create(int flagc, ...);
 
@@ -152,7 +153,7 @@ int* check_next(Parse_instance* P, int index, int steps);
 
 int check_current(Parse_instance* P, int index);
 
-int check_validity(Parse_instance* P, Parse_node rule, Int_list comp);
+int check_validity(Parse_instance* P, Parse_rule rule, Int_list comp);
 
 Offset_list get_next(Parse_instance* P, int index, int steps);
 

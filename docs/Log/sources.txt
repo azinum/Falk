@@ -9,3 +9,5 @@ Recursive Parsing (30/09/2016) https://en.wikipedia.org/wiki/Recursive_descent_p
 Pointers (17/10/2016) http://www.programiz.com/c-programming/c-pointers
 Python (17/10/2016) https://python.org
 Ruby (17/10/2016) https://www.ruby-lang.org/en/, https://github.com/ruby/ruby
+Associativity (24/10/2016) https://en.wikipedia.org/wiki/Associative_property
+Operator Precedence (24/10/2016) https://en.wikipedia.org/wiki/Order_of_operations

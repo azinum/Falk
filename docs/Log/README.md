@@ -176,3 +176,84 @@ EXIT
 
 Vad var det som hände i detta program? ``` PUSHK ``` pushar en konstant på ``` stack ```, denna instruktion tar ett argument.
 Så, man pushar två konstanter på ``` stack ``` och sedan adderar dom och pushar resultatet.
+
+### V42 - 2016/10/23
+
+Jag har denna vecka jobbat mycket med parsen. Nu kan man kolla ifall en syntax är korrekt eller inte.
+
+Här är ett exempel:
+
+<img src="https://raw.githubusercontent.com/Azinum/Falk/master/docs/Log/images/Syntax-Check.png" width="256">
+
+Jag har en funktion som heter ``` check_next ```. Den kollar frammåt i ingången av symboler och gämför med regler som är definierat i språket. Om syntaxen är korrekt, då kan vi fortsätta. Vi använder block som vi har kollat upp i ingången och sedan parsar dom i vilken ordning grammatiken har bestämt.
+
+Detta är en regel:
+
+``` C
+typedef struct Parse_rule {
+    int type,   /* if, while, +, - */
+        asso,   /* x(x) or (x)x */
+        prec,   /* operator priority */
+        *rule,  /* array of what can follow this type */
+        *prio,  /* priority in which order a rule is parsed */
+        rule_size;  /* how many items in rule */
+} Parse_rule;
+```
+``` type ``` är för vilken typ vi ska parsa för, det kan vara ```if``` (om vilkor gör detta) eller ```
+ while ``` (medans detta vilkor gör detta) o.s.v. ``` asso, prec ``` är till för operatörer, [associativity](https://en.wikipedia.org/wiki/Associative_property) och [operator precedence](https://en.wikipedia.org/wiki/Order_of_operations). För i vilken ordning operatörer ska pushas till resultat produktionen.
+ ``` *rule ``` är en lista med var som är tillåtet att följa efter denna typ (vilka symboler som är tillåtna att vara efter denna symbol). Exempelvis så får ``` if ``` statement se ut såhär:
+
+``` C
+if (1);
+
+if (1) {...}
+```
+
+``` *prio ``` är för vilken ordning block av symboler ska bli hanterade av parsern.
+
+Nästa steg när jag har fixat parsern så ska man sedan generera ``` bytecode ``` som jag skrev lite om förra veckan.
+
+Hur ska jag exempelvis göra om jag ska parsa en ``` while ``` loop?
+
+``` C
+
+a = 5;
+while (a < 100) {
+   a += 1;
+}
+
+```
+
+Resultatet jag vill åstadkomma i parsern är detta:
+
+``` C
+a 5 = end
+a 100 < while {
+   a 1 += end
+}
+
+```
+
+While loop ska ha instruktioner som ``` goto ``` som går till början av loopen när man nått slutet av body ``` {...} ```.
+Jag vill ha detta resultat:
+
+``` Ruby
+
+1    pushi "a"		# push identifier to stack
+3    pushk 5		# push constant to stack
+4    equals_assign	# assign value
+5    end		      # end expression (pop stack top)
+7    pushi "a"
+9    pushk 100
+10   less_than		# less than comparison operator
+12   while 21		# while instruction, if true: skip one instruction, else: use next instruction value to jump out of scope
+14   pushi "a"
+16   pushk 1
+17   add_assign	# add and assign value
+18   end
+20   goto 6	      # goto start of loop
+21   exit	      # exit program
+
+```
+
+Det är detta jag jobbar mot att klara av. Jag kommer stöta på en hel del problem, men dom är till för att lösas.
