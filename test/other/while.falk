@@ -1,0 +1,30 @@
+
+# user input =>
+i = 0;
+while (i < 10) {
+   i += 1;
+}
+
+# linear parse tree =>
+
+i 0 = end
+i 10 < while {
+   i 1 += end
+}
+
+# bytecode
+
+pushi "i"
+pushk 0
+equals_assign
+end
+pushi "i"
+pushk 10
+less_than
+while 21    # while + 1 => outside while scope. goto outside of scope when condition is false
+pushi "i"
+pushk 1
+add_assign
+end
+goto 6
+exit

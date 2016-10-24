@@ -164,118 +164,117 @@ int parse_expression(Parse_instance* P, unsigned int from, unsigned int to) {
     list_init(stack);
 
     Token current;
-    if (from <= to) {
-        for (int i = from; i < to && from < to; i++) {
-            current = list_get(refcast(P->lexed), i);
+    for (int i = from; i < to && from < to; i++) {
+        current = list_get(refcast(P->lexed), i);
+        
+        switch (current.op) {
+            case OP_ADD:
+            case OP_SUB:
+            case OP_MUL:
+            case OP_DIV:
+            case OP_EQ_ASSIGN: {
+                list_push(stack, current);
+                check_precedence(P, stack);
+            }
+                break;
 
-            switch (current.op) {
-                case OP_ADD:
-                case OP_SUB:
-                case OP_MUL:
-                case OP_DIV:
-                case OP_EQ_ASSIGN: {
-                    list_push(stack, current);
-                    check_precedence(P, stack);
-                }
-                    break;
+            case OP_CALLF:
+            case T_IDENTIFIER:
+            case T_NUMBER: {
+                list_push(P->result, current);
+            }
+                break;
 
-                case OP_CALLF:
-                case T_IDENTIFIER:
-                case T_NUMBER: {
-                    list_push(P->result, current);
-                }
-                    break;
+            /*
+            ** TODO: need to structure this up
+            */
+            case OP_WHILE:
+            case OP_IF: {
+                /* ... */
+                Parse_rule rule = get_parse_node(P, current.op);
+                Offset_list block_list, block_list_unsorted;
+                list_init(refcast(block_list));
+                list_init(refcast(block_list_unsorted));
+                Int_list comp;
+                list_init(refcast(comp));
 
-                /*
-                ** TODO: need to structure this up
-                */
-                case OP_WHILE:
-                case OP_IF: {
-                    /* ... */
-                    Parse_rule rule = get_parse_node(P, current.op);
-                    Offset_list block_list, block_list_unsorted;
-                    list_init(refcast(block_list));
-                    list_init(refcast(block_list_unsorted));
-                    Int_list comp;
-                    list_init(refcast(comp));
+                block_list = get_next(P, i, rule.rule_size);
+                block_list_unsorted = block_list;
 
-                    block_list = get_next(P, i, rule.rule_size);
-                    block_list_unsorted = block_list;
-
-                    int* next = NULL;
-                    for (int j = i; j < to; j++) {
-                        next = check_next(P, j, rule.rule_size);    /* check one step at a time */
-                        for (int i = 0; i < rule.rule_size; i++) {
-                            list_push(refcast(comp), next[i]);
-                        }
+                int* next = NULL;
+                for (int j = i; j < to; j++) {
+                    next = check_next(P, j, rule.rule_size);    /* check one step at a time */
+                    for (int i = 0; i < rule.rule_size; i++) {
+                        list_push(refcast(comp), next[i]);
                     }
+                }
 
-                    int valid = check_validity(P, rule, comp);  /* check if syntax is correct */
-                    if (!valid) {   /* syntax is not valid, throw an error */
-                        parse_throw_error(P, PARSE_ERR_SYNTAXERROR);
-                        if (P->exit_on_error)
-                            return 0;
-                    } else {    /* syntax is valid, continue */
-                        /* sort for which order blocks is parsed */
-                        Offset temp_block;
-                        for (int j = 0; j < block_list.top; j++) {
-                            for (int i = 0; i < block_list.top; i++) {
-                                if (rule.prio[i] < rule.prio[i + 1]) {
-                                    temp_block = list_get(refcast(block_list), i);
-                                    list_get(refcast(block_list), i) = list_get(refcast(block_list), i + 1);
-                                    list_get(refcast(block_list), i + 1) = temp_block;
-                                }
+                int valid = check_validity(P, rule, comp);  /* check if syntax is correct */
+                if (!valid) {   /* syntax is not valid, throw an error */
+                    parse_throw_error(P, PARSE_ERR_SYNTAXERROR);
+                    if (P->exit_on_error)
+                        return 0;
+                } else {    /* syntax is valid, continue */
+                    /* sort for which order blocks is parsed */
+                    Offset temp_block;
+                    for (int j = 0; j < block_list.top; j++) {
+                        for (int i = 0; i < block_list.top; i++) {
+                            if (rule.prio[i] < rule.prio[i + 1]) {
+                                temp_block = list_get(refcast(block_list), i);
+                                list_get(refcast(block_list), i) = list_get(refcast(block_list), i + 1);
+                                list_get(refcast(block_list), i + 1) = temp_block;
                             }
                         }
                     }
-
-                    for (int i = 0; i < block_list.top; i++) {
-                        Offset block = list_get(refcast(block_list), i);
-                        if (check_current(P, block.x) == current.op) {
-                            list_push(P->result, current);  /* do not parse same rule again */
-                            continue;
-                        }
-                        if (!parse_expression(P, block.x + 1, block.y + 1)) {
-                            return 0;
-                        }
-                    }
-                    i = list_get_top(refcast(block_list_unsorted)).y;   /* jump to last block */
                 }
-                    break;
 
-                case TOK_LEFT_P: {
-                    list_push(stack, current);
-                    /*
-                    check_next(P, i, 1);
-                    if (parse_expression(P, i + 1, P->jump-1)) {
-                        return 1;
+                for (int i = 0; i < block_list.top; i++) {
+                    Offset block = list_get(refcast(block_list), i);
+                    if (check_current(P, block.x) == current.op) {
+                        list_push(P->result, current);  /* do not parse same rule again */
+                        continue;
                     }
-                    i = P->jump;
-                    */
-                }
-                    break;
-
-                case TOK_RIGHT_P: {
-                    while (stack->top > 0) {
-                        if (list_get_top(stack).op == TOK_LEFT_P) {
-                            list_pop2(stack);
-                            break;
-                        }
-                        list_push(P->result, list_get_top(stack));
-                        list_pop2(stack);
+                    printf("%s, %s\n", list_get(refcast(P->lexed), block.x).token, list_get(refcast(P->lexed), block.y).token);
+                    if (!parse_expression(P, block.x, block.y)) {
+                        return 0;
                     }
                 }
-                    break;
-
-                default:
-                    break;
+                i = list_get_top(refcast(block_list_unsorted)).y;   /* jump to last block */
             }
-        }
+                break;
 
-        while (stack->top > 0) {
-            list_push(P->result, list_get_top(stack));
-            list_pop2(stack);
+            case TOK_LEFT_P: {
+                list_push(stack, current);
+                /*
+                check_next(P, i, 1);
+                if (parse_expression(P, i + 1, P->jump-1)) {
+                    return 1;
+                }
+                i = P->jump;
+                */
+            }
+                break;
+
+            case TOK_RIGHT_P: {
+                while (stack->top > 0) {
+                    if (list_get_top(stack).op == TOK_LEFT_P) {
+                        list_pop2(stack);
+                        break;
+                    }
+                    list_push(P->result, list_get_top(stack));
+                    list_pop2(stack);
+                }
+            }
+                break;
+
+            default:
+                break;
         }
+    }
+    
+    while (stack->top > 0) {
+        list_push(P->result, list_get_top(stack));
+        list_pop2(stack);
     }
 
     free(stack);
@@ -358,9 +357,9 @@ int* check_next(Parse_instance* P, int index, int steps) {
             /* (...) */
             case TOK_LEFT_P: {
                 debug_printf("expr ");
-                int delta = 1;  /* how big difference */
+                int delta = 0;  /* how big difference */
 
-                while (i++ < lex_top) {
+                while (i < lex_top) {
                     if (list_get(refcast(P->lex_instance->result), i).op == TOK_LEFT_P) {
                         delta++;
                     }
@@ -373,6 +372,7 @@ int* check_next(Parse_instance* P, int index, int steps) {
                         P->jump = i;
                         break;
                     }
+                    i++;
                 }
 
                 if (delta != 0) {
@@ -467,7 +467,7 @@ Offset_list get_next(Parse_instance* P, int index, int steps) {
     int block;
     while (steps > 0) {
         block = check_current(P, index);
-        list_push(refcast(blocks), ((Offset){index, P->jump}));
+        list_push(refcast(blocks), ((Offset){index, P->jump+1}));
         index = P->jump + 1;
         steps--;
     }
