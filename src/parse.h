@@ -149,13 +149,13 @@ int parse_expression(Parse_instance* P, unsigned int from, unsigned int to);
 
 void check_precedence(Parse_instance* P, Tokenlist* stack);
 
-int* check_next(Parse_instance* P, int index, int steps);
+int* check_next(Parse_instance* P, Tokenlist what, int index, int steps);
 
-int check_current(Parse_instance* P, int index);
+int check_current(Parse_instance* P, Tokenlist what, int index);
 
 int check_validity(Parse_instance* P, Parse_rule rule, Int_list comp);
 
-Offset_list get_next(Parse_instance* P, int index, int steps);
+Offset_list get_next(Parse_instance* P, Tokenlist what, int index, int steps);
 
 unsigned char is_op(int op);
 
