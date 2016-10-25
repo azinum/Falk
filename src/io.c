@@ -10,7 +10,7 @@ char* read_file(const char* fname) {
     long ssize, rsize;   /* string, read size*/
     FILE* f = fopen(fname, "r");
     
-    if (!f) {
+    if (f == NULL) {
         printf("Could not open file \"%s\".\n", fname);
         return NULL;
     }
@@ -25,7 +25,7 @@ char* read_file(const char* fname) {
     
     rsize = fread(buffer, sizeof(char), ssize, f);
     
-    buffer[ssize] = '\0';
+     buffer[ssize] = '\0'; 
     
     if (ssize != rsize) {
         free(buffer);

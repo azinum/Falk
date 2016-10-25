@@ -89,8 +89,14 @@ enum VM_instructions {
     VMI_MUL,
     VMI_PUSHK,
     VMI_PUSHIDF,
+    VMI_EXIT,
+    VMI_GOTO
+};
 
-    VMI_EXIT
+
+enum VM_exec_mode {
+    VM_EXEC_INTERPRET,      /* includes lexing, parsing and final vm execution step */
+    VM_EXEC_FILE,   /* deserialize file and convert to vm instructions */
 };
 
 static const char* VMI_info[] = {
@@ -102,6 +108,7 @@ static const char* VMI_info[] = {
     "VMI_PUSHK",
     "VMI_PUSHIDF",
     "VMI_EXIT",
+    "VMI_GOTO"
 };
 
 enum VM_errors {
@@ -125,14 +132,14 @@ static const char* VM_error_messages[] = {
     "",
     "Stack Error: ",
     "Arithmetic Error: ",
-    "Instruction Converion Error: ",
+    "Instruction Conversion Error: ",
 };
 
 static const char* VM_error_cause_messages[] = {
     "",
     /* messages for stack */
     "Not enough items on stack;",
-    "StackOverflow;",
+    "Stack overflow;",
     "Stack has not been initialized yet;",
 
     /* arithmetic error causes */
@@ -145,16 +152,16 @@ typedef struct Scope {
 } Scope;
 
 typedef struct VM_instance {
-    unsigned char init;     /* is VM initialized? */
+    unsigned char init;     /* VM initialized? */
     unsigned char exit_on_error;
     void** ip;      /* pointer to an instruction */
-    Instruction_list* ins;     /* all instructions */
+    Instruction_list* instructions;     /* all instructions */
     Stack* stack;   /* list of objects */
     Scope* global;  /* global scope */
     Object* dummy;
 } VM_instance;
 
-int VM_execute(VM_instance* VM, char* input);
+int VM_execute(VM_instance* VM, int mode, char* input);
 
 void VM_init(VM_instance* VM);
 
@@ -163,6 +170,8 @@ void VM_instance_free(VM_instance* VM);
 void** ins_add_instructions(int insc, void* ins, ...);
 
 void** to_ins(VM_instance* VM, Tokenlist* list);
+
+void** string2bytecode(VM_instance* VM, char* input);
 
 void VM_throw_error(VM_instance* VM, int error, int cause, const char* msg);
 

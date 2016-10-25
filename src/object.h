@@ -79,14 +79,6 @@ enum Instructions {
     
     OP_END,
     
-    T_NULL,     /* 10 */
-    T_IDENTIFIER,
-    T_NUMBER,
-    T_STRING,
-    T_CSTRING,
-    T_SCOPE,    /* 15 */
-    T_VAR,
-    
     OP_GOTO,     /* goto ip. args: 1 */
     OP_JUMP,     /* goto ip - jump. args: 1 */
     OP_IF,
@@ -94,6 +86,16 @@ enum Instructions {
     OP_CALLF,
     OP_SCOPE_BEGIN,
     OP_SCOPE_END,
+    OP_EXIT,
+    OP_PUSHK,
+    
+    T_NULL,     /* 10 */
+    T_IDENTIFIER,
+    T_NUMBER,
+    T_STRING,
+    T_CSTRING,
+    T_SCOPE,    /* 15 */
+    T_VAR,
     
     TOK_NEWLINE,  /* not an instruction / op code */
     TOK_LEFT_P,     /* left parenthesis "(" */

@@ -1,0 +1,33 @@
+#
+# test.fac
+# falk cache file
+#
+# %numbers%
+# "strings"
+# ?identifiers?
+#
+#
+# instruction name, identified as, code
+# ------------------|------------|-------|
+# null				| unused        -
+# begin				| unused        -
+# add				| C             67
+# sub				| D             68
+# mul				| E             69
+# div				| F             70
+# eq_assign			| G             71
+# left_shift		| unused        -
+# right_shift		| unused        -
+# end				| unused        -
+# goto				| K             74
+# jump				| unused        -
+# if 				| unused        -
+# while             | unused        -
+# callf				| unused        -
+# scope_begin		| unused        -
+# scope_end			| unused        -
+# exit				| R             81
+# pushk             | S             82
+# ------------------|------------|-------|
+#
+#

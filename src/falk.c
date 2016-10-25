@@ -33,10 +33,11 @@ void falk_execute(Falk_instance* F) {
         while (1) {
             printf(FALK_PROMPT);
             if (getline(&input, &size, stdin) > 0) {
-                if (!parse(F->parse_instance, input))
+                input[strlen(input)-1] = '\0';      /* remove newline */
+                if (!(VM_execute(F->vm_instance, VM_EXEC_FILE, input)))
                     break;
-            } else
-                break;
+            }
+            break;
         }
     }
     
