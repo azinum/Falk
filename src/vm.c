@@ -166,8 +166,8 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
                 ** if (false) {...}
                 **          jump  ^
                 */
-                VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number;
-                vm_skip(1);
+                list_spop(VM->stack);
+                VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number - 1;
             }
         }
     });
