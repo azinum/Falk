@@ -76,7 +76,7 @@ enum VM_instructions {
     VMI_DIV,
     VMI_MUL,
     VMI_PUSHK,
-    VMI_PUSHIDF,
+    VMI_PUSHI,
     VMI_EXIT,
     VMI_GOTO,
     VMI_IF
@@ -95,7 +95,7 @@ static const char* VMI_info[] = {
     "VMI_DIV",
     "VMI_MUL",
     "VMI_PUSHK",
-    "VMI_PUSHIDF",
+    "VMI_PUSHI",
     "VMI_EXIT",
     "VMI_GOTO",
     "VMI_IF"

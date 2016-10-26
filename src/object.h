@@ -88,6 +88,7 @@ enum Instructions {
     OP_SCOPE_END,
     OP_EXIT,
     OP_PUSHK,
+    OP_PUSHI,
     
     T_NULL,     /* 10 */
     T_IDENTIFIER,

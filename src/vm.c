@@ -37,7 +37,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         list_push(VM->instructions, &&VM_DIV);
         list_push(VM->instructions, &&VM_MUL);
         list_push(VM->instructions, &&VM_PUSHK);
-        list_push(VM->instructions, &&VM_PUSHIDF);
+        list_push(VM->instructions, &&VM_PUSHI);
         list_push(VM->instructions, &&VM_EXIT);
         list_push(VM->instructions, &&VM_GOTO);
         list_push(VM->instructions, &&VM_IF);
@@ -108,7 +108,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         vm_skip(1);
     });
     
-    vmcase(VM_PUSHIDF, {
+    vmcase(VM_PUSHI, {
         Object* next = (Object*)(((VM->program[VM->ip + 1])));
         char* name = next->value.string;
         if (table_find(VM->global->variables, name) != NULL) {
@@ -207,7 +207,7 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
                 break;
 
            case T_IDENTIFIER: {
-               list_push(refcast(ilist), list_get(VM->instructions, VMI_PUSHIDF));
+               list_push(refcast(ilist), list_get(VM->instructions, VMI_PUSHI));
                list_push(refcast(ilist), new(Object));
                (*(Object*)list_get_top(refcast(ilist))) = (Object){((union Value){}.string = current.token), T_IDENTIFIER};
             }
@@ -297,6 +297,10 @@ void** string2bytecode(VM_instance* VM, char* input) {
                 list_push(refcast(result),  list_get(VM->instructions, VMI_IF));
                 break;
                 
+            case OP_PUSHI:
+                list_push(refcast(result),  list_get(VM->instructions, VMI_PUSHI));
+                break;
+            
             case '#' - 65: {
                 /*
                 ** skip till comment end (newline, #)
@@ -323,6 +327,7 @@ void** string2bytecode(VM_instance* VM, char* input) {
                 for (int i = block.x; i < block.y; i++) {
                     list_push(refcast(temp), input[i]);
                 }
+                
                 list_push(refcast(temp), '\0');
                 if (!is_number(temp.value)) {
                     VM_throw_error(VM, 0, 0, "Not a number");
@@ -343,7 +348,30 @@ void** string2bytecode(VM_instance* VM, char* input) {
                 break;
             
             case '?' - 65: {    /* identifier: ?test? */
+                Offset block;
+                block.x = i + 1;
+                while (i++ < limit) {
+                    if (input[i] == '?') {
+                        block.y = i;
+                        break;
+                    }
+                }
                 
+                for (int i = block.x; i < block.y; i++) {
+                    list_push(refcast(temp), input[i]);
+                }
+                
+                list_push(refcast(temp), '\0');
+                if (!is_identifier(temp.value)) {
+                    VM_throw_error(VM, 0, 0, "Not a valid identifier");
+                    return null;
+                }
+                
+                object_create(identifier, string = temp.value, T_IDENTIFIER);
+                
+                list_push(refcast(result), (void*)identifier);
+                
+                string_clear(refcast(temp));
             }
                 break;
             
