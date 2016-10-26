@@ -43,13 +43,6 @@ list_define(Instruction_list, void*);
 #define comp_type(A, B, TYPE) ((A.type | B.type) == TYPE)
 
 /*
-** convert var to object
-** if variable is detected, convert it to object
-** else: do nothing with it
-*/
-#define obj_convert(O) ((O.type == T_VAR) ? ((*(TValue*)(O.value.ptr)).tval) : (O))
-
-/*
 ** TODO: throw exception on error
 */
 #define num_arith(OP, MSG) \

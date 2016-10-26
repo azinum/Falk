@@ -307,7 +307,6 @@ void** string2bytecode(VM_instance* VM, char* input) {
     
     int limit = (int)strlen(input);
     for (int i = 0; i < limit; i++) {
-        /* printf("%c\n", input[i]); */
         switch (input[i] - 65) {    /* - 65 offset for making the code human readable */
             case OP_EQ_ASSIGN:
                 list_push(refcast(result),  list_get(VM->instructions, VMI_EQ_ASSIGN));
@@ -371,6 +370,10 @@ void** string2bytecode(VM_instance* VM, char* input) {
                 
             case OP_GEQ:
                 list_push(refcast(result), list_get(VM->instructions, VMI_GEQ));
+                break;
+            
+            case OP_POP:
+                list_push(refcast(result), list_get(VM->instructions, VMI_POP));
                 break;
             
             case '#' - 65: {
@@ -453,6 +456,7 @@ void** string2bytecode(VM_instance* VM, char* input) {
     }
     
     list_push(refcast(result), list_get(VM->instructions, VMI_EXIT));
+    printf("Program size: %i\n", result.top);
     return result.value;
 }
 

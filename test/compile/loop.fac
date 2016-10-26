@@ -21,7 +21,6 @@ T?test?S%150%VM%22%     # test < 100 [6]
 # eq_assign
 # pop
 T?test?T?test?S%1%CGU   # test = test + 1; [13]
-# goto 0
-K%5%            # goto 0 [22]
+K%5%            # goto 5 [22]
 T?test?         # [24]
 # exit [26]

@@ -44,6 +44,13 @@ NAME->type = TYPE
 #define typeof __typeof__
 #endif
 
+/*
+** convert var to object
+** if variable is detected, convert it to object
+** else: do nothing with it
+*/
+#define obj_convert(O) ((O.type == T_VAR) ? ((*(TValue*)(O.value.ptr)).tval) : (O))
+
 typedef union Value {
     char* string;
     double number;

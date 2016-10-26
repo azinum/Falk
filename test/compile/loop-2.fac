@@ -1,0 +1,18 @@
+#
+# loop-2.fac
+# Author: Azinum
+# Date: 2016-10-26
+#
+
+T?test?     # 00 | pushi test
+S%0%        # 02 | pushk 0
+G           # 03 | eq_assign
+U           # 04 | pop
+
+T?test?     # 05 | pushi test
+T?test?     # 07 | pushi test
+S%1%        # 09 | pushk 1
+C           # 11 | add
+G           # 12 | eq_assign
+#M%20%#       # 13 | if goto end
+#K%5%#        # 15 | goto start

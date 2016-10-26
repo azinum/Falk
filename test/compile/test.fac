@@ -4,4 +4,21 @@
 # Date: 2016-10-26
 #
 
-S%6%S%8%C     # 6 + 8
+T?test?     # 00 pushi test
+S%1%        # 02 pushk 1
+G           # 03 eq_assign
+U           # 04 pop
+
+T?test?     # 05 pushi test
+S%1000%     # 07 pushk 5
+V           # 09 less than
+M%24%       # 10 if
+
+T?test?     # 12 pushi test
+T?test?     # 14 pushi test
+S%1%        # 16 pushk 1
+C           # 18 add
+G           # 19 eq_assign
+U           # 20 pop
+K%4%        # 21 goto
+T?test?     # 23 pushi test

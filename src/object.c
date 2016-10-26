@@ -85,7 +85,10 @@ int object_is_true(Object obj) {
             if (strncmp(obj.value.string, "", strlen(obj.value.string)))
                 return 1;
             break;
+            
         default:
+            if (obj.value.ptr != NULL)
+                return 1;
             break;
     }
     return 0;
