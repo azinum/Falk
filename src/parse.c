@@ -1,6 +1,6 @@
 /* parse.c */
-/* author: Azinum */
-/* date: 05/09/16 */
+/* Author: Azinum */
+/* Date: 2016-09-05 */
 
 
 #include "parse.h"

@@ -1,6 +1,6 @@
 /* parse.h */
-/* author: Azinum */
-/* date: 05/09/16 */
+/* Author: Azinum */
+/* Date: 2016-09-05 */
 
 
 #ifndef parse_h

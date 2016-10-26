@@ -1,6 +1,6 @@
 /* table.c */
-/* author: Azinum */
-/* date: 31/08/16 */
+/* Author: Azinum */
+/* Date: 2016-08-31 */
 
 
 #include "table.h"

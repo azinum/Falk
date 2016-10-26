@@ -1,6 +1,6 @@
 /* main.c - grammar tests */
-/* author: Azinum */
-/* date: 07/09/16 */
+/* Author: Azinum */
+/* Date: 07/09/16 */
 
 #include <stdlib.h>
 #include <stdio.h>

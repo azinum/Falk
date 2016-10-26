@@ -1,10 +1,11 @@
 /* vm.c */
-/* author: Azinum */
-/* date: 19/09/16 */
+/* Author: Azinum */
+/* Date: 2016-09-19 */
 
 #include "vm.h"
 #include "falk.h"
 #include "io.h"
+#include "libstandard.h"
 #include <time.h>
 
 void VM_init(VM_instance* VM) {

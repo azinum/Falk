@@ -1,6 +1,6 @@
 /* io.h */
-/* author: Azinum */
-/* date: 9/10/16 */
+/* Author: Azinum */
+/* Date: 2016-10-09 */
 
 
 #ifndef io_h

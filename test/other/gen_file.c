@@ -1,6 +1,6 @@
 /* gen_file.c - test for generating files */
-/* author: Azinum */
-/* date: 26/09/16 */
+/* Author: Azinum */
+/* Date: 26/09/16 */
 
 #include <stdlib.h>
 #include <stdio.h>

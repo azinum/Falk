@@ -1,6 +1,6 @@
 /* vm.h */
-/* author: Azinum */
-/* date: 19/09/16 */
+/* Author: Azinum */
+/* Date: 2016-09-19 */
 
 #ifndef vm_h
 #define vm_h

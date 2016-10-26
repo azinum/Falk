@@ -1,6 +1,6 @@
 /* lex.c */
-/* author: Azinum */
-/* date: 30/08/16 */
+/* Author: Azinum */
+/* Date: 2016-08-30 */
 
 
 #include "lex.h"

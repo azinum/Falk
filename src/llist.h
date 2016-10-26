@@ -1,6 +1,6 @@
 /* llist.h */
-/* author: Azinum */
-/* date: 15/09/16 */
+/* Author: Azinum */
+/* Date: 2016-09-15 */
 
 #ifndef llist_h
 #define llist_h

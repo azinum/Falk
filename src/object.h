@@ -1,6 +1,6 @@
 /* object.h */
-/* author: Azinum */
-/* date: 30/08/16 */
+/* Author: Azinum */
+/* Date: 2016-08-30 */
 
 #ifndef object_h
 #define object_h
