@@ -79,7 +79,8 @@ enum VM_instructions {
     VMI_EQ,
     VMI_LEQ,
     VMI_GEQ,
-    VMI_PUSHP
+    VMI_PUSHP,
+    VMI_CALLF,
 };
 
 
@@ -105,7 +106,8 @@ static const char* VMI_info[] = {
     "VMI_EQ",
     "VMI_LEQ",
     "VMI_GEQ",
-    "VMI_PUSHP"
+    "VMI_PUSHP",
+    "VMI_CALLF"
 };
 
 enum VM_errors {

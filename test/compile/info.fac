@@ -23,7 +23,7 @@
 # jump            | unused         -
 # if              | M              -
 # while           | unused         -
-# callf           | unused         -
+# callf           | O              78
 # scope_begin     | unused         -
 # scope_end       | unused         -
 # exit            | R              81

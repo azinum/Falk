@@ -50,7 +50,12 @@ begin:
             printf("Scope @: $%i\n", (int)object.value.ptr);
         }
             break;
-        
+            
+        case T_CFUNCTION: {
+            printf("Cfunction @:%i\n", (int)object.value.ptr);
+        }
+            break;
+            
         case T_NULL: {
             puts("null");
         }

@@ -91,14 +91,14 @@ enum Instructions {
     OP_GOTO,     /* goto ip. args: 1 */
     OP_JUMP,     /* goto ip - jump. args: 1 */
     OP_IF,
-    OP_WHILE,    /* 20 */
+    OP_WHILE,    /* 13 */
     OP_CALLF,
     OP_SCOPE_BEGIN,
     OP_SCOPE_END,
     OP_EXIT,
     OP_PUSHK,
     OP_PUSHI,
-    OP_POP,
+    OP_POP,     /* 20 */
     OP_LT,      /* < */
     OP_GT,      /* > */
     OP_EQ,      /* == */
@@ -106,9 +106,9 @@ enum Instructions {
     OP_GEQ,     /* >= */
     OP_PUSHP,   /* push pointer */
     
-    T_NULL,     /* 10 */
+    T_NULL,
     T_IDENTIFIER,
-    T_NUMBER,
+    T_NUMBER,   /* 30 */
     T_STRING,
     T_CSTRING,
     T_SCOPE,    /* 15 */

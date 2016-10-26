@@ -34,6 +34,16 @@ obj.type = TYPE; \
 table_push(TABLE, KEY, obj); \
 }
 
+#define table_push_variable(TABLE, KEY, VALUE, TYPE) { \
+Object obj; \
+obj.type = TYPE; \
+obj.value.VALUE; \
+Object var; \
+var.type = T_VAR; \
+var.value.ptr = new(Object); \
+var.value.ptr = &obj; \
+}
+
 /*
 ** key and value for hashtable
 ** Table Value

@@ -28,6 +28,7 @@ void VM_init(VM_instance* VM) {
     table_push_object(VM->global->variables, "null", ptr = NULL, T_NULL);
     table_push_object(VM->global->variables, "undefined", ptr = NULL, T_NULL);
     table_push_object(VM->global->variables, "pi", number = 3.14159265359, T_NUMBER);
+    table_push_object(VM->global->variables, "a", number = 7, T_NUMBER);
     table_push_object(VM->global->variables, "vm", ptr = &VM, -1);
 }
 
@@ -51,9 +52,10 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         list_push(VM->instructions, &&VM_LEQ);
         list_push(VM->instructions, &&VM_GEQ);
         list_push(VM->instructions, &&VM_PUSHP);
+        list_push(VM->instructions, &&VM_CALLF);
         VM->init = 1;
     }
-    
+
     switch (mode) {
         case VM_EXEC_INTERPRET: {
             Lex_instance* lex_instance = new(Lex_instance);
@@ -200,6 +202,18 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             list_spop(VM->stack);
         } else {
             VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_POP");
+        }
+    });
+    
+    vmcase(VM_CALLF, {
+        for (int i = 0; i < 24; i++) {
+            if ((VM->stack->top - i) < 0) {
+                if (list_get_from_top(VM->stack, -i).type == T_CFUNCTION) {
+                    puts("call da funk!");
+                    ((Cfunction)(list_get_from_top(VM->stack, -i).value.ptr))(VM);
+                    break;
+                }
+            }
         }
     });
     
@@ -376,6 +390,10 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
             case OP_POP:
                 list_push(refcast(result), list_get(VM->instructions, VMI_POP));
                 break;
+                
+            case OP_CALLF:
+                list_push(refcast(result), list_get(VM->instructions, VMI_CALLF));
+                break;
             
             case '#' - 65: {
                 /*
@@ -438,6 +456,7 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
                 }
                 
                 list_push(refcast(temp), '\0');
+                
                 if (!is_identifier(temp.value)) {
                     VM_throw_error(VM, 0, 0, "Not a valid identifier");
                     return null;
@@ -445,9 +464,9 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
                 
                 object_create(identifier, string = temp.value, T_IDENTIFIER);
                 
-                list_push(refcast(result), (void*)identifier);
+                list_push(refcast(result), identifier);
                 
-                string_clear(refcast(temp));
+                temp.top = 0;
             }
                 break;
             
@@ -457,7 +476,6 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
     }
     
     list_push(refcast(result), list_get(VM->instructions, VMI_EXIT));
-    printf("Program size: %i\n", result.top);
     return result.value;
 }
 
