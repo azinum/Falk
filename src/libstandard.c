@@ -3,3 +3,12 @@
 /* Date: 2016-10-26 */
 
 #include "libstandard.h"
+
+int falk_print(VM_instance* VM) {
+    if (VM->stack->top > 0) {
+        print_object(list_get_top(VM->stack));
+        return 1;
+    }
+    VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@falk_print lib function");
+    return 0;
+}

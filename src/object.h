@@ -71,6 +71,8 @@ typedef struct Offset {
     int x, y;
 } Offset;
 
+typedef int (*Cfunction)();
+
 enum Instructions {
     OP_NULL = 0,
     OP_BEGIN,
@@ -111,6 +113,7 @@ enum Instructions {
     T_CSTRING,
     T_SCOPE,    /* 15 */
     T_VAR,
+    T_CFUNCTION,
     
     TOK_NEWLINE,  /* not an instruction / op code */
     TOK_LEFT_P,     /* left parenthesis "(" */

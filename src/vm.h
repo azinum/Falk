@@ -169,10 +169,13 @@ void** ins_add_instructions(int insc, void* ins, ...);
 
 void** to_ins(VM_instance* VM, Tokenlist* list);
 
-void** string2bytecode(VM_instance* VM, char* input);
+void** VM_string2bytecode(VM_instance* VM, char* input);
+
+void VM_push_cfunction(VM_instance* VM, char* name, Cfunction function);
 
 void VM_throw_error(VM_instance* VM, int error, int cause, const char* msg);
 
 void VM_debug_print_vmi(VM_instance* VM, void* vmi);
+
 
 #endif /* vm_h */

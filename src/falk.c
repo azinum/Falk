@@ -9,6 +9,7 @@
 #include "list.h"
 #include "llist.h"
 #include "io.h"
+#include "libstandard.h"
 
 void falk_instance_init(Falk_instance* F) {
     F->parse_instance = new(Parse_instance);
@@ -18,6 +19,8 @@ void falk_instance_init(Falk_instance* F) {
     F->vm_instance = new(VM_instance);
     VM_init(F->vm_instance);
     F->init = 1;
+    
+    VM_push_cfunction(F->vm_instance, "print", falk_print);
 }
 
 

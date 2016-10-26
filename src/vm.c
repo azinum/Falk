@@ -78,7 +78,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         case VM_EXEC_FILE: {
             char* read = read_file(input);
             if (read != NULL) {
-                VM->program = string2bytecode(VM, read);
+                VM->program = VM_string2bytecode(VM, read);
                 break;
             }
             return 0;
@@ -300,7 +300,7 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
 ** load string from a compiled file (or raw string input) and this function will return
 ** an array of instructions
 */
-void** string2bytecode(VM_instance* VM, char* input) {
+void** VM_string2bytecode(VM_instance* VM, char* input) {
     String temp;
     list_init(refcast(temp));
     Instruction_list result;
@@ -459,6 +459,10 @@ void** string2bytecode(VM_instance* VM, char* input) {
     list_push(refcast(result), list_get(VM->instructions, VMI_EXIT));
     printf("Program size: %i\n", result.top);
     return result.value;
+}
+
+void VM_push_cfunction(VM_instance* VM, char* name, Cfunction function) {
+    table_push_object(VM->global->variables, name, ptr = function, T_CFUNCTION);
 }
 
 void VM_throw_error(VM_instance* VM, int error, int cause, const char* msg) {
