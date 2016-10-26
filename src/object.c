@@ -72,3 +72,21 @@ begin:
             break;
     }
 }
+
+
+int object_is_true(Object obj) {
+    switch (obj.type) {
+        case T_NUMBER:
+            if (obj.value.number != 0)
+                return 1;
+            break;
+            
+        case T_STRING:
+            if (strncmp(obj.value.string, "", strlen(obj.value.string)))
+                return 1;
+            break;
+        default:
+            break;
+    }
+    return 0;
+}

@@ -17,23 +17,11 @@
 list_define(Stack, Object);
 list_define(Instruction_list, void*);
 
-/*
-** VM debugging here
-*/
-#if VM_DEBUG
-#define vm_begin VM_debug_print_vmi(VM, *(VM->ip)); goto **(VM->ip)
-#define vm_next VM_debug_print_vmi(VM, *(VM->ip + 1)); goto **(++VM->ip)
-#define vm_skip(N) VM_debug_print_vmi(VM, *(VM->ip + 1)); (VM->ip += N)
-#define VM_PRINT_EXTRA_INFO \
-printf("Stack top: %i, vars: %i\n", VM->stack->top, VM->global->variables->top);
-#else
-#define vm_begin goto **(VM->ip)
-#define vm_next goto **(++VM->ip)
+#define vm_begin goto *(VM->program[VM->ip])
+#define vm_next goto *(VM->program[++VM->ip])
 #define vm_skip(N) (VM->ip += N)
-#define VM_PRINT_EXTRA_INFO
-#endif
 
-#define vm_jump(N) goto **(VM->ip += N)
+#define vm_jump(N) goto *(VM->program[VM->ip += N])
 
 #define vmcase(CASE, BODY) { \
     CASE : { BODY ; } \
@@ -90,7 +78,8 @@ enum VM_instructions {
     VMI_PUSHK,
     VMI_PUSHIDF,
     VMI_EXIT,
-    VMI_GOTO
+    VMI_GOTO,
+    VMI_IF
 };
 
 
@@ -108,7 +97,8 @@ static const char* VMI_info[] = {
     "VMI_PUSHK",
     "VMI_PUSHIDF",
     "VMI_EXIT",
-    "VMI_GOTO"
+    "VMI_GOTO",
+    "VMI_IF"
 };
 
 enum VM_errors {
@@ -154,7 +144,8 @@ typedef struct Scope {
 typedef struct VM_instance {
     unsigned char init;     /* VM initialized? */
     unsigned char exit_on_error;
-    void** ip;      /* pointer to an instruction */
+    void** program;      /* pointer to an instruction */
+    int ip;
     Instruction_list* instructions;     /* all instructions */
     Stack* stack;   /* list of objects */
     Scope* global;  /* global scope */

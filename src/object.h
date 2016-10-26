@@ -131,4 +131,6 @@ double to_number(const char* string);
 
 void print_object(Object object);
 
+int object_is_true(Object obj);
+
 #endif /* object_h */

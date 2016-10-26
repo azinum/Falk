@@ -1,0 +1,8 @@
+#
+# if.fac
+# Author: Azinum
+# Date: 2016-10-26
+#
+
+S%1%M9      # if 1
+S%4%S%3%C   # 4 + 3

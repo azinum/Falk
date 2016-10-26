@@ -15,7 +15,8 @@ void VM_init(VM_instance* VM) {
     VM->dummy = new(Object);
     VM->dummy->type = T_NULL;
     VM->exit_on_error = 1;
-
+    VM->ip = 0;
+    
     VM->global = new(Scope);
     VM->global->global = VM->global;
     VM->global->variables = new(HashTable);
@@ -39,6 +40,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         list_push(VM->instructions, &&VM_PUSHIDF);
         list_push(VM->instructions, &&VM_EXIT);
         list_push(VM->instructions, &&VM_GOTO);
+        list_push(VM->instructions, &&VM_IF);
         VM->init = 1;
     }
     
@@ -59,14 +61,14 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
                 return 0;
             }
             
-            VM->ip = to_ins(VM, lexresult);
+            VM->program = to_ins(VM, lexresult);
         }
             break;
             
         case VM_EXEC_FILE: {
             char* read = read_file(input);
             if (read != NULL) {
-                VM->ip = string2bytecode(VM, read);
+                VM->program = string2bytecode(VM, read);
                 break;
             }
             return 0;
@@ -76,9 +78,8 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             VM_throw_error(VM, 0, 0, "Invalid exec mode");
             break;
     }
-
-
-    if (!VM->ip)
+    
+    if (!VM->program)
         return 0;
 
     vm_begin;
@@ -100,15 +101,15 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     });
     
     vmcase(VM_PUSHK, {
-        list_push(VM->stack, *(Object*)(*(VM->ip + 1)));
+        list_push(VM->stack, *((Object*)VM->program[VM->ip + 1]));
         if (list_get_top(VM->stack).type != T_NUMBER) {
-            VM_throw_error(VM, VM_ERR_ARITH, VM_ERRC_ARITH_INVALID_TYPES, "@VM_PUSHK");
+            VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_ARITH_INVALID_TYPES, "@VM_PUSHK");
         }
         vm_skip(1);
     });
     
     vmcase(VM_PUSHIDF, {
-        Object* next = (Object*)(*((VM->ip + 1)));
+        Object* next = (Object*)(((VM->program[VM->ip + 1])));
         char* name = next->value.string;
         if (table_find(VM->global->variables, name) != NULL) {
             /*
@@ -151,11 +152,27 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     });
 
     vmcase(VM_GOTO, {
+        VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number;
+        vm_skip(1);
+    });
     
+    vmcase(VM_IF, {
+        if (VM->stack->top > 0) {   /* stack can not be empty */
+            if (object_is_true(list_get_top(VM->stack))) {      /* if (true) {...} */
+                list_spop(VM->stack);   /* pop top */
+            } else {
+                /*
+                ** do a jump if statement is false
+                ** if (false) {...}
+                **          jump  ^
+                */
+                VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number;
+                vm_skip(1);
+            }
+        }
     });
     
     vmcase(VM_EXIT, {
-        VM_PRINT_EXTRA_INFO;
         if (VM->stack->top > 0) {
             print_object(list_get_top(VM->stack));
             list_clear2(VM->stack);
@@ -272,12 +289,23 @@ void** string2bytecode(VM_instance* VM, char* input) {
                 list_push(refcast(result),  list_get(VM->instructions, VMI_PUSHK));
                 break;
                 
+            case OP_GOTO:
+                list_push(refcast(result),  list_get(VM->instructions, VMI_GOTO));
+                break;
+                
+            case OP_IF:
+                list_push(refcast(result),  list_get(VM->instructions, VMI_IF));
+                break;
+                
             case '#' - 65: {
-                /* skip till comment end (newline) */
-                while (i < limit) {
-                    if (input[i] == '\n')
+                /*
+                ** skip till comment end (newline, #)
+                ** # comment
+                ** # this is also a comment #
+                */
+                while (i++ < limit) {
+                    if (input[i] == '\n' || input[i] == '#')
                         break;
-                    i++;
                 }
             }
                 break;
