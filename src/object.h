@@ -89,6 +89,13 @@ enum Instructions {
     OP_EXIT,
     OP_PUSHK,
     OP_PUSHI,
+    OP_POP,
+    OP_LT,      /* < */
+    OP_GT,      /* > */
+    OP_EQ,      /* == */
+    OP_LEQ,     /* <= */
+    OP_GEQ,     /* >= */
+    OP_PUSHP,   /* push pointer */
     
     T_NULL,     /* 10 */
     T_IDENTIFIER,

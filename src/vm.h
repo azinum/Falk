@@ -79,7 +79,14 @@ enum VM_instructions {
     VMI_PUSHI,
     VMI_EXIT,
     VMI_GOTO,
-    VMI_IF
+    VMI_IF,
+    VMI_POP,
+    VMI_LT,
+    VMI_GT,
+    VMI_EQ,
+    VMI_LEQ,
+    VMI_GEQ,
+    VMI_PUSHP
 };
 
 
@@ -98,7 +105,14 @@ static const char* VMI_info[] = {
     "VMI_PUSHI",
     "VMI_EXIT",
     "VMI_GOTO",
-    "VMI_IF"
+    "VMI_IF",
+    "VMI_POP",
+    "VMI_LT",
+    "VMI_GT",
+    "VMI_EQ",
+    "VMI_LEQ",
+    "VMI_GEQ",
+    "VMI_PUSHP"
 };
 
 enum VM_errors {
@@ -128,12 +142,12 @@ static const char* VM_error_messages[] = {
 static const char* VM_error_cause_messages[] = {
     "",
     /* messages for stack */
-    "Not enough items on stack;",
-    "Stack overflow;",
-    "Stack has not been initialized yet;",
+    "Not enough items on stack; ",
+    "Stack overflow; ",
+    "Stack has not been initialized yet; ",
 
     /* arithmetic error causes */
-    "Invalid types on arithmetic operation;",
+    "Invalid types on arithmetic operation; ",
 };
 
 typedef struct Scope {

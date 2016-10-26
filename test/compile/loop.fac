@@ -1,0 +1,27 @@
+#
+# loop.fac
+# Author: Azinum
+# Date: 2016-10.26
+#
+
+# pushi test
+# pushk 0
+# eq_assign
+# end
+T?test?S%0%GU    # test = 0  [0]
+# pushi test
+# pushk 100
+# less_than
+# if
+T?test?S%150%VM%22%     # test < 100 [6]
+# pushi test
+# pushi test
+# pushk 1
+# add
+# eq_assign
+# pop
+T?test?T?test?S%1%CGU   # test = test + 1; [13]
+# goto 0
+K%5%            # goto 0 [22]
+T?test?         # [24]
+# exit [26]

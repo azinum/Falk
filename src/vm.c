@@ -5,6 +5,7 @@
 #include "vm.h"
 #include "falk.h"
 #include "io.h"
+#include <time.h>
 
 void VM_init(VM_instance* VM) {
     VM->init = 0;
@@ -30,6 +31,7 @@ void VM_init(VM_instance* VM) {
 }
 
 int VM_execute(VM_instance* VM, int mode, char* input) {
+    double start = clock();
     if (!VM->init) {
         list_push(VM->instructions, &&VM_EQ_ASSIGN);
         list_push(VM->instructions, &&VM_ADD);
@@ -41,6 +43,13 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         list_push(VM->instructions, &&VM_EXIT);
         list_push(VM->instructions, &&VM_GOTO);
         list_push(VM->instructions, &&VM_IF);
+        list_push(VM->instructions, &&VM_POP);
+        list_push(VM->instructions, &&VM_LT);
+        list_push(VM->instructions, &&VM_GT);
+        list_push(VM->instructions, &&VM_EQ);
+        list_push(VM->instructions, &&VM_LEQ);
+        list_push(VM->instructions, &&VM_GEQ);
+        list_push(VM->instructions, &&VM_PUSHP);
         VM->init = 1;
     }
     
@@ -94,6 +103,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
                 /* if we do not do obj_convert then, we assign by reference / pointer */
                 /* it is a feature to be added later */
                 (*(TValue*)(list_get_from_top(VM->stack, -1).value.ptr)).tval = obj_convert(list_get_top(VM->stack));
+                list_spop(VM->stack);
             }
         } else {
             VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_EQ_ASSIGN");
@@ -108,6 +118,11 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         vm_skip(1);
     });
     
+    vmcase(VM_PUSHP, {
+        list_push(VM->stack, *((Object*)VM->program[VM->ip + 1]));
+        vm_skip(1);
+    });
+    
     vmcase(VM_PUSHI, {
         Object* next = (Object*)(((VM->program[VM->ip + 1])));
         char* name = next->value.string;
@@ -118,6 +133,9 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             */
             tobject_create(obj, ptr = table_find(VM->global->variables, name), T_VAR);
             list_push(VM->stack, obj);
+            VM->program[VM->ip] = list_get(VM->instructions, VMI_PUSHP);
+            VM->program[VM->ip + 1] = &obj;
+            
         } else {
             /*
             ** variable does not exist
@@ -150,16 +168,45 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     vmcase(VM_MUL, {
         num_arith(*, "@VM_MUL");
     });
+    
+    vmcase(VM_LT, {
+        num_arith(<, "@VM_LT");
+    });
+    
+    vmcase(VM_GT, {
+        num_arith(>, "@VM_GT");
+    });
+    
+    vmcase(VM_EQ, {
+        num_arith(==, "@VM_EQ");
+    });
+    
+    vmcase(VM_LEQ, {
+        num_arith(<=, "@VM_LEQ");
+    });
 
+    vmcase(VM_GEQ, {
+        num_arith(>=, "@VM_GEQ");
+    });
+    
     vmcase(VM_GOTO, {
         VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number;
         vm_skip(1);
+    });
+    
+    vmcase(VM_POP, {
+        if (VM->stack > 0) {
+            list_spop(VM->stack);
+        } else {
+            VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_POP");
+        }
     });
     
     vmcase(VM_IF, {
         if (VM->stack->top > 0) {   /* stack can not be empty */
             if (object_is_true(list_get_top(VM->stack))) {      /* if (true) {...} */
                 list_spop(VM->stack);   /* pop top */
+                vm_skip(1);
             } else {
                 /*
                 ** do a jump if statement is false
@@ -175,6 +222,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     vmcase(VM_EXIT, {
         if (VM->stack->top > 0) {
             print_object(list_get_top(VM->stack));
+            printf("%.6g ms\n", (double)(clock() - start) / 1000.0f);
             list_clear2(VM->stack);
         }
         return 1;
@@ -289,6 +337,10 @@ void** string2bytecode(VM_instance* VM, char* input) {
                 list_push(refcast(result),  list_get(VM->instructions, VMI_PUSHK));
                 break;
                 
+            case OP_PUSHP:
+                list_push(refcast(result),  list_get(VM->instructions, VMI_PUSHP));
+                break;
+                
             case OP_GOTO:
                 list_push(refcast(result),  list_get(VM->instructions, VMI_GOTO));
                 break;
@@ -299,6 +351,26 @@ void** string2bytecode(VM_instance* VM, char* input) {
                 
             case OP_PUSHI:
                 list_push(refcast(result),  list_get(VM->instructions, VMI_PUSHI));
+                break;
+                
+            case OP_LT:
+                list_push(refcast(result), list_get(VM->instructions, VMI_LT));
+                break;
+                
+            case OP_GT:
+                list_push(refcast(result), list_get(VM->instructions, VMI_GT));
+                break;
+                
+            case OP_EQ:
+                list_push(refcast(result), list_get(VM->instructions, VMI_EQ));
+                break;
+                
+            case OP_LEQ:
+                list_push(refcast(result), list_get(VM->instructions, VMI_LEQ));
+                break;
+                
+            case OP_GEQ:
+                list_push(refcast(result), list_get(VM->instructions, VMI_GEQ));
                 break;
             
             case '#' - 65: {
@@ -385,7 +457,7 @@ void** string2bytecode(VM_instance* VM, char* input) {
 }
 
 void VM_throw_error(VM_instance* VM, int error, int cause, const char* msg) {
-    printf("%s%s %s\n", VM_error_messages[error], VM_error_cause_messages[cause], msg);
+    printf("%s%s%s\n", VM_error_messages[error], VM_error_cause_messages[cause], msg);
     if (VM->exit_on_error) {
         /*
         ** TODO: free everything
