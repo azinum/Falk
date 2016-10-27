@@ -102,12 +102,11 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     */
     vmcase(VM_EQ_ASSIGN, {
         if (VM->stack->top >= 2) {
-            if (list_get_from_top(VM->stack, -1).type == T_VAR) {
-                /* if we do not do obj_convert then, we assign by reference / pointer */
-                /* it is a feature to be added later */
-                (*(TValue*)(list_get_from_top(VM->stack, -1).value.ptr)).tval = obj_convert(list_get_top(VM->stack));
-                list_spop(VM->stack);
-            }
+            /* if we do not do obj_convert then, we assign by reference / pointer */
+            /* it is a feature to be added later */
+            (*(TValue*)(list_get_from_top(VM->stack, -1).value.ptr)).tval = obj_convert(list_get_top(VM->stack));
+            list_spop(VM->stack);
+            
         } else {
             VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_EQ_ASSIGN");
         }
@@ -129,6 +128,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     vmcase(VM_PUSHI, {
         Object* next = (Object*)(((VM->program[VM->ip + 1])));
         char* name = next->value.string;
+        
         if (table_find(VM->global->variables, name) != NULL) {
             /*
             ** variable exist
@@ -193,8 +193,8 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     });
     
     vmcase(VM_GOTO, {
-        VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number;
-        vm_skip(1);
+        VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number-1;
+        vm_next;
     });
     
     vmcase(VM_POP, {
@@ -246,9 +246,9 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     vmcase(VM_EXIT, {
         if (VM->stack->top > 0) {
             print_object(list_get_top(VM->stack));
-            printf("%.6g ms\n", (double)(clock() - start) / 1000.0f);
             list_clear2(VM->stack);
         }
+        printf("%.6g ms\n", (double)(clock() - start) / 1000.0f);
         return 1;
     });
 
@@ -324,8 +324,6 @@ void** to_ins(VM_instance* VM, Tokenlist* list) {
 ** an array of instructions
 */
 void** VM_string2bytecode(VM_instance* VM, char* input) {
-    String temp;
-    list_init(refcast(temp));
     Instruction_list result;
     list_init(refcast(result));
     
@@ -418,6 +416,8 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
                 break;
             
             case '%' - 65: {    /* fetch number: %number% */
+                String temp;
+                list_init(refcast(temp));
                 Offset block;
                 block.x = i + 1;
                 while (i++ < limit) {
@@ -451,6 +451,8 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
                 break;
             
             case '?' - 65: {    /* identifier: ?test? */
+                String temp;
+                list_init(refcast(temp));
                 Offset block;
                 block.x = i + 1;
                 while (i++ < limit) {

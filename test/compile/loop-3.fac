@@ -1,0 +1,12 @@
+#
+# loop-3.fac
+# Author: Azinum
+# Date: 2016-10-27
+#
+
+T?test?     # 00 pushi test
+T?print?    # 02 pushi print
+G           # 04 eq_assign
+U           # 05 pop
+
+T?test?     # 06 pushi test
