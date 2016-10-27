@@ -73,6 +73,12 @@ typedef struct Offset {
 
 typedef int (*Cfunction)();
 
+typedef struct CLibfunction {
+    char* name;
+    Cfunction func;
+    const char* doc_string;
+} CLibfunction;
+
 enum Instructions {
     OP_NULL = 0,
     OP_BEGIN,

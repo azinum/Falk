@@ -20,7 +20,7 @@ void falk_instance_init(Falk_instance* F) {
     VM_init(F->vm_instance);
     F->init = 1;
     
-    VM_push_cfunction(F->vm_instance, "print", falk_print);
+    falk_openlib(F->vm_instance, falklib_standard);
 }
 
 
@@ -50,17 +50,26 @@ void falk_execute(Falk_instance* F) {
 /*
 ** push number to stack
 */
-int falk_push_number(Falk_instance* F, double number) {
-    /* if instance of Falk is not initialized, return false */
-    if (!F->init) {
-        return 0;
-    }
+int falk_push_number(VM_instance* VM, double number) {
     Object obj;
     obj.type = T_NUMBER;
     obj.value.number = number;
-    list_push(F->vm_instance->stack, obj);
+    list_push(VM->stack, obj);
     
     return 1;   /* success */
+}
+
+int falk_openlib(VM_instance* VM, CLibfunction lib[]) {
+    int i = 0;
+    while (lib[i].func != NULL) {
+        falk_push_cfunction(VM, lib[i].name, lib[i].func);
+        i++;
+    }
+    return 1;
+}
+
+void falk_push_cfunction(VM_instance* VM, char* name, Cfunction function) {
+    table_push_object(VM->global->variables, name, ptr = function, T_CFUNCTION);
 }
 
 void falk_instance_free(Falk_instance* F) {

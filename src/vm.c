@@ -198,26 +198,30 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     });
     
     vmcase(VM_POP, {
-        if (VM->stack > 0) {
+        if (VM->stack->top > 0) {
             list_spop(VM->stack);
-        } else {
-            VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_POP");
+            vm_next;
         }
+        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_POP");
     });
     
     vmcase(VM_CALLF, {
+        if (VM->stack->top <= 0) {
+            VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_CALLF");
+            return 0;
+        }
         Object func;
         func = obj_convert(list_get_top(VM->stack));
-        if (func.type != T_CFUNCTION) {
-            VM_throw_error(VM, VM_ERR_CALL, VM_ERRC_NOT_A_FUNC, "@VM_CALLF");
-        } else {
+        if (func.type == T_CFUNCTION) {
             list_spop(VM->stack);
-            int res = (*(Cfunction)func.value.ptr)(VM);
+            int res = ((*(Cfunction)func.value.ptr)(VM));
             for (int i = 0; i < res && VM->stack->top > 0; i++) {
                 list_spop(VM->stack);
             }
+            vm_next;
         }
-        
+        VM_throw_error(VM, VM_ERR_CALL, VM_ERRC_NOT_A_FUNC, "@VM_CALLF");
+        return 0;
     });
     
     vmcase(VM_IF, {
@@ -484,10 +488,6 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
     return result.value;
 }
 
-void VM_push_cfunction(VM_instance* VM, char* name, Cfunction function) {
-    table_push_object(VM->global->variables, name, ptr = function, T_CFUNCTION);
-}
-
 void VM_throw_error(VM_instance* VM, int error, int cause, const char* msg) {
     printf("%s%s%s\n", VM_error_messages[error], VM_error_cause_messages[cause], msg);
     if (VM->exit_on_error) {
@@ -526,6 +526,15 @@ void VM_debug_print_vmi(VM_instance* VM, void* vmi) {
         }
     }
     puts("VMI undefined");
+}
+
+/*
+** print all items in stack
+*/
+void VM_print_stack(VM_instance* VM) {
+    for (int i = 0; i < VM->stack->top; i++) {
+        print_object(list_get(VM->stack, i));
+    }
 }
 
 void VM_instance_free(VM_instance* VM) {

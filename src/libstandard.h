@@ -10,4 +10,12 @@
 
 int falk_print(VM_instance* VM);
 
+int falk_time(VM_instance* VM);
+
+static CLibfunction falklib_standard[] = {
+    {"print", falk_print, "Print stuff to console"},
+    {"time", falk_time, "Get time"},
+    {NULL, NULL, NULL}
+};
+
 #endif /* libstandard_h */

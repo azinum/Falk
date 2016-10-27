@@ -30,6 +30,10 @@ void falk_execute(Falk_instance* F);
 
 void falk_instance_free(Falk_instance* F);
 
-int falk_push_number(Falk_instance* F, double number);
+int falk_push_number(VM_instance* VM, double number);
+
+int falk_openlib(VM_instance* VM, CLibfunction lib[]);
+
+void falk_push_cfunction(VM_instance* VM, char* name, Cfunction function);
 
 #endif /* falk_h */

@@ -4,7 +4,8 @@
 # Date: 2016-10-26
 #
 
-S%12%       # pushk 12
+S%5%        # pushk 5
+S%13%       # pushk 13
+C           # add
 T?print?    # pushi print
 O           # callf
-U           # pop
