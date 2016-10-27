@@ -58,6 +58,16 @@ if (VM->stack->top >= 2) { \
     VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \
 }
 
+#define num_assign(OP, MSG) { \
+if (VM->stack->top > 0) { \
+    op_arith(((*(TValue*)(list_get_from_top(VM->stack, -1).value.ptr)).tval), obj_convert(list_get_top(VM->stack)), OP); \
+    list_spop(VM->stack); \
+    print_object(list_get_top(VM->stack)); \
+    vm_next; \
+} \
+    VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \
+}
+
 /*
 ** WARNING!
 ** order reserved
@@ -81,6 +91,10 @@ enum VM_instructions {
     VMI_GEQ,
     VMI_PUSHP,
     VMI_CALLF,
+    VMI_ADD_ASSIGN,
+    VMI_SUB_ASSIGN,
+    VMI_MUL_ASSIGN,
+    VMI_DIV_ASSIGN,
 };
 
 
@@ -107,7 +121,11 @@ static const char* VMI_info[] = {
     "VMI_LEQ",
     "VMI_GEQ",
     "VMI_PUSHP",
-    "VMI_CALLF"
+    "VMI_CALLF",
+    "VMI_ADD_ASSIGN",
+    "VMI_SUB_ASSIGN",
+    "VMI_MUL_ASSIGN",
+    "VMI_DIV_ASSIGN",
 };
 
 enum VM_errors {

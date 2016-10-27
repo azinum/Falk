@@ -23,7 +23,7 @@ void VM_init(VM_instance* VM) {
     VM->global->global = VM->global;
     VM->global->variables = new(HashTable);
     table_init(VM->global->variables);
-
+    
     table_push_object(VM->global->variables, "global", ptr = VM->global, T_SCOPE);
     table_push_object(VM->global->variables, "null", ptr = NULL, T_NULL);
     table_push_object(VM->global->variables, "undefined", ptr = NULL, T_NULL);
@@ -33,7 +33,6 @@ void VM_init(VM_instance* VM) {
 }
 
 int VM_execute(VM_instance* VM, int mode, char* input) {
-    double start = clock();
     if (!VM->init) {
         list_push(VM->instructions, &&VM_EQ_ASSIGN);
         list_push(VM->instructions, &&VM_ADD);
@@ -53,6 +52,10 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         list_push(VM->instructions, &&VM_GEQ);
         list_push(VM->instructions, &&VM_PUSHP);
         list_push(VM->instructions, &&VM_CALLF);
+        list_push(VM->instructions, &&VM_ADD_ASSIGN);
+        list_push(VM->instructions, &&VM_SUB_ASSIGN);
+        list_push(VM->instructions, &&VM_MUL_ASSIGN);
+        list_push(VM->instructions, &&VM_DIV_ASSIGN);
         VM->init = 1;
     }
 
@@ -106,10 +109,25 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             /* it is a feature to be added later */
             (*(TValue*)(list_get_from_top(VM->stack, -1).value.ptr)).tval = obj_convert(list_get_top(VM->stack));
             list_spop(VM->stack);
-            
-        } else {
-            VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_EQ_ASSIGN");
+            vm_next;
         }
+        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_EQ_ASSIGN");
+    });
+    
+    vmcase(VM_ADD_ASSIGN, {
+        num_assign(+=, "@VM_ADD_ASSIGN");
+    });
+    
+    vmcase(VM_SUB_ASSIGN, {
+        num_assign(-=, "@VM_SUB_ASSIGN");
+    });
+    
+    vmcase(VM_MUL_ASSIGN, {
+        num_assign(*=, "@VM_MUL_ASSIGN");
+    });
+    
+    vmcase(VM_DIV_ASSIGN, {
+        num_assign(/=, "@VM_DIV_ASSIGN");
     });
     
     vmcase(VM_PUSHK, {
@@ -248,7 +266,6 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             print_object(list_get_top(VM->stack));
             list_clear2(VM->stack);
         }
-        printf("%.6g ms\n", (double)(clock() - start) / 1000.0f);
         return 1;
     });
 
@@ -400,6 +417,22 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
                 
             case OP_CALLF:
                 list_push(refcast(result), list_get(VM->instructions, VMI_CALLF));
+                break;
+            
+            case OP_ADD_ASSIGN:
+                list_push(refcast(result), list_get(VM->instructions, VMI_ADD_ASSIGN));
+                break;
+                
+            case OP_SUB_ASSIGN:
+                list_push(refcast(result), list_get(VM->instructions, VMI_SUB_ASSIGN));
+                break;
+                
+            case OP_MUL_ASSIGN:
+                list_push(refcast(result), list_get(VM->instructions, VMI_MUL_ASSIGN));
+                break;
+                
+            case OP_DIV_ASSIGN:
+                list_push(refcast(result), list_get(VM->instructions, VMI_DIV_ASSIGN));
                 break;
             
             case '#' - 65: {

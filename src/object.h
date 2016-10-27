@@ -49,7 +49,7 @@ NAME->type = TYPE
 ** if variable is detected, convert it to object
 ** else: do nothing with it
 */
-#define obj_convert(O) ((O.type == T_VAR) ? ((*(TValue*)(O.value.ptr)).tval) : (O))
+#define obj_convert(O) (O.type == T_VAR ? ((*(TValue*)(O.value.ptr)).tval) : O)
 
 typedef union Value {
     char* string;
@@ -111,6 +111,10 @@ enum Instructions {
     OP_LEQ,     /* <= */
     OP_GEQ,     /* >= */
     OP_PUSHP,   /* push pointer */
+    OP_ADD_ASSIGN,
+    OP_SUB_ASSIGN,
+    OP_MUL_ASSIGN,
+    OP_DIV_ASSIGN,
     
     T_NULL,
     T_IDENTIFIER,

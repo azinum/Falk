@@ -5,8 +5,11 @@
 #
 
 T?test?     # 00 pushi test
-T?print?    # 02 pushi print
+S%5%        # 02 pushk 5
 G           # 04 eq_assign
 U           # 05 pop
 
-T?test?     # 06 pushi test
+T?test?
+S%1%
+[
+R
