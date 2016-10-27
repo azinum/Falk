@@ -206,15 +206,18 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     });
     
     vmcase(VM_CALLF, {
-        for (int i = 0; i < 24; i++) {
-            if ((VM->stack->top - i) < 0) {
-                if (list_get_from_top(VM->stack, -i).type == T_CFUNCTION) {
-                    puts("call da funk!");
-                    ((Cfunction)(list_get_from_top(VM->stack, -i).value.ptr))(VM);
-                    break;
-                }
+        Object func;
+        func = obj_convert(list_get_top(VM->stack));
+        if (func.type != T_CFUNCTION) {
+            VM_throw_error(VM, VM_ERR_CALL, VM_ERRC_NOT_A_FUNC, "@VM_CALLF");
+        } else {
+            list_spop(VM->stack);
+            int res = (*(Cfunction)func.value.ptr)(VM);
+            for (int i = 0; i < res && VM->stack->top > 0; i++) {
+                list_spop(VM->stack);
             }
         }
+        
     });
     
     vmcase(VM_IF, {
@@ -231,6 +234,8 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
                 list_spop(VM->stack);
                 VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number - 1;
             }
+        } else {
+            VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_IF");
         }
     });
     

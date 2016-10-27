@@ -108,12 +108,12 @@ enum Instructions {
     
     T_NULL,
     T_IDENTIFIER,
-    T_NUMBER,   /* 30 */
-    T_STRING,
+    T_NUMBER,
+    T_STRING,   /* 30 */
     T_CSTRING,
-    T_SCOPE,    /* 15 */
+    T_SCOPE,
     T_VAR,
-    T_CFUNCTION,
+    T_CFUNCTION,    /* 34 */
     
     TOK_NEWLINE,  /* not an instruction / op code */
     TOK_LEFT_P,     /* left parenthesis "(" */

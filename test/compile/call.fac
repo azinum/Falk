@@ -4,4 +4,7 @@
 # Date: 2016-10-26
 #
 
-T?print?
+S%12%       # pushk 12
+T?print?    # pushi print
+O           # callf
+U           # pop

@@ -115,6 +115,7 @@ enum VM_errors {
     VM_ERR_STACK,
     VM_ERR_ARITH,
     VM_INS_CONV_ERR,    /* instruction conversion error */
+    VM_ERR_CALL,    /* function call error */
 };
 
 enum VM_error_causes {
@@ -125,6 +126,7 @@ enum VM_error_causes {
     VM_ERRC_STACK_NOT_INIT,
     /* arith */
     VM_ERRC_ARITH_INVALID_TYPES,
+    VM_ERRC_NOT_A_FUNC,
 };
 
 static const char* VM_error_messages[] = {
@@ -132,6 +134,7 @@ static const char* VM_error_messages[] = {
     "Stack Error: ",
     "Arithmetic Error: ",
     "Instruction Conversion Error: ",
+    "Call Error: "
 };
 
 static const char* VM_error_cause_messages[] = {
@@ -143,6 +146,7 @@ static const char* VM_error_cause_messages[] = {
 
     /* arithmetic error causes */
     "Invalid types on arithmetic operation; ",
+    "Not a function; "
 };
 
 typedef struct Scope {
