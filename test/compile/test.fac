@@ -4,4 +4,5 @@
 # Date: 2016-10-26
 #
 
-c %0% ?test?      # 00 store 0, 12
+c%0%?test?      # 00 store 0, 12
+b%0%            # 03 load 0

@@ -126,9 +126,14 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         vm_jump(3); */
     });
     
-    /* load reg, value */
+    /* load reg */
     vmcase(VM_LOAD, {
-        
+        Object reg = (*(Object*)vm_getip(VM->ip + 1));
+        if (reg.type != T_NUMBER) {
+            VM_throw_error(VM, VM_ERR_REGISTER, VM_ERRC_REGISTER_INVALID_TYPE, "@VM_LOAD");
+        }
+        list_push(VM->stack, VM->registers[(int)reg.value.number]);
+        vm_jump(2);
     });
     
     /* store reg, value */
