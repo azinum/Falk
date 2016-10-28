@@ -56,7 +56,6 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         list_push(VM->instructions, &&VM_SUB_ASSIGN);
         list_push(VM->instructions, &&VM_MUL_ASSIGN);
         list_push(VM->instructions, &&VM_DIV_ASSIGN);
-        list_push(VM->instructions, &&VM_SET);
         list_push(VM->instructions, &&VM_LOAD);
         list_push(VM->instructions, &&VM_STORE);
         VM->init = 1;
@@ -115,15 +114,6 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             vm_next;
         }
         VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_EQ_ASSIGN");
-    });
-    
-    /*
-    ** fast assign value
-    ** set var, value
-    */
-    vmcase(VM_SET, {
-        /* obj2TValue((*(Object*)vm_getip(VM->ip + 1))).value = obj_convert((*(Object*)vm_getip(VM->ip + 2)));
-        vm_jump(3); */
     });
     
     /* load reg */
@@ -484,10 +474,6 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
                 
             case OP_DIV_ASSIGN:
                 list_push(refcast(result), list_get(VM->instructions, VMI_DIV_ASSIGN));
-                break;
-                
-            case OP_SET:
-                list_push(refcast(result), list_get(VM->instructions, VMI_SET));
                 break;
                 
             case OP_LOAD:

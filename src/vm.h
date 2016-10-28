@@ -26,7 +26,6 @@ list_define(Instruction_list, void*);
 #define vm_getip(I) (VM->program[I])
 
 
-
 #define vmcase(CASE, BODY) { \
     CASE : { BODY ; } \
     vm_next; \
@@ -98,7 +97,6 @@ enum VM_instructions {
     VMI_SUB_ASSIGN,
     VMI_MUL_ASSIGN,
     VMI_DIV_ASSIGN,
-    VMI_SET,
     VMI_LOAD,
     VMI_STORE
 };
@@ -132,7 +130,6 @@ static const char* VMI_info[] = {
     "VMI_SUB_ASSIGN",
     "VMI_MUL_ASSIGN",
     "VMI_DIV_ASSIGN",
-    "VMI_SET",
     "VMI_LOAD",
     "VMI_STORE"
 };
