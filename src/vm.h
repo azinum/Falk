@@ -60,9 +60,8 @@ if (VM->stack->top >= 2) { \
 
 #define num_assign(OP, MSG) { \
 if (VM->stack->top > 0) { \
-    op_arith(((*(TValue*)(list_get_from_top(VM->stack, -1).value.ptr)).tval), obj_convert(list_get_top(VM->stack)), OP); \
+    op_arith(((*(TValue*)(list_get_from_top(VM->stack, -1).value.ptr)).value), obj_convert(list_get_top(VM->stack)), OP); \
     list_spop(VM->stack); \
-    print_object(list_get_top(VM->stack)); \
     vm_next; \
 } \
     VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \

@@ -50,7 +50,7 @@ var.value.ptr = &obj; \
 */
 typedef struct TValue {
     unsigned long key;
-    struct Object tval;
+    struct Object value;
 } TValue;
 
 /*

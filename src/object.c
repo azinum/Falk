@@ -63,7 +63,7 @@ begin:
         
         case T_VAR: {
             if (object.value.ptr != NULL) {
-                object = (*(TValue*)object.value.ptr).tval;
+                object = (*(TValue*)object.value.ptr).value;
                 goto begin;
             } else {
                 puts("Undefined");

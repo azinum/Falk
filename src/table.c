@@ -54,13 +54,13 @@ unsigned char table_push(HashTable* table, char* key, Object value) {
     TValue* tval = table_find(table, key);
     if (tval != NULL) {
         /* replace value */
-        tval->tval = value;
+        tval->value = value;
         table->top++;
         return 1;
     } else {
         /* create new item in table */
         table_realloc(table, 1);
-        table->items[table->top].tval = value;
+        table->items[table->top].value = value;
         table->items[table->top].key = hash(key);
         table->top++;
         return 1;
@@ -76,7 +76,7 @@ unsigned char table_replace(HashTable* table, char* key, Object value) {
     TValue* item;
     if ((item = table_find(table, key)) != NULL) {  /* find item in table */
         /* key is matching */
-        item->tval = value;
+        item->value = value;
         return 1;
     }
     return 0;

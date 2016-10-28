@@ -107,7 +107,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         if (VM->stack->top >= 2) {
             /* if we do not do obj_convert then, we assign by reference / pointer */
             /* it is a feature to be added later */
-            (*(TValue*)(list_get_from_top(VM->stack, -1).value.ptr)).tval = obj_convert(list_get_top(VM->stack));
+            obj2TValue(list_get_from_top(VM->stack, -1)).value = obj_convert(list_get_top(VM->stack));
             list_spop(VM->stack);
             vm_next;
         }
@@ -132,9 +132,9 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     
     vmcase(VM_PUSHK, {
         list_push(VM->stack, *((Object*)VM->program[VM->ip + 1]));
-        if (list_get_top(VM->stack).type != T_NUMBER) {
+        /* if (list_get_top(VM->stack).type != T_NUMBER) {
             VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_ARITH_INVALID_TYPES, "@VM_PUSHK");
-        }
+        } */
         vm_skip(1);
     });
     

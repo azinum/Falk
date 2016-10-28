@@ -49,7 +49,10 @@ NAME->type = TYPE
 ** if variable is detected, convert it to object
 ** else: do nothing with it
 */
-#define obj_convert(O) (O.type == T_VAR ? ((*(TValue*)(O.value.ptr)).tval) : O)
+#define obj_convert(O) (O.type == T_VAR ? ((*(TValue*)(O.value.ptr)).value) : O)
+
+
+#define obj2TValue(O) (*(TValue*)(O.value.ptr))
 
 typedef union Value {
     char* string;
