@@ -23,6 +23,10 @@ list_define(Instruction_list, void*);
 
 #define vm_jump(N) goto *(VM->program[VM->ip += N])
 
+#define vm_getip(I) (VM->program[I])
+
+
+
 #define vmcase(CASE, BODY) { \
     CASE : { BODY ; } \
     vm_next; \
@@ -94,6 +98,9 @@ enum VM_instructions {
     VMI_SUB_ASSIGN,
     VMI_MUL_ASSIGN,
     VMI_DIV_ASSIGN,
+    VMI_SET,
+    VMI_LOAD,
+    VMI_STORE
 };
 
 
@@ -125,6 +132,9 @@ static const char* VMI_info[] = {
     "VMI_SUB_ASSIGN",
     "VMI_MUL_ASSIGN",
     "VMI_DIV_ASSIGN",
+    "VMI_SET",
+    "VMI_LOAD",
+    "VMI_STORE"
 };
 
 enum VM_errors {
@@ -133,6 +143,7 @@ enum VM_errors {
     VM_ERR_ARITH,
     VM_INS_CONV_ERR,    /* instruction conversion error */
     VM_ERR_CALL,    /* function call error */
+    VM_ERR_REGISTER
 };
 
 enum VM_error_causes {
@@ -144,6 +155,7 @@ enum VM_error_causes {
     /* arith */
     VM_ERRC_ARITH_INVALID_TYPES,
     VM_ERRC_NOT_A_FUNC,
+    VM_ERRC_REGISTER_INVALID_TYPE
 };
 
 static const char* VM_error_messages[] = {
@@ -151,7 +163,8 @@ static const char* VM_error_messages[] = {
     "Stack Error: ",
     "Arithmetic Error: ",
     "Instruction Conversion Error: ",
-    "Call Error: "
+    "Call Error: ",
+    "Register Error: "
 };
 
 static const char* VM_error_cause_messages[] = {
@@ -163,7 +176,8 @@ static const char* VM_error_cause_messages[] = {
 
     /* arithmetic error causes */
     "Invalid types on arithmetic operation; ",
-    "Not a function; "
+    "Not a function; ",
+    "Register index must be number; "
 };
 
 typedef struct Scope {
@@ -180,6 +194,7 @@ typedef struct VM_instance {
     Stack* stack;   /* list of objects */
     Scope* global;  /* global scope */
     Object* dummy;
+    Object registers[8];
 } VM_instance;
 
 int VM_execute(VM_instance* VM, int mode, char* input);

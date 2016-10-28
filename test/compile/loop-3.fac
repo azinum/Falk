@@ -9,7 +9,6 @@ S%5%        # 02 pushk 5
 G           # 04 eq_assign
 U           # 05 pop
 
-T?test?
-S%1%
-[
-R
+T?test?     # 06 pushi test
+S%1%        # 08 pushk 1
+\           # 10 add_assign

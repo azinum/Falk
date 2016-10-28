@@ -4,12 +4,4 @@
 # Date: 2016-10-26
 #
 
-T?test?     # 00 pushi test
-S%0%        # 02 pushk 1
-G           # 03 eq_assign
-U           # 04 pop
-
-T?test?     # 05 pushi test
-S%1%        # 07 pushk 1
-\           # 09 add_assign
-U           # 10 pop
+c %0% ?test?      # 00 store 0, 12

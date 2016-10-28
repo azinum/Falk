@@ -118,6 +118,10 @@ enum Instructions {
     OP_SUB_ASSIGN,
     OP_MUL_ASSIGN,
     OP_DIV_ASSIGN,
+    /* ... */
+    OP_SET = OP_DIV_ASSIGN + 2,     /* SET a, b (direct assign) */
+    OP_LOAD,
+    OP_STORE,
     
     T_NULL,
     T_IDENTIFIER,
