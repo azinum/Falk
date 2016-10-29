@@ -24,12 +24,14 @@ void VM_init(VM_instance* VM) {
     VM->global->variables = new(HashTable);
     table_init(VM->global->variables);
     
+    /*
     table_push_object(VM->global->variables, "global", ptr = VM->global, T_SCOPE);
     table_push_object(VM->global->variables, "null", ptr = NULL, T_NULL);
     table_push_object(VM->global->variables, "undefined", ptr = NULL, T_NULL);
     table_push_object(VM->global->variables, "pi", number = 3.14159265359, T_NUMBER);
     table_push_object(VM->global->variables, "a", number = 7, T_NUMBER);
     table_push_object(VM->global->variables, "vm", ptr = &VM, -1);
+    */
 }
 
 int VM_execute(VM_instance* VM, int mode, char* input) {
@@ -296,7 +298,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         if (VM->stack->top > 0) {   /* stack can not be empty */
             if (object_is_true(list_get_top(VM->stack))) {      /* if (true) {...} */
                 list_spop(VM->stack);   /* pop top */
-                vm_skip(1);
+                vm_jump(2);
             } else {
                 /*
                 ** do a jump if statement is false
@@ -496,7 +498,7 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
                 
             case OP_COPY:
                 list_push(refcast(result), list_get(VM->instructions, VMI_COPY));
-            break;
+                break;
             
             case '#' - 65: {
                 /*
@@ -610,7 +612,6 @@ void** VM_ins_add_instructions(int insc, void* ins, ...) {
 
     return result;
 }
-
 
 /*
 ** find and print Virtual Machine instruction
