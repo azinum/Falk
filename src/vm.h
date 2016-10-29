@@ -202,9 +202,9 @@ void VM_init(VM_instance* VM);
 
 void VM_instance_free(VM_instance* VM);
 
-void** ins_add_instructions(int insc, void* ins, ...);
+void** VM_ins_add_instructions(int insc, void* ins, ...);
 
-void** to_ins(VM_instance* VM, Tokenlist* list);
+void** VM_list2instructions(VM_instance* VM, Tokenlist* list);
 
 void** VM_string2bytecode(VM_instance* VM, char* input);
 

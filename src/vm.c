@@ -81,7 +81,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
                 return 0;
             }
             
-            VM->program = to_ins(VM, lexresult);
+            VM->program = VM_list2instructions(VM, lexresult);
         }
             break;
             
@@ -185,12 +185,12 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         /* if (list_get_top(VM->stack).type != T_NUMBER) {
             VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_ARITH_INVALID_TYPES, "@VM_PUSHK");
         } */
-        vm_skip(1);
+        vm_jump(2);
     });
     
     vmcase(VM_PUSHP, {
         list_push(VM->stack, *((Object*)VM->program[VM->ip + 1]));
-        vm_skip(1);
+        vm_jump(2);
     });
     
     vmcase(VM_PUSHI, {
@@ -206,7 +206,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             list_push(VM->stack, obj);
             VM->program[VM->ip] = list_get(VM->instructions, VMI_PUSHP);
             VM->program[VM->ip + 1] = &obj;
-            
+            vm_jump(2);
         } else {
             /*
             ** variable does not exist
@@ -217,7 +217,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             tobject_create(obj, ptr = table_find(VM->global->variables, name), T_VAR);
             list_push(VM->stack, obj);
         }
-        vm_skip(1);
+        vm_jump(2);
     });
     
     /*
@@ -327,7 +327,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
 /*
 ** convert input of tokens to an array of instructions
 */
-void** to_ins(VM_instance* VM, Tokenlist* list) {
+void** VM_list2instructions(VM_instance* VM, Tokenlist* list) {
     Instruction_list ilist;
     list_init(refcast(ilist));
     void** result;
@@ -597,7 +597,7 @@ void VM_throw_error(VM_instance* VM, int error, int cause, const char* msg) {
     }
 }
 
-void** ins_add_instructions(int insc, void* ins, ...) {
+void** VM_ins_add_instructions(int insc, void* ins, ...) {
     void** result = newx(void*, insc + 1);
 
     va_list args;
