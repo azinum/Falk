@@ -54,6 +54,9 @@ NAME->type = TYPE
 
 #define obj2TValue(O) (*(TValue*)(O.value.ptr))
 
+typedef int (*Cfunction)();
+
+
 typedef union Value {
     char* string;
     double number;
@@ -61,7 +64,13 @@ typedef union Value {
 } Value;
 
 typedef struct Object {
-    union Value value;
+    union {
+        char* string;
+        double number;
+        void* ptr;
+        struct Object* obj;
+        Cfunction func;
+    } value;
     unsigned char type;
 } Object;
 
@@ -73,8 +82,6 @@ typedef struct Token {
 typedef struct Offset {
     int x, y;
 } Offset;
-
-typedef int (*Cfunction)();
 
 typedef struct CLibfunction {
     char* name;
@@ -121,6 +128,7 @@ enum Instructions {
     /* ... */
     OP_LOAD = OP_DIV_ASSIGN + 2,
     OP_STORE,
+    OP_COPY,        /* copy stack value to register */
     
     T_NULL,
     T_IDENTIFIER,

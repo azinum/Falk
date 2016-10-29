@@ -37,7 +37,7 @@ void print_object(Object object) {
 begin:
     switch (object.type) {
         case T_NUMBER: {
-            printf("%.6g\n", object.value.number);
+            printf("%.8g\n", object.value.number);
         }
             break;
             

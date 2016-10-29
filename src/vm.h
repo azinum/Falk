@@ -98,7 +98,8 @@ enum VM_instructions {
     VMI_MUL_ASSIGN,
     VMI_DIV_ASSIGN,
     VMI_LOAD,
-    VMI_STORE
+    VMI_STORE,
+    VMI_COPY,
 };
 
 
@@ -131,7 +132,8 @@ static const char* VMI_info[] = {
     "VMI_MUL_ASSIGN",
     "VMI_DIV_ASSIGN",
     "VMI_LOAD",
-    "VMI_STORE"
+    "VMI_STORE",
+    "VMI_COPY"
 };
 
 enum VM_errors {

@@ -58,8 +58,11 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         list_push(VM->instructions, &&VM_DIV_ASSIGN);
         list_push(VM->instructions, &&VM_LOAD);
         list_push(VM->instructions, &&VM_STORE);
+        list_push(VM->instructions, &&VM_COPY);
         VM->init = 1;
     }
+    
+    double start = clock();
 
     switch (mode) {
         case VM_EXEC_INTERPRET: {
@@ -124,6 +127,12 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         }
         list_push(VM->stack, VM->registers[(int)reg.value.number]);
         vm_jump(2);
+    });
+    
+    /* copy reg from stack */
+    vmcase(VM_COPY, {
+        VM->registers[(int)(*(Object*)vm_getip(VM->ip + 1)).value.number] = list_get_from_top(VM->stack, -(int)(*(Object*)vm_getip(VM->ip + 1)).value.number);
+        vm_jump(3);
     });
     
     /* store reg, value */
@@ -252,7 +261,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     });
     
     vmcase(VM_GOTO, {
-        VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number-1;
+        VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number - 1;
         vm_next;
     });
     
@@ -306,6 +315,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         if (VM->stack->top > 0) {
             print_object(list_get_top(VM->stack));
             list_clear2(VM->stack);
+            printf("%.6g ms\n", (double)(clock() - start) / 1000.0f);
         }
         return 1;
     });
@@ -483,6 +493,10 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
             case OP_STORE:
                 list_push(refcast(result), list_get(VM->instructions, VMI_STORE));
                 break;
+                
+            case OP_COPY:
+                list_push(refcast(result), list_get(VM->instructions, VMI_COPY));
+            break;
             
             case '#' - 65: {
                 /*
