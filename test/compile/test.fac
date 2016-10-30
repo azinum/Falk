@@ -6,16 +6,15 @@
 # test/compile/test.fac
 #
 
-b%0%%5%
-b%1%%1%
-b%2%%1000000000%
+T?test?     # 00 pushi test
+S%0%        # 02 pushk 0
+G           # 04 eq_assign
 
-a%0%
-a%1%
-C
-c%0%%0%
-a%2%
-V
-M%24%
-K%9%
-a%0%
+T?test?         # 05 pushi test
+S%1%            # 07 pushk 1
+\               # 08 add_assign
+S%1000000000%   # 10 pushk ..
+V               # 11 less_than
+M%17%           # 12 if
+K%05%           # 14 goto 05
+R               # 16 exit
