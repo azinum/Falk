@@ -4,4 +4,10 @@
 # Date: 2016-10-26
 #
 
-T?test?S%25%G    # test = 25
+T?test?     # pushi test
+S%25%       # pushk 25
+GU          # eq_assign, pop
+
+T?test?
+S%3%
+\           # add_assign

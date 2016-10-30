@@ -114,13 +114,16 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         if (VM->stack->top >= 2) {
             /* if we do not do obj_convert then, we assign by reference / pointer */
             /* it is a feature to be added later */
-            obj2TValue(list_get_from_top(VM->stack, -1)).value = obj_convert(list_get_top(VM->stack));
+            /* must put up safety guards here */
+            *list_get_from_top(VM->stack, -1).value.obj = list_get_top(VM->stack);
             list_spop(VM->stack);
             vm_next;
         }
         VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_EQ_ASSIGN");
     });
     
+    
+    /*{============================ REGISTER BASED OPS ===================================*/
     /* load reg */
     vmcase(VM_LOAD, {
         Object reg = (*(Object*)vm_getip(VM->ip + 1));
@@ -166,6 +169,8 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         vm_jump(3);
     });
     
+    /*============================ END OF REGISTER BASED OPS ===================================}*/
+    
     vmcase(VM_ADD_ASSIGN, {
         num_assign(+=, "@VM_ADD_ASSIGN");
     });
@@ -204,7 +209,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             ** variable exist
             ** optimize: create opcode (VM_PUSHP, addr)
             */
-            tobject_create(obj, ptr = table_find(VM->global->variables, name), T_VAR);
+            tobject_create(obj, obj = &table_find(VM->global->variables, name)->value, T_VAR);
             list_push(VM->stack, obj);
             VM->program[VM->ip] = list_get(VM->instructions, VMI_PUSHP);
             VM->program[VM->ip + 1] = &obj;
@@ -216,7 +221,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             ** optimize code
             */
             table_push_object(VM->global->variables, name, ptr = NULL, T_NULL);
-            tobject_create(obj, ptr = table_find(VM->global->variables, name), T_VAR);
+            tobject_create(obj, obj = &table_find(VM->global->variables, name)->value, T_VAR);
             list_push(VM->stack, obj);
         }
         vm_jump(2);

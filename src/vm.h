@@ -33,15 +33,15 @@ list_define(Instruction_list, void*);
 
 
 #define op_arith(L, R, OP) \
-((op_arith_issafe(L, R) ? (L.value.number OP R.value.number) : (-1))
+(op_arith_issafe(L, R, T_NUMBER) ? (L.value.number OP R.value.number) : (-1))
 
 /*
 ** this macro is for type checking, to check if two objects has the same type
 */
-#define op_arith_issafe(L, R) ((L.type | R.type) == T_NUMBER))
+#define op_arith_issafe(L, R, TYPE) (L.type == TYPE && R.type == TYPE)
 
 /*
-** compare type between two objects
+** compare type between two objects (binary only)
 */
 #define comp_type(A, B, TYPE) ((A.type | B.type) == TYPE)
 
@@ -55,7 +55,6 @@ if (VM->stack->top >= 2) { \
         obj_convert(list_get_top(VM->stack)), \
     OP); \
     list_spop(VM->stack); \
-    list_get_top(VM->stack).type = T_NUMBER; \
     vm_next; \
 } else { \
     VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \
@@ -63,7 +62,7 @@ if (VM->stack->top >= 2) { \
 
 #define num_assign(OP, MSG) { \
 if (VM->stack->top > 0) { \
-    op_arith(((*(TValue*)(list_get_from_top(VM->stack, -1).value.ptr)).value), obj_convert(list_get_top(VM->stack)), OP); \
+    op_arith((*list_get_from_top(VM->stack, -1).value.obj), obj_convert(list_get_top(VM->stack)), OP); \
     list_spop(VM->stack); \
     vm_next; \
 } \

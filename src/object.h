@@ -49,22 +49,15 @@ NAME->type = TYPE
 ** if variable is detected, convert it to object
 ** else: do nothing with it
 */
-#define obj_convert(O) (O.type == T_VAR ? ((*(TValue*)(O.value.ptr)).value) : O)
+#define obj_convert(O) (O.type == T_VAR ? (*O.value.obj) : O)
 
 
-#define obj2TValue(O) (*(TValue*)(O.value.ptr))
+#define obj2TValue(O) (O.value.obj)
 
 typedef int (*Cfunction)();
 
-
-typedef union Value {
-    char* string;
-    double number;
-    void* ptr;
-} Value;
-
 typedef struct Object {
-    union {
+    union Value {
         char* string;
         double number;
         void* ptr;
