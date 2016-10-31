@@ -119,9 +119,7 @@ enum Instructions {
     OP_MUL_ASSIGN,
     OP_DIV_ASSIGN,
     /* ... */
-    OP_LOAD = OP_DIV_ASSIGN + 2,
-    OP_STORE,
-    OP_COPY,        /* copy stack value to register */
+    OP_ = OP_DIV_ASSIGN + 2,
     
     T_NULL,
     T_IDENTIFIER,

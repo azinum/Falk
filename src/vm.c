@@ -58,9 +58,6 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         list_push(VM->instructions, &&VM_SUB_ASSIGN);
         list_push(VM->instructions, &&VM_MUL_ASSIGN);
         list_push(VM->instructions, &&VM_DIV_ASSIGN);
-        list_push(VM->instructions, &&VM_LOAD);
-        list_push(VM->instructions, &&VM_STORE);
-        list_push(VM->instructions, &&VM_COPY);
         VM->init = 1;
     }
     
@@ -111,7 +108,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     ** if not true, throw an error
     */
     vmcase(VM_EQ_ASSIGN, {
-        if (VM->stack->top >= 2) {
+        if (VM->stack->top > 1) {
             /* if we do not do obj_convert then, we assign by reference / pointer */
             /* it is a feature to be added later */
             /* must put up safety guards here */
@@ -121,55 +118,6 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         }
         VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_EQ_ASSIGN");
     });
-    
-    
-    /*{============================ REGISTER BASED OPS ===================================*/
-    /* load reg */
-    vmcase(VM_LOAD, {
-        Object reg = (*(Object*)vm_getip(VM->ip + 1));
-        if (reg.type != T_NUMBER) {
-            VM_throw_error(VM, VM_ERR_REGISTER, VM_ERRC_REGISTER_INVALID_TYPE, "@VM_LOAD");
-        }
-        list_push(VM->stack, VM->registers[(int)reg.value.number]);
-        vm_jump(2);
-    });
-    
-    /* copy reg from stack */
-    vmcase(VM_COPY, {
-        VM->registers[(int)(*(Object*)vm_getip(VM->ip + 1)).value.number] = list_get_from_top(VM->stack, -(int)(*(Object*)vm_getip(VM->ip + 1)).value.number);
-        vm_jump(3);
-    });
-    
-    /* store reg, value */
-    vmcase(VM_STORE, {
-        Object reg = (*(Object*)vm_getip(VM->ip + 1));
-        Object value = (*(Object*)vm_getip(VM->ip + 2));
-        if (reg.type != T_NUMBER) {
-            VM_throw_error(VM, VM_ERR_REGISTER, VM_ERRC_REGISTER_INVALID_TYPE, "@VM_STORE");
-        }
-        
-        switch (value.type) {
-            case T_IDENTIFIER: {
-                if (table_find(VM->global->variables, value.value.string) != NULL) {
-                    tobject_create(obj, ptr = table_find(VM->global->variables, value.value.string), T_VAR);
-                    VM->registers[(int)reg.value.number] = obj;
-                } else {
-                    Object null_object;
-                    null_object.type = T_NULL;
-                    VM->registers[(int)reg.value.number] = null_object;
-                }
-            }
-                break;
-                
-            default:
-                VM->registers[(int)reg.value.number] = value;
-                break;
-        }
-    
-        vm_jump(3);
-    });
-    
-    /*============================ END OF REGISTER BASED OPS ===================================}*/
     
     vmcase(VM_ADD_ASSIGN, {
         num_assign(+=, "@VM_ADD_ASSIGN");
@@ -492,18 +440,6 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
                 
             case OP_DIV_ASSIGN:
                 list_push(refcast(result), list_get(VM->instructions, VMI_DIV_ASSIGN));
-                break;
-                
-            case OP_LOAD:
-                list_push(refcast(result), list_get(VM->instructions, VMI_LOAD));
-                break;
-                
-            case OP_STORE:
-                list_push(refcast(result), list_get(VM->instructions, VMI_STORE));
-                break;
-                
-            case OP_COPY:
-                list_push(refcast(result), list_get(VM->instructions, VMI_COPY));
                 break;
             
             case '#' - 65: {

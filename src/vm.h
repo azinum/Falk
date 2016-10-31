@@ -31,7 +31,6 @@ list_define(Instruction_list, void*);
     vm_next; \
 }
 
-
 #define op_arith(L, R, OP) \
 (op_arith_issafe(L, R, T_NUMBER) ? (L.value.number OP R.value.number) : (-1))
 
@@ -49,16 +48,15 @@ list_define(Instruction_list, void*);
 ** TODO: throw exception on error
 */
 #define num_arith(OP, MSG) \
-if (VM->stack->top >= 2) { \
+if (VM->stack->top > 1) { \
     list_get_from_top(VM->stack, -1).value.number = op_arith( \
         obj_convert(list_get_from_top(VM->stack, -1)), \
         obj_convert(list_get_top(VM->stack)), \
     OP); \
     list_spop(VM->stack); \
     vm_next; \
-} else { \
-    VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \
-}
+} \
+VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \
 
 #define num_assign(OP, MSG) { \
 if (VM->stack->top > 0) { \
@@ -96,9 +94,6 @@ enum VM_instructions {
     VMI_SUB_ASSIGN,
     VMI_MUL_ASSIGN,
     VMI_DIV_ASSIGN,
-    VMI_LOAD,
-    VMI_STORE,
-    VMI_COPY,
 };
 
 
@@ -129,10 +124,7 @@ static const char* VMI_info[] = {
     "VMI_ADD_ASSIGN",
     "VMI_SUB_ASSIGN",
     "VMI_MUL_ASSIGN",
-    "VMI_DIV_ASSIGN",
-    "VMI_LOAD",
-    "VMI_STORE",
-    "VMI_COPY"
+    "VMI_DIV_ASSIGN"
 };
 
 enum VM_errors {
@@ -153,7 +145,6 @@ enum VM_error_causes {
     /* arith */
     VM_ERRC_ARITH_INVALID_TYPES,
     VM_ERRC_NOT_A_FUNC,
-    VM_ERRC_REGISTER_INVALID_TYPE
 };
 
 static const char* VM_error_messages[] = {
@@ -192,7 +183,6 @@ typedef struct VM_instance {
     Stack* stack;   /* list of objects */
     Scope* global;  /* global scope */
     Object* dummy;
-    Object registers[8];
 } VM_instance;
 
 int VM_execute(VM_instance* VM, int mode, char* input);
