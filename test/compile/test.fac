@@ -13,7 +13,7 @@ G           # 04 eq_assign
 T?test?         # 05 pushi test
 S%1%            # 07 pushk 1
 \               # 08 add_assign
-S%10000000%     # 10 pushk ..
+S%100000000%    # 10 pushk ..
 V               # 11 less_than
 M%17%           # 12 if
 K%05%           # 14 goto 05

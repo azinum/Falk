@@ -26,7 +26,7 @@ void falk_instance_init(Falk_instance* F) {
 
 void falk_execute(Falk_instance* F) {
     if (F->argc == 2) {     /* open file */
-        char* input = read_file(F->argv[1]);
+        char* input = file_read(F->argv[1]);
         if (input != NULL)
             parse(F->parse_instance, input);
     } else {
@@ -34,9 +34,12 @@ void falk_execute(Falk_instance* F) {
         unsigned long size = 0;
         
         while (1) {
+            if (file_exist("test/compile/autoexec.fac")) {
+                VM_execute(F->vm_instance, VM_EXEC_FILE, "test/compile/autoexec.fac");
+                break;
+            }
             printf(FALK_PROMPT);
             if (getline(&input, &size, stdin) > 0) {
-                input[strlen(input)-1] = '\0';      /* remove newline */
                 if (!(VM_execute(F->vm_instance, VM_EXEC_FILE, input)))
                     break;
             }

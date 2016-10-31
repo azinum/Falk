@@ -39,9 +39,6 @@
 # sub_assign      | ]              92
 # mul_assign      | ^              93
 # div_assign      | _              94
-# load            | a              97
-# store           | b              98
-# copy            | c              99
 # ----------------|-------------|-------|
 #
 #

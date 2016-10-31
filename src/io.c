@@ -5,7 +5,7 @@
 
 #include "io.h"
 
-char* read_file(const char* fname) {
+char* file_read(const char* fname) {
     char* buffer = NULL;
     long ssize, rsize;   /* string, read size*/
     FILE* f = fopen(fname, "r");
@@ -25,7 +25,7 @@ char* read_file(const char* fname) {
     
     rsize = fread(buffer, sizeof(char), ssize, f);
     
-     buffer[ssize] = '\0'; 
+    buffer[ssize] = '\0';
     
     if (ssize != rsize) {
         free(buffer);
@@ -34,6 +34,15 @@ char* read_file(const char* fname) {
     
     fclose(f);
     
-    
     return buffer;
+}
+
+
+int file_exist(const char* fname) {
+    FILE* f = fopen(fname, "r");
+    if (f) {
+        fclose(f);
+        return 1;
+    }
+    return 0;
 }

@@ -10,6 +10,8 @@
 #include "object.h"
 #include "falk.h"
 
-char* read_file(const char* fname);
+char* file_read(const char* fname);
+
+int file_exist(const char* fname);
 
 #endif /* io_h */

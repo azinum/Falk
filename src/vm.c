@@ -85,7 +85,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             break;
             
         case VM_EXEC_FILE: {
-            char* read = read_file(input);
+            char* read = file_read(input);
             if (read != NULL) {
                 VM->program = VM_string2bytecode(VM, read);
                 break;
@@ -217,7 +217,6 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     
     vmcase(VM_GOTO, {
         VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number - 1;
-        vm_next;
     });
     
     vmcase(VM_POP, {
