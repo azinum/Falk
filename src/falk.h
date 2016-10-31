@@ -34,6 +34,10 @@ int falk_push_number(VM_instance* VM, double number);
 
 int falk_openlib(VM_instance* VM, CLibfunction lib[]);
 
+void falk_pop(VM_instance* VM);
+
+void falk_popx(VM_instance* VM, int x);
+
 void falk_push_cfunction(VM_instance* VM, char* name, Cfunction function);
 
 #endif /* falk_h */

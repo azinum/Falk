@@ -8,6 +8,7 @@
 #include <time.h>
 
 int falk_print(VM_instance* VM) {
+    falk_pop(VM);   /* pop argc */
     if (VM->stack->top > 0) {
         print_object(list_get_top(VM->stack));
         return 1;
@@ -18,6 +19,7 @@ int falk_print(VM_instance* VM) {
 
 
 int falk_time(VM_instance* VM) {
+    falk_pop(VM);
     falk_push_number(VM, clock());
-    return 0;
+    return 1;
 }

@@ -4,7 +4,9 @@
 # Date: 2016-10-26
 #
 
+S%0%        # pushk 0 (argc)
 T?time?     # pushi time
 O           # callf
+S%1%        # pushk 1 (argc)
 T?print?    # pushi print
 O           # callf

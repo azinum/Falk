@@ -68,6 +68,19 @@ int falk_openlib(VM_instance* VM, CLibfunction lib[]) {
     return 1;
 }
 
+void falk_pop(VM_instance* VM) {
+    list_spop(VM->stack);
+}
+
+/*
+** pop stack x times
+*/
+void falk_popx(VM_instance* VM, int x) {
+    while (x-- > 0) {
+        list_spop(VM->stack);
+    }
+}
+
 void falk_push_cfunction(VM_instance* VM, char* name, Cfunction function) {
     table_push_object(VM->global->variables, name, ptr = function, T_CFUNCTION);
 }

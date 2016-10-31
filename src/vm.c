@@ -196,7 +196,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     });
     
     vmcase(VM_PUSHP, {
-        list_push(VM->stack, *((Object*)VM->program[VM->ip + 1]));
+        list_push(VM->stack, *(Object*)VM->program[VM->ip + 1]);
         vm_jump(2);
     });
     
@@ -281,22 +281,24 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     });
     
     vmcase(VM_CALLF, {
-        if (VM->stack->top <= 0) {
-            VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_CALLF");
-            return 0;
-        }
-        Object func;
-        func = obj_convert(list_get_top(VM->stack));
-        if (func.type == T_CFUNCTION) {
-            list_spop(VM->stack);
-            int res = ((*(Cfunction)func.value.ptr)(VM));
-            for (int i = 0; i < res && VM->stack->top > 0; i++) {
-                list_spop(VM->stack);
+        /*
+        ** number of items on stack must be 2 or more (function and argc)
+        */
+        if (VM->stack->top > 1) {
+            Object func;
+            Object argc;
+            func = obj_convert(list_get_top(VM->stack));
+            if (func.value.func != NULL) {
+                list_spop(VM->stack);   /* pop function off stack */
+                argc = obj_convert(list_get_top(VM->stack));
+                if (func.value.func(VM)) {
+                    vm_next;
+                }
+                VM_throw_error(VM, VM_ERR_CALL, 0, "@VM_CALLF");
             }
-            vm_next;
+            VM_throw_error(VM, VM_ERR_CALL, 0, "@VM_CALLF");
         }
-        VM_throw_error(VM, VM_ERR_CALL, VM_ERRC_NOT_A_FUNC, "@VM_CALLF");
-        return 0;
+        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_CALLF");
     });
     
     vmcase(VM_IF, {
@@ -304,18 +306,17 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             if (object_is_true(list_get_top(VM->stack))) {      /* if (true) {...} */
                 list_spop(VM->stack);   /* pop top */
                 vm_jump(2);
-            } else {
-                /*
-                ** do a jump if statement is false
-                ** if (false) {...}
-                **          jump  ^
-                */
-                list_spop(VM->stack);
-                VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number - 1;
             }
-        } else {
-            VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_IF");
+            /*
+            ** do a jump if statement is false
+            ** if (false) {...}
+            **          jump  ^
+            */
+            list_spop(VM->stack);
+            VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number - 1;
+            vm_jump(2);
         }
+        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_IF");
     });
     
     vmcase(VM_EXIT, {
