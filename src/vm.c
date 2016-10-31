@@ -137,9 +137,6 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     
     vmcase(VM_PUSHK, {
         list_push(VM->stack, *((Object*)VM->program[VM->ip + 1]));
-        /* if (list_get_top(VM->stack).type != T_NUMBER) {
-            VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_ARITH_INVALID_TYPES, "@VM_PUSHK");
-        } */
         vm_jump(2);
     });
     
@@ -485,7 +482,28 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
                 break;
                 
             case '\"' - 65: {   /* string: "string" */
+                String temp;
+                list_init(refcast(temp));
+                Offset block;
+                block.x = i + 1;
+                while (i++ < limit) {
+                    if (input[i] == '\"') {
+                        block.y = i;
+                        break;
+                    }
+                }
                 
+                for (int i = block.x; i < block.y; i++) {
+                    list_push(refcast(temp), input[i]);
+                }
+                
+                list_push(refcast(temp), '\0');
+                
+                object_create(string, string = temp.value, T_CSTRING);
+                
+                list_push(refcast(result), string);
+                
+                temp.top = 0;
             }
                 break;
             
