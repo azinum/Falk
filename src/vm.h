@@ -25,6 +25,13 @@ list_define(Instruction_list, void*);
 
 #define vm_getip(I) (VM->program[I])
 
+#define vm_stack_push(VALUE) \
+VM->stack->value[VM->stack->top++] = VALUE
+
+#define vm_stack_pop() \
+VM->stack->top--
+
+#define vm_stack_size 52
 
 #define vmcase(CASE, BODY) { \
     CASE : { BODY ; } \

@@ -10,8 +10,12 @@
 
 void VM_init(VM_instance* VM) {
     VM->init = 0;
+    /* custom stack init { */
     VM->stack = new(Stack);
-    list_init(VM->stack);
+    VM->stack->value = newx(Object, vm_stack_size);
+    VM->stack->top = 0;
+    VM->stack->size = vm_stack_size;
+    /* } */
     VM->instructions = new(Instruction_list);
     list_init(VM->instructions);
     VM->dummy = new(Object);
@@ -100,7 +104,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     
     if (!VM->program)
         return 0;
-
+    
     vm_begin;
 
     /*
@@ -113,7 +117,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             /* it is a feature to be added later */
             /* must put up safety guards here */
             *list_get_from_top(VM->stack, -1).value.obj = list_get_top(VM->stack);
-            list_spop(VM->stack);
+            vm_stack_pop();
             vm_next;
         }
         VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_EQ_ASSIGN");
@@ -136,12 +140,12 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     });
     
     vmcase(VM_PUSHK, {
-        list_push(VM->stack, *((Object*)VM->program[VM->ip + 1]));
+        vm_stack_push(*((Object*)VM->program[VM->ip + 1]));
         vm_jump(2);
     });
     
     vmcase(VM_PUSHP, {
-        list_push(VM->stack, *(Object*)VM->program[VM->ip + 1]);
+        vm_stack_push(*((Object*)VM->program[VM->ip + 1]));
         vm_jump(2);
     });
     
@@ -155,7 +159,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             ** optimize: create opcode (VM_PUSHP, addr)
             */
             tobject_create(obj, obj = &table_find(VM->global->variables, name)->value, T_VAR);
-            list_push(VM->stack, obj);
+            vm_stack_push(obj);
             VM->program[VM->ip] = list_get(VM->instructions, VMI_PUSHP);
             VM->program[VM->ip + 1] = &obj;
             vm_jump(2);
@@ -167,7 +171,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             */
             table_push_object(VM->global->variables, name, ptr = NULL, T_NULL);
             tobject_create(obj, obj = &table_find(VM->global->variables, name)->value, T_VAR);
-            list_push(VM->stack, obj);
+            vm_stack_push(obj);
         }
         vm_jump(2);
     });
@@ -218,7 +222,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     
     vmcase(VM_POP, {
         if (VM->stack->top > 0) {
-            list_spop(VM->stack);
+            vm_stack_pop();
             vm_next;
         }
         VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_POP");
@@ -233,7 +237,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             Object argc;
             func = obj_convert(list_get_top(VM->stack));
             if (func.value.func != NULL) {
-                list_spop(VM->stack);   /* pop function off stack */
+                vm_stack_pop();   /* pop function off stack */
                 argc = obj_convert(list_get_top(VM->stack));
                 if (func.value.func(VM)) {
                     vm_next;
@@ -248,7 +252,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     vmcase(VM_IF, {
         if (VM->stack->top > 0) {   /* stack can not be empty */
             if (object_is_true(list_get_top(VM->stack))) {      /* if (true) {...} */
-                list_spop(VM->stack);   /* pop top */
+                vm_stack_pop();   /* pop top */
                 vm_jump(2);
             }
             /*
@@ -256,7 +260,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             ** if (false) {...}
             **          jump  ^
             */
-            list_spop(VM->stack);
+            vm_stack_pop();
             VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number - 1;
             vm_jump(2);
         }
@@ -301,7 +305,7 @@ void** VM_list2instructions(VM_instance* VM, Tokenlist* list) {
            case T_IDENTIFIER: {
                list_push(refcast(ilist), list_get(VM->instructions, VMI_PUSHI));
                list_push(refcast(ilist), new(Object));
-               (*(Object*)list_get_top(refcast(ilist))) = (Object){((union Value){}.string = current.token), T_IDENTIFIER};
+               (*(Object*)list_get_top(refcast(ilist))) = (Object){{((union Value){}.string = current.token)}, T_IDENTIFIER};
             }
                 break;
 
