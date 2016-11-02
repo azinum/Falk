@@ -25,8 +25,11 @@ list_define(Instruction_list, void*);
 
 #define vm_getip(I) (VM->program[I])
 
-#define vm_stack_push(VALUE) \
-VM->stack->value[VM->stack->top++] = VALUE
+#define vm_stack_push(VALUE, MSG) \
+if (VM->stack->top < VM->stack->size) \
+    VM->stack->value[VM->stack->top++] = VALUE; \
+else \
+    VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_OVERFLOW, MSG)
 
 #define vm_stack_pop() \
 VM->stack->top--
@@ -60,7 +63,7 @@ if (VM->stack->top > 1) { \
         obj_convert(list_get_from_top(VM->stack, -1)), \
         obj_convert(list_get_top(VM->stack)), \
     OP); \
-    list_spop(VM->stack); \
+    vm_stack_pop(); \
     vm_next; \
 } \
 VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \
@@ -68,7 +71,7 @@ VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \
 #define num_assign(OP, MSG) { \
 if (VM->stack->top > 0) { \
     op_arith((*list_get_from_top(VM->stack, -1).value.obj), obj_convert(list_get_top(VM->stack)), OP); \
-    list_spop(VM->stack); \
+    vm_stack_pop(); \
     vm_next; \
 } \
     VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \

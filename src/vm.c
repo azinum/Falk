@@ -142,12 +142,12 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     });
     
     vmcase(VM_PUSHK, {
-        vm_stack_push(*((Object*)VM->program[ip + 1]));
+        vm_stack_push(*((Object*)VM->program[ip + 1]), "@VM_PUSHK");
         vm_jump(2);
     });
     
     vmcase(VM_PUSHP, {
-        vm_stack_push(*((Object*)VM->program[ip + 1]));
+        vm_stack_push(*((Object*)VM->program[ip + 1]), "@VM_PUSHP");
         vm_jump(2);
     });
     
@@ -161,7 +161,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             ** optimize: create opcode (VM_PUSHP, addr)
             */
             tobject_create(obj, obj = &table_find(VM->global->variables, name)->value, T_VAR);
-            vm_stack_push(obj);
+            vm_stack_push(obj, "@VM_PUSHI");
             VM->program[ip] = list_get(VM->instructions, VMI_PUSHP);
             VM->program[ip + 1] = &obj;
             vm_jump(2);
@@ -173,7 +173,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             */
             table_push_object(VM->global->variables, name, ptr = NULL, T_NULL);
             tobject_create(obj, obj = &table_find(VM->global->variables, name)->value, T_VAR);
-            vm_stack_push(obj);
+            vm_stack_push(obj, "@VM_PUSHI");
         }
         vm_jump(2);
     });
