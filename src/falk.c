@@ -42,6 +42,12 @@ void falk_execute(Falk_instance* F) {
                         }
                             break;
                             
+                        case 's': {     /* execute string */
+                            VM_execute(F->vm_instance, VM_EXEC_INTERPRET, (char*)F->argv[i + 1]);
+                            i++;
+                        }
+                            break;
+                            
                         case 'i': {     /* interpret */
                             falk_input(F, VM_EXEC_INTERPRET);
                         }
@@ -83,6 +89,7 @@ done:
 void falk_print_help(Falk_instance* F) {
     printf("\n%s\n",
         "-c [script]   Execute compiled file.\n"
+        "-s            Execute string.\n"
         "-i            Run in interpreted mode.\n"
         "-h            Print usage.\n"
         "[script]      Execute script.\n"
