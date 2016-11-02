@@ -42,9 +42,16 @@ void falk_execute(Falk_instance* F) {
                         }
                             break;
                             
+                        case 'i': {     /* interpret */
+                            falk_input(F, VM_EXEC_INTERPRET);
+                        }
+                            break;
+                            
                         default: {    /* invalid option */
-                            printf("%s \"%c\"\n", "Invalid option", F->argv[i][1]);
-                            goto done;
+                            printf("Invalid option \"-%c\". %s\n",
+                                F->argv[i][1],
+                                "-h for a list of options.");
+                            i++;
                         }
                             break;
                     }
@@ -53,9 +60,7 @@ void falk_execute(Falk_instance* F) {
                     
                 default: {
                     /* script */
-                    char* read = file_read(F->argv[1]);
-                    VM_execute(F->vm_instance, VM_EXEC_FILE, read);
-                    free(read);
+                    VM_execute(F->vm_instance, VM_EXEC_FILE, (char*)F->argv[1]);
                     goto done;
                 }
                     break;
@@ -66,17 +71,7 @@ void falk_execute(Falk_instance* F) {
     
     VM_execute(F->vm_instance, VM_EXEC_FILE, "test/compile/autoexec.fac");
     
-    char* input = NULL;
-    unsigned long size = 0;
-    
-    while (1) {
-        printf(FALK_PROMPT);
-        if (getline(&input, &size, stdin) > 0) {
-            if (!(VM_execute(F->vm_instance, VM_EXEC_INTERPRET, input)))
-                break;
-        }
-    }
-    
+    falk_input(F, VM_EXEC_INTERPRET);
 done:
     falk_instance_free(F);
 }
@@ -88,11 +83,29 @@ done:
 void falk_print_help(Falk_instance* F) {
     printf("\n%s\n",
         "-c [script]   Execute compiled file.\n"
+        "-i            Run in interpreted mode.\n"
         "-h            Print usage.\n"
         "[script]      Execute script.\n"
         "0 args        Run interpreter.\n"
     );
 }
+
+/*
+** get input and execute in what exec mode
+*/
+void falk_input(Falk_instance* F, int mode) {
+    char* input = NULL;
+    unsigned long size = 0;
+    
+    while (1) {
+        printf(FALK_PROMPT);
+        if (getline(&input, &size, stdin) > 0) {
+            if (!(VM_execute(F->vm_instance, mode, input)))
+                break;
+        }
+    }
+}
+
 
 /*
 ** push number to stack
