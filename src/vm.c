@@ -105,6 +105,8 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     if (!VM->program)
         return 0;
     
+    register int ip = 0;
+    
     vm_begin;
 
     /*
@@ -140,17 +142,17 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     });
     
     vmcase(VM_PUSHK, {
-        vm_stack_push(*((Object*)VM->program[VM->ip + 1]));
+        vm_stack_push(*((Object*)VM->program[ip + 1]));
         vm_jump(2);
     });
     
     vmcase(VM_PUSHP, {
-        vm_stack_push(*((Object*)VM->program[VM->ip + 1]));
+        vm_stack_push(*((Object*)VM->program[ip + 1]));
         vm_jump(2);
     });
     
     vmcase(VM_PUSHI, {
-        Object* next = (Object*)(((VM->program[VM->ip + 1])));
+        Object* next = (Object*)(((VM->program[ip + 1])));
         char* name = next->value.string;
         
         if (table_find(VM->global->variables, name) != NULL) {
@@ -160,8 +162,8 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             */
             tobject_create(obj, obj = &table_find(VM->global->variables, name)->value, T_VAR);
             vm_stack_push(obj);
-            VM->program[VM->ip] = list_get(VM->instructions, VMI_PUSHP);
-            VM->program[VM->ip + 1] = &obj;
+            VM->program[ip] = list_get(VM->instructions, VMI_PUSHP);
+            VM->program[ip + 1] = &obj;
             vm_jump(2);
         } else {
             /*
@@ -217,7 +219,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     });
     
     vmcase(VM_GOTO, {
-        VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number - 1;
+        ip = (int)((Object*)VM->program[ip + 1])->value.number - 1;
     });
     
     vmcase(VM_POP, {
@@ -261,7 +263,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             **          jump  ^
             */
             vm_stack_pop();
-            VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number - 1;
+            ip = (int)((Object*)VM->program[ip + 1])->value.number - 1;
             vm_jump(2);
         }
         VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_IF");
