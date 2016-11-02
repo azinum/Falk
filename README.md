@@ -5,11 +5,11 @@
 
 #### Fast
 The Virtual Machine in Falk is a [Threaded Interpreter](https://en.wikipedia.org/wiki/Threaded_code).
-This is probably the fastest Virtual Machine interpreter. The only downsite I can think of is that is't harder to implement, compared to other solutions like [Decode and Dispatch](http://stackoverflow.com/questions/3848343/decode-and-dispatch-interpretation-vs-threaded-interpretation).
+This is probably the fastest Virtual Machine interpreter. The only downside I can think of is that is't harder to implement, compared to other solutions like [Decode and Dispatch](http://stackoverflow.com/questions/3848343/decode-and-dispatch-interpretation-vs-threaded-interpretation).
 
 #### Simple
 Target syntax style is aimed to be like C.
-Falk is going to be a dynamically typed language. When defining a variable, type is not requred.
+Falk is going to be a dynamically typed language. When defining a variable, type is not required.
 
 Example:
 ``` ruby
