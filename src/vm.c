@@ -142,13 +142,11 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     });
     
     vmcase(VM_PUSHK, {
-        vm_stack_push(*((Object*)VM->program[ip + 1]), "@VM_PUSHK");
-        vm_jump(2);
+        vm_stack_push(*((Object*)VM->program[++ip]), "@VM_PUSHK");
     });
     
     vmcase(VM_PUSHP, {
-        vm_stack_push(*((Object*)VM->program[ip + 1]), "@VM_PUSHP");
-        vm_jump(2);
+        vm_stack_push(*((Object*)VM->program[++ip]), "@VM_PUSHP");
     });
     
     vmcase(VM_PUSHI, {
