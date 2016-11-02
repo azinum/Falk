@@ -105,7 +105,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     if (!VM->program)
         return 0;
     
-    register int ip = 0;
+    register unsigned int ip = 0;
     
     vm_begin;
 
