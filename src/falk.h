@@ -28,6 +28,8 @@ void falk_instance_init(Falk_instance* F);
 
 void falk_execute(Falk_instance* F);
 
+void falk_print_help(Falk_instance* F);
+
 void falk_instance_free(Falk_instance* F);
 
 int falk_push_number(VM_instance* VM, double number);

@@ -32,12 +32,12 @@ void falk_execute(Falk_instance* F) {
                     switch (F->argv[i][1]) {
                         case 'c': {     /* execute compiled file */
                             VM_execute(F->vm_instance, VM_EXEC_FILE, (char*)F->argv[i + 1]);
-                            goto done;
+                            i++;
                         }
                             break;
                             
                         case 'h': {     /* help */
-                            
+                            falk_print_help(F);
                             goto done;
                         }
                             break;
@@ -61,6 +61,7 @@ void falk_execute(Falk_instance* F) {
                     break;
             }
         }
+        goto done;
     }
     
     VM_execute(F->vm_instance, VM_EXEC_FILE, "test/compile/autoexec.fac");
@@ -78,6 +79,19 @@ void falk_execute(Falk_instance* F) {
     
 done:
     falk_instance_free(F);
+}
+
+
+/*
+** prints command-line args and usage
+*/
+void falk_print_help(Falk_instance* F) {
+    printf("\n%s\n",
+        "-c [script]   Execute compiled file.\n"
+        "-h            Print usage.\n"
+        "[script]      Execute script.\n"
+        "0 args        Run interpreter.\n"
+    );
 }
 
 /*
