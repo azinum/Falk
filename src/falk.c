@@ -25,28 +25,58 @@ void falk_instance_init(Falk_instance* F) {
 
 
 void falk_execute(Falk_instance* F) {
-    if (F->argc == 2) {     /* open file */
-        char* input = file_read(F->argv[1]);
-        if (input != NULL)
-            parse(F->parse_instance, input);
-    } else {
-        char* input = NULL;
-        unsigned long size = 0;
-        
-        while (1) {
-            if (file_exist("test/compile/autoexec.fac")) {
-                VM_execute(F->vm_instance, VM_EXEC_FILE, "test/compile/autoexec.fac");
-                break;
-            }
-            printf(FALK_PROMPT);
-            if (getline(&input, &size, stdin) > 0) {
-                if (!(VM_execute(F->vm_instance, VM_EXEC_FILE, input)))
+    if (F->argc >= 2) {
+        for (int i = 1; i < F->argc; i++) {
+            switch (F->argv[i][0]) {
+                case '-': {
+                    switch (F->argv[i][1]) {
+                        case 'c': {     /* execute compiled file */
+                            VM_execute(F->vm_instance, VM_EXEC_FILE, (char*)F->argv[i + 1]);
+                            goto done;
+                        }
+                            break;
+                            
+                        case 'h': {     /* help */
+                            
+                            goto done;
+                        }
+                            break;
+                            
+                        default: {    /* invalid option */
+                            printf("%s \"%c\"\n", "Invalid option", F->argv[i][1]);
+                            goto done;
+                        }
+                            break;
+                    }
+                }
+                    break;
+                    
+                default: {
+                    /* script */
+                    char* read = file_read(F->argv[1]);
+                    VM_execute(F->vm_instance, VM_EXEC_FILE, read);
+                    free(read);
+                    goto done;
+                }
                     break;
             }
-            break;
         }
     }
     
+    VM_execute(F->vm_instance, VM_EXEC_FILE, "test/compile/autoexec.fac");
+    
+    char* input = NULL;
+    unsigned long size = 0;
+    
+    while (1) {
+        printf(FALK_PROMPT);
+        if (getline(&input, &size, stdin) > 0) {
+            if (!(VM_execute(F->vm_instance, VM_EXEC_INTERPRET, input)))
+                break;
+        }
+    }
+    
+done:
     falk_instance_free(F);
 }
 

@@ -69,7 +69,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
 
     switch (mode) {
         case VM_EXEC_INTERPRET: {
-            Lex_instance* lex_instance = new(Lex_instance);
+            /* Lex_instance* lex_instance = new(Lex_instance);
             lex_instance_init(lex_instance);
             
             if (!lex(lex_instance, input)) {
@@ -84,7 +84,8 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
                 return 0;
             }
             
-            VM->program = VM_list2instructions(VM, lexresult);
+            VM->program = VM_list2instructions(VM, lexresult); */
+            VM->program = VM_string2bytecode(VM, input);
         }
             break;
             
@@ -261,7 +262,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             **          jump  ^
             */
             vm_stack_pop();
-            ip = (int)((Object*)VM->program[ip + 1])->value.number - 1;
+            ip = (int)((Object*)VM->program[ip + 1])->value.number;
             vm_next;
         }
         VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_IF");
