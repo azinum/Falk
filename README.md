@@ -35,3 +35,28 @@ Falk is compiled in C99 and should compile on most platforms.
 
 #### Extensible
 If you want to do something, nothing should stop you from doing so. My goal is to make it possible to compile a library and then, link it to the Falk interpreter.
+
+
+
+## Accomplishments
+
+* VM **√**
+   * Variables (modify, create)
+   * Strings, numbers (``` double ```)
+   * C function calls
+   * Deserializer (execute a compiled file)
+   * Push, pop, goto, jump and if instructions
+   * Assignment & Comparison operators
+   * Simple optimizations (lookup variable and store pointer instead of key)
+* Lexer **√**
+   * Keywords
+   * Identifiers
+   * Numbers
+   * Operators (length of 1 (+, -, /))
+   * Simple block mismatch check
+   * Line counter
+* Parser **x**
+   * Infix to postfix **√**
+   * Grammar checking (syntax validation) **√**
+   * AST **x**
+   * AST -> byte code **x**
