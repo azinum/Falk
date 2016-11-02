@@ -14,3 +14,9 @@
 *.xcbkptlist
 
 test/other/gen
+
+test/lib/test/build
+
+*.o
+
+*.so
