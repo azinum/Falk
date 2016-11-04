@@ -8,9 +8,9 @@
 #include <stdio.h>
 #include "vm.h"
 
-int falk_print(VM_instance* VM);
+Object falk_print(VM_instance* VM);
 
-int falk_time(VM_instance* VM);
+Object falk_time(VM_instance* VM);
 
 static CLibfunction falklib_standard[] = {
     {"print", falk_print, "Print stuff to console"},

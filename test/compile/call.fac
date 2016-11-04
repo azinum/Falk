@@ -4,9 +4,13 @@
 # Date: 2016-10-26
 #
 
-S%0%        # pushk 0 (argc)
-T?time?     # pushi time
-O           # callf
-S%1%        # pushk 1 (argc)
-T?print?    # pushi print
-O           # callf
+#
+# Calling conversion:
+# (func, args, argc, callf)
+#
+
+T   ?print?         # pushi print
+S   "Hello World"   # pushk "Hello World"
+S   %1%             # pushk 1 (argc)
+O                   # callf
+U                   # pop rvalue (null)

@@ -7,19 +7,16 @@
 
 #include <time.h>
 
-int falk_print(VM_instance* VM) {
-    falk_pop(VM);   /* pop argc */
+Object falk_print(VM_instance* VM) {
     if (VM->stack->top > 0) {
         print_object(list_get_top(VM->stack));
-        return 1;
+        return falk_create_null(VM);
     }
     VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@falk_print lib function");
-    return 0;
+    return falk_create_null(VM);
 }
 
 
-int falk_time(VM_instance* VM) {
-    falk_pop(VM);
-    falk_push_number(VM, clock());
-    return 1;
+Object falk_time(VM_instance* VM) {
+    return falk_create_number(VM, clock());
 }

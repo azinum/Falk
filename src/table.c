@@ -15,7 +15,7 @@ unsigned long hash(const char* key) {
     
     while (i < (int)strlen(key)) {
         hashvalue <<= 8;
-        hashvalue += (int)key[i];
+        hashvalue += (unsigned long)key[i];
         i++;
     }
     

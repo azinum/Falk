@@ -34,8 +34,6 @@ else \
 #define vm_stack_pop() \
 VM->stack->top--
 
-#define vm_stack_size 52
-
 #define vmcase(CASE, BODY) { \
     CASE : { BODY ; } \
     vm_next; \
@@ -154,7 +152,9 @@ enum VM_error_causes {
     VM_ERRC_STACK_NOT_INIT,
     /* arith */
     VM_ERRC_ARITH_INVALID_TYPES,
+    
     VM_ERRC_NOT_A_FUNC,
+    VM_ERRC_NOT_A_NUMBER,
 };
 
 static const char* VM_error_messages[] = {
@@ -176,7 +176,7 @@ static const char* VM_error_cause_messages[] = {
     /* arithmetic error causes */
     "Invalid types on arithmetic operation; ",
     "Not a function; ",
-    "Register index must be number; "
+    "Not a number; ",
 };
 
 typedef struct Scope {
@@ -187,12 +187,13 @@ typedef struct Scope {
 typedef struct VM_instance {
     unsigned char init;     /* VM initialized? */
     unsigned char exit_on_error;
-    void** program;      /* pointer to an instruction */
-    int ip;
+    void** program;
+    int ip;     /* pointer to an instruction */
     Instruction_list* instructions;     /* all instructions */
     Stack* stack;   /* list of objects */
     Scope* global;  /* global scope */
-    Object* dummy;
+    Object* dummy, obj_null;
+    unsigned int stack_size;
 } VM_instance;
 
 int VM_execute(VM_instance* VM, int mode, char* input);

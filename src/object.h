@@ -55,7 +55,7 @@ NAME->type = TYPE
 
 #define obj2TValue(O) (O.value.obj)
 
-typedef int (*Cfunction)();
+typedef struct Object (*Cfunction)();
 
 typedef struct Object {
     union Value {

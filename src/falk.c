@@ -152,6 +152,27 @@ void falk_push_cfunction(VM_instance* VM, char* name, Cfunction function) {
     table_push_object(VM->global->variables, name, ptr = function, T_CFUNCTION);
 }
 
+/*
+** falk_create returns a Falk object
+*/
+Object falk_create_number(VM_instance* VM, double number) {
+    Object obj;
+    obj.type = T_NUMBER;
+    obj.value.number = number;
+    return obj;
+}
+
+Object falk_create_cstring(VM_instance* VM, char* string) {
+    Object obj;
+    obj.type = T_CSTRING;
+    obj.value.string = string;
+    return obj;
+}
+
+Object falk_create_null(VM_instance* VM) {
+    return VM->obj_null;
+}
+
 void falk_instance_free(Falk_instance* F) {
     parse_instance_free(F->parse_instance);
     lex_instance_free(F->parse_instance->lex_instance);

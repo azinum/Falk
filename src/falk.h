@@ -44,4 +44,10 @@ void falk_popx(VM_instance* VM, int x);
 
 void falk_push_cfunction(VM_instance* VM, char* name, Cfunction function);
 
+Object falk_create_number(VM_instance* VM, double number);
+
+Object falk_create_cstring(VM_instance* VM, char* string);
+
+Object falk_create_null(VM_instance* VM);
+
 #endif /* falk_h */

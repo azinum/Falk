@@ -9,12 +9,13 @@
 #include <time.h>
 
 void VM_init(VM_instance* VM) {
-    VM->init = 0;
+    VM->init = 0;   /* initialize VM instructions */
     /* custom stack init { */
+    VM->stack_size = 28;
     VM->stack = new(Stack);
-    VM->stack->value = newx(Object, vm_stack_size);
+    VM->stack->value = newx(Object, VM->stack_size);
     VM->stack->top = 0;
-    VM->stack->size = vm_stack_size;
+    VM->stack->size = VM->stack_size;
     /* } */
     VM->instructions = new(Instruction_list);
     list_init(VM->instructions);
@@ -27,6 +28,9 @@ void VM_init(VM_instance* VM) {
     VM->global->global = VM->global;
     VM->global->variables = new(HashTable);
     table_init(VM->global->variables);
+    
+    VM->obj_null.type = T_NULL;
+    VM->obj_null.value.number = 0;
     
     /*
     table_push_object(VM->global->variables, "global", ptr = VM->global, T_SCOPE);
@@ -106,7 +110,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     if (!VM->program)
         return 0;
     
-    register unsigned int ip = 0;
+    unsigned int ip = 0;
     
     vm_begin;
 
@@ -161,9 +165,9 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             */
             tobject_create(obj, obj = &table_find(VM->global->variables, name)->value, T_VAR);
             vm_stack_push(obj, "@VM_PUSHI");
-            VM->program[ip] = list_get(VM->instructions, VMI_PUSHP);
-            VM->program[ip + 1] = &obj;
-            vm_jump(2);
+            VM->program[ip++] = list_get(VM->instructions, VMI_PUSHP);
+            VM->program[ip] = &obj;
+            vm_next;
         } else {
             /*
             ** variable does not exist
@@ -229,25 +233,37 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_POP");
     });
     
+    /*
+    ** call C/Falk function
+    */
     vmcase(VM_CALLF, {
         /*
         ** number of items on stack must be 2 or more (function and argc)
         */
         if (VM->stack->top > 1) {
+            /*
+            ** calling conversion:
+            ** (func_addr, args, argc, callf)
+            */
+            Object argc = obj_convert(list_get_top(VM->stack));
             Object func;
-            Object argc;
-            func = obj_convert(list_get_top(VM->stack));
-            if (func.value.func != NULL) {
-                vm_stack_pop();   /* pop function off stack */
-                argc = obj_convert(list_get_top(VM->stack));
-                if (func.value.func(VM)) {
+            Object rvalue;
+            vm_stack_pop();
+            if (argc.type == T_NUMBER) {
+                func = obj_convert(list_get_from_top(VM->stack, -(int)argc.value.number));
+                if (func.type == T_CFUNCTION && func.value.func != NULL) {
+                    rvalue = func.value.func(VM);
+                    int i = (int)argc.value.number;
+                    while (i-- >= 0)
+                        vm_stack_pop();     /* pop args & function off stack */
+                    vm_stack_push(rvalue, "@VM_CALLF");     /* push new value (rvalue) */
                     vm_next;
                 }
-                VM_throw_error(VM, VM_ERR_CALL, 0, "@VM_CALLF");
+                VM_throw_error(VM, VM_ERR_CALL, VM_ERRC_NOT_A_FUNC, "@VM_CALLF");
             }
-            VM_throw_error(VM, VM_ERR_CALL, 0, "@VM_CALLF");
+            VM_throw_error(VM, VM_ERR_CALL, VM_ERRC_NOT_A_NUMBER, "@VM_CALLF");
         }
-        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_CALLF");
+        VM_throw_error(VM, VM_ERR_CALL, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_CALLF");
     });
     
     vmcase(VM_IF, {
