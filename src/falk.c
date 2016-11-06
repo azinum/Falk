@@ -173,6 +173,14 @@ Object falk_create_null(VM_instance* VM) {
     return VM->obj_null;
 }
 
+Token falk_create_token(char* string, unsigned int type) {
+    Token token;
+    token.token = string;
+    token.op = type;
+    return token;
+}
+
+
 void falk_instance_free(Falk_instance* F) {
     parse_instance_free(F->parse_instance);
     lex_instance_free(F->parse_instance->lex_instance);

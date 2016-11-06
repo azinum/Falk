@@ -50,4 +50,6 @@ Object falk_create_cstring(VM_instance* VM, char* string);
 
 Object falk_create_null(VM_instance* VM);
 
+Token falk_create_token(char* string, unsigned int type);
+
 #endif /* falk_h */

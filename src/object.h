@@ -65,7 +65,7 @@ typedef struct Object {
         struct Object* obj;
         Cfunction func;
     } value;
-    unsigned char type;
+    unsigned int type;
 } Object;
 
 typedef struct Token {

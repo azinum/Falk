@@ -60,6 +60,11 @@ begin:
             puts("null");
         }
             break;
+            
+        case 0: {
+            puts("null");
+        }
+            break;
         
         case T_VAR: {
             if (object.value.ptr != NULL) {
