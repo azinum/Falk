@@ -9,8 +9,9 @@
 */
 void ast_node_init(AST_node* node, AST_node* root) {
     node->top = 0;
-    node->size = 0;     /* allocated memory for children */
-    node->children = NULL;
+    node->size = 1;     /* allocated memory for children */
+    node->children = new(AST_node);
+    node->children->children = NULL;
     node->root = root;
 }
 
@@ -35,16 +36,17 @@ void ast_node_push_child_value(AST_node* node, AST_node* root, Token value) {
     if (node->top >= node->size) {
         ast_node_realloc(node, 1);
     }
+    
     if (node->children == NULL) {
-        ast_node_new_branch(node, root);
+        ast_node_init(node, root);
     }
+    
     node->children[node->top].root = root;
     node->children[node->top++].value = value;
     
     /* NULL terminate last child */
     AST_node* tmp = &node->children[node->top];
     tmp = NULL;
-
     
 }
 
@@ -81,6 +83,7 @@ AST_node* ast_node_get_child(AST_node* node, unsigned int index) {
         ast_node_throw_error(node, AST_ERR_CHILD_NOT_FOUND);
         return NULL;
     }
+    
     return &node->children[index];
 }
 
@@ -98,22 +101,8 @@ void ast_print_ast(AST_node* node, int level) {
         ast_node_throw_error(node, AST_ERR_NULL);
         return;
     }
-    
-    /*
-    int j = level;
-    AST_node* it = node;
-    if (node->has_children) {
-        for (int i = 0; i <= node->top; i++) {
-            while (j--)
-                printf("   ");
-            
-            ast_print_branch(it);
-            it = &it->children[i];
-            
-            j = level;
-        }
-    }*/
 }
+
 
 void ast_print_branch(AST_node* node) {
     if (!node) {
@@ -143,13 +132,4 @@ void ast_node_print_node(AST_node* node) {
 
 void ast_node_throw_error(AST_node* node, int error) {
     printf("AST Error: %s. @Node: %p.\n", AST_error_messages[error], node);
-}
-
-
-void ast_node_new_branch(AST_node* node, AST_node* root) {
-    node->children = new(AST_node);
-    node->children->children = NULL;
-    node->top = 0;
-    node->size = 1;
-    node->root = root;
 }

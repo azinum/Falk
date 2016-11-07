@@ -51,6 +51,4 @@ void ast_node_print_node(AST_node* node);
 
 void ast_node_throw_error(AST_node* node, int error);
 
-void ast_node_new_branch(AST_node* node, AST_node* root);
-
 #endif /* ast_h */
