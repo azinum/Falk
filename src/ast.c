@@ -27,6 +27,11 @@ void ast_node_setv(AST_node* node, Token value) {
 ** create new child
 */
 void ast_node_push_child_value(AST_node* node, AST_node* root, Token value) {
+    if (!node) {
+        ast_node_throw_error(node, AST_ERR_NULL);
+        return;
+    }
+    
     if (node->top >= node->size) {
         ast_node_realloc(node, 1);
     }
@@ -35,6 +40,12 @@ void ast_node_push_child_value(AST_node* node, AST_node* root, Token value) {
     }
     node->children[node->top].root = root;
     node->children[node->top++].value = value;
+    
+    /* NULL terminate last child */
+    AST_node* tmp = &node->children[node->top];
+    tmp = NULL;
+
+    
 }
 
 
@@ -56,39 +67,88 @@ void ast_node_realloc(AST_node* node, unsigned int size) {
 ** get child from a node
 */
 AST_node* ast_node_get_child(AST_node* node, unsigned int index) {
-    if (node == NULL)
+    if (!node) {
+        ast_node_throw_error(node, AST_ERR_NULL);
         return NULL;
+    }
     
-    if (index >= node->size || index >= node->top)
+    if (index >= node->size || index >= node->top) {
+        ast_node_throw_error(node, AST_ERR_INVALID_INDEX);
         return NULL;
+    }
     
+    if (!&node->children[index]) {
+        ast_node_throw_error(node, AST_ERR_CHILD_NOT_FOUND);
+        return NULL;
+    }
     return &node->children[index];
 }
 
-
 /*
-** walk and print ast from a node
+**
+** Root
+** |
+** A---B    # (1) print A node. (3) continue on to B node
+** |
+** a---b---c    # (2) go to child node.
+**
 */
-void ast_walk_ast(AST_node* node, int level) {
-    AST_node* child;
+void ast_print_ast(AST_node* node, int level) {
+    if (!node) {
+        ast_node_throw_error(node, AST_ERR_NULL);
+        return;
+    }
     
+    /*
     int j = level;
-    for (int i = 0; i < node->top; i++) {
-        child = ast_node_get_child(node, i);
-        if (child != NULL) {
-            while (j-- > 0)
+    AST_node* it = node;
+    if (node->has_children) {
+        for (int i = 0; i <= node->top; i++) {
+            while (j--)
                 printf("   ");
-            printf("%s\n", child->value.token);
-            if (child->children != NULL) {
-                ast_walk_ast(child, level + 1);
-            }
+            
+            ast_print_branch(it);
+            it = &it->children[i];
+            
             j = level;
         }
+    }*/
+}
+
+void ast_print_branch(AST_node* node) {
+    if (!node) {
+        ast_node_throw_error(node, AST_ERR_NULL);
+        return;
+    }
+    
+    if (!node->children) {
+        ast_node_throw_error(node, AST_ERR_NO_CHILDREN);
+        return;
+    }
+    
+    for (int i = 0; i < node->top; i++) {
+        printf("%s\n", node->children[i].value.token);
     }
 }
 
+
+void ast_node_print_node(AST_node* node) {
+    if (!node) {
+        ast_node_throw_error(node, AST_ERR_NULL);
+        return;
+    }
+    printf("%s\n", node->value.token);
+}
+
+
+void ast_node_throw_error(AST_node* node, int error) {
+    printf("AST Error: %s. @Node: %p.\n", AST_error_messages[error], node);
+}
+
+
 void ast_node_new_branch(AST_node* node, AST_node* root) {
     node->children = new(AST_node);
+    node->children->children = NULL;
     node->top = 0;
     node->size = 1;
     node->root = root;
