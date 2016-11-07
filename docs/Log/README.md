@@ -289,8 +289,9 @@ Denna "assembly" kod är ekvivalent till denna kod (Javascript):
 var test = 0;
 while ((test += 1) < 7500);
 
+```
+
 Denna vecka lyckades jag compilera språket på Linux:
 <img src="https://raw.githubusercontent.com/Azinum/Falk/master/docs/Log/images/debian2.png" width="256">
 <img src="https://raw.githubusercontent.com/Azinum/Falk/master/docs/Log/images/debian.png" width="256">
 
-```
