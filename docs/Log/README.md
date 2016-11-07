@@ -302,4 +302,34 @@ Denna vecka lyckades jag compilera språket på Linux:
 
 Under denna vecka så har jag påbörjat med [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) (Abstract Syntax Tree).
 Med hjälp av AST så kan man skapa en struktur av koden. Man delar in koden i block och tar bort onödiga symboler i ingången.
-Exempelvis så tar man bort parenteser.
+Exempelvis så tar man bort parenteser. Jag har en idé hur jag ska forma grammatiken i språket nu.
+Det som är så bra med AST är att, man kan lätt flytta runt noder till olika platser i trädet.
+
+Exempel:
+
+```
+Root
+|
+A--B--C
+   |
+   x--y--z
+```
+
+Här kan jag flytta på nod (B) och alla noder som tillhör B följer med B.
+
+```
+Root
+|
+B--A--C
+|
+x--y--z
+```
+
+På detta sett kan man skapa en grammatik som flyttar på dessa noder. Exempelvis om A + B (efter A så kommer B) så kanske regeln ser ut såhär:
+
+```
+A + B := s;
+```
+
+```s``` betyder swap eller switch. Alltså att dom ska byta plats med varandra. När man skannar igenom trädet så ska man utföra handlingar utifrån vad grammatiken säger. Om man inte hittar en regel för en symbol, då kommer det visas ett error.
+Grammatikreglerna kommer säga vad som är tillåtet, förbjud allt annat. Att göra så kallas whitelist eller vitlista. Man säger dom saker man får göra och förbjuder allt annnat.
