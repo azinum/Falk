@@ -257,3 +257,40 @@ Jag vill ha detta resultat:
 ```
 
 Det är detta jag jobbar mot att klara av. Jag kommer stöta på en hel del problem, men dom är till för att lösas.
+
+
+# V43 2016/10/31
+
+Denna vecka har jag jobbat med Virtuella Maskinen (VM). Jag har gjort så att man kan läsa in en fil och sedan exekvera den.
+Man måste själv skriva in instruktioner när man gör ett program.
+
+Här är ett exempel på ett program:
+
+``` Ruby
+T?test?     # 00 pushi test
+S%0%        # 02 pushk 0
+G           # 04 eq_assign
+
+T?test?     # 05 pushi test
+S%1%        # 07 pushk 1
+\           # 08 add_assign
+S%7500%     # 10 pushk 7500
+V           # 11 less_than
+M%17%       # 12 if
+K%05%       # 14 goto 05
+R           # 16 exit
+```
+
+Vad gör detta program? Detta är en loop. Den plussar på ``` 1 ``` på variabel ``` test ```, ``` 7500 ``` gånger.
+Denna "assembly" kod är ekvivalent till denna kod (Javascript):
+
+``` Javascript
+
+var test = 0;
+while ((test += 1) < 7500);
+
+Denna vecka lyckades jag compilera språket på Linux:
+<img src="https://raw.githubusercontent.com/Azinum/Falk/master/docs/Log/images/debian2.png" width="256">
+<img src="https://raw.githubusercontent.com/Azinum/Falk/master/docs/Log/images/debian.png" width="256">
+
+```

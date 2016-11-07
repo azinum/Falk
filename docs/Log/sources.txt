@@ -1,13 +1,14 @@
-RubyConf 2015 - Inside Ruby's VM (30/08/2016) https://www.youtube.com/watch?v=CT8JSJkymZM
-Hash function for string (06/09/2016) http://stackoverflow.com/questions/7666509/hash-function-for-string
-Read file (07/09/2016) http://stackoverflow.com/questions/3463426/in-c-how-should-i-read-a-text-file-and-print-all-strings
-Linked List (15/09/2016) http://www.learn-c.org/en/Linked_lists
-Doubly Linked List (15/09/2016) http://www.thelearningpoint.net/computer-science/data-structures-doubly-linked-list-with-c-program-source-code
-Implementing Programming Languages (16/09/2016) http://www.cse.chalmers.se/edu/year/2012/course/DAT150/lectures/plt-book.pdf
-Bitwise Operators and Bit Masks (19/09/2016) http://www.vipan.com/htdocs/bitwisehelp.html
-Recursive Parsing (30/09/2016) https://en.wikipedia.org/wiki/Recursive_descent_parser
-Pointers (17/10/2016) http://www.programiz.com/c-programming/c-pointers
-Python (17/10/2016) https://python.org
-Ruby (17/10/2016) https://www.ruby-lang.org/en/, https://github.com/ruby/ruby
-Associativity (24/10/2016) https://en.wikipedia.org/wiki/Associative_property
-Operator Precedence (24/10/2016) https://en.wikipedia.org/wiki/Order_of_operations
+RubyConf 2015 - Inside Ruby's VM (2016-08-30) https://www.youtube.com/watch?v=CT8JSJkymZM
+Hash function for string (2016-90-06) http://stackoverflow.com/questions/7666509/hash-function-for-string
+Read file (2016-09-07) http://stackoverflow.com/questions/3463426/in-c-how-should-i-read-a-text-file-and-print-all-strings
+Linked List (2016-09-15) http://www.learn-c.org/en/Linked_lists
+Doubly Linked List (2016-09-15) http://www.thelearningpoint.net/computer-science/data-structures-doubly-linked-list-with-c-program-source-code
+Implementing Programming Languages (2016-09-16) http://www.cse.chalmers.se/edu/year/2012/course/DAT150/lectures/plt-book.pdf
+Bitwise Operators and Bit Masks (2016-09-19) http://www.vipan.com/htdocs/bitwisehelp.html
+Recursive Parsing (2016-09-30) https://en.wikipedia.org/wiki/Recursive_descent_parser
+Pointers (2016-10-17) http://www.programiz.com/c-programming/c-pointers
+Python (2016-10-17) https://python.org
+Ruby (2016-10-17) https://www.ruby-lang.org/en/, https://github.com/ruby/ruby
+Associativity (2016-10-24) https://en.wikipedia.org/wiki/Associative_property
+Operator Precedence (2016-10-24) https://en.wikipedia.org/wiki/Order_of_operations
+Abstract Syntax Tree (2016-11-07) http://stackoverflow.com/questions/1721553/how-to-construct-an-abstract-syntax-tree, https://en.wikipedia.org/wiki/Abstract_syntax_tree
