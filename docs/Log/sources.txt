@@ -11,4 +11,4 @@ Python (2016-10-17) https://python.org
 Ruby (2016-10-17) https://www.ruby-lang.org/en/, https://github.com/ruby/ruby
 Associativity (2016-10-24) https://en.wikipedia.org/wiki/Associative_property
 Operator Precedence (2016-10-24) https://en.wikipedia.org/wiki/Order_of_operations
-Abstract Syntax Tree (2016-11-07) http://stackoverflow.com/questions/1721553/how-to-construct-an-abstract-syntax-tree, https://en.wikipedia.org/wiki/Abstract_syntax_tree
+Abstract Syntax Tree (2016-11-07) http://stackoverflow.com/questions/1721553/how-to-construct-an-abstract-syntax-tree, https://en.wikipedia.org/wiki/Abstract_syntax_tree, https://www.cs.umd.edu/class/fall2010/cmsc631/data-flow.pdf
