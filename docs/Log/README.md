@@ -292,6 +292,14 @@ while ((test += 1) < 7500);
 ```
 
 Denna vecka lyckades jag compilera språket på Linux:
-<img src="https://raw.githubusercontent.com/Azinum/Falk/master/docs/Log/images/debian2.png" width="256">
-<img src="https://raw.githubusercontent.com/Azinum/Falk/master/docs/Log/images/debian.png" width="256">
 
+<img src="https://raw.githubusercontent.com/Azinum/Falk/master/docs/Log/images/debian2.png" width="512">
+<img src="https://raw.githubusercontent.com/Azinum/Falk/master/docs/Log/images/debian.png" width="512">
+
+
+
+# V43 2016/11/06
+
+Under denna vecka så har jag påbörjat med [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) (Abstract Syntax Tree).
+Med hjälp av AST så kan man skapa en struktur av koden. Man delar in koden i block och tar bort onödiga symboler i ingången.
+Exempelvis så tar man bort parenteser.
