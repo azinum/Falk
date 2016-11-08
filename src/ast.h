@@ -43,12 +43,12 @@ void ast_node_realloc(AST_node* node, unsigned int size);
 
 AST_node* ast_node_get_child(AST_node* node, unsigned int index);
 
-void ast_print_ast(AST_node* node, int level);
+int ast_print_ast(AST_node* node, int level);
 
 void ast_print_branch(AST_node* node);
 
 void ast_node_print_node(AST_node* node);
 
-void ast_node_throw_error(AST_node* node, int error);
+void ast_node_throw_error(AST_node* node, int error, const char* function);
 
 #endif /* ast_h */
