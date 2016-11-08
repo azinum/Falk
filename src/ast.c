@@ -7,7 +7,7 @@
 /*
 ** initialize AST node
 */
-void ast_node_init(AST_node* node, AST_node* root) {
+void ast_node_init(AST_node* node, AST_node* parent, AST_node* root) {
     if (!node) {
         ast_node_throw_error(node, AST_ERR_NULL, "ast_node_init");
         return;
@@ -40,12 +40,15 @@ void ast_node_push_child_value(AST_node* node, AST_node* root, Token value) {
         ast_node_realloc(node, 1);
     }
     
-    if (node->children == NULL) {
-        ast_node_init(node, root);
+    if (!node->children) {
+        ast_node_init(node, node->parent, root);
     }
     
-    node->children[node->top].root = root;
-    node->children[node->top++].value = value;
+    AST_node* child = &node->children[node->top];
+    child->root = root;
+    child->value = value;
+    child->parent = node;
+    node->top++;
     
     /* NULL terminate last child */
     AST_node* tmp = &node->children[node->top];
@@ -91,6 +94,7 @@ AST_node* ast_node_get_child(AST_node* node, unsigned int index) {
     return &node->children[index];
 }
 
+
 /*
 **
 ** Root
@@ -126,6 +130,7 @@ int ast_print_ast(AST_node* node, int level) {
     return 1;
 }
 
+
 /*
 ** print children of node
 */
@@ -157,6 +162,23 @@ void ast_node_print_node(AST_node* node) {
     printf("%s\n", node->value.value);
 }
 
+
+/*
+** select first and second parent
+** swap children of the parents
+*/
+int ast_node_swap(AST_node* first, AST_node* second) {
+    if (!first) {
+        ast_node_throw_error(first, AST_ERR_NULL, "ast_node_swap");
+        return 0;
+    }
+    
+    if (!second) {
+        ast_node_throw_error(second, AST_ERR_NULL, "ast_node_swap");
+        return 0;
+    }
+    return 1;
+}
 
 /*
 ** print error message

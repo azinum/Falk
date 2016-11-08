@@ -10,6 +10,7 @@
 
 typedef struct AST_node {
     struct AST_node* root, *children;
+    struct AST_node* parent;
     unsigned int top, size;
     Token value;
 } AST_node;
@@ -31,7 +32,7 @@ static const char* AST_error_messages[] = {
     "Index out of range"
 };
 
-void ast_node_init(AST_node* node, AST_node* root);
+void ast_node_init(AST_node* node, AST_node* parent, AST_node* root);
 
 void ast_node_setv(AST_node* node, Token value);
 
@@ -48,6 +49,8 @@ int ast_print_ast(AST_node* node, int level);
 void ast_print_branch(AST_node* node);
 
 void ast_node_print_node(AST_node* node);
+
+int ast_node_swap(AST_node* first, AST_node* second);
 
 void ast_node_throw_error(AST_node* node, int error, const char* function);
 
