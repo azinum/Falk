@@ -309,20 +309,20 @@ void** VM_list2instructions(VM_instance* VM, Tokenlist* list) {
     for (int i = 0; i < list->top; i++) {
         current = list_get(list, i);
 
-        switch (current.op) {
+        switch (current.type) {
             case T_NUMBER: {
                 /* pushk, value */
                 list_push(refcast(ilist), list_get(VM->instructions, VMI_PUSHK));
                 list_push(refcast(ilist), new(Object));
                 (*(Object*)list_get_top(refcast(ilist))).type = T_NUMBER;
-                (*(Object*)list_get_top(refcast(ilist))).value.number = to_number(current.token);
+                (*(Object*)list_get_top(refcast(ilist))).value.number = to_number(current.value);
             }
                 break;
 
            case T_IDENTIFIER: {
                list_push(refcast(ilist), list_get(VM->instructions, VMI_PUSHI));
                list_push(refcast(ilist), new(Object));
-               (*(Object*)list_get_top(refcast(ilist))) = (Object){{((union Value){}.string = current.token)}, T_IDENTIFIER};
+               (*(Object*)list_get_top(refcast(ilist))) = (Object){{((union Value){}.string = current.value)}, T_IDENTIFIER};
             }
                 break;
 

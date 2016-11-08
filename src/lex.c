@@ -21,7 +21,7 @@ unsigned char is_operator(char token) {
     char* cmp = new(char);
     *cmp = token;
     for (int i = 0; i < arr_size(tokens); i++) {
-        if (!strcmp(cmp, tokens[i].token)) {
+        if (!strcmp(cmp, tokens[i].value)) {
             free(cmp);
             return 1;
         }
@@ -32,7 +32,7 @@ unsigned char is_operator(char token) {
 
 unsigned char is_keyword(Token token) {
     for (int i = 0; i < arr_size(tokens); i++) {
-        if (!strcmp(token.token, tokens[i].token)) {
+        if (!strcmp(token.value, tokens[i].value)) {
             return 1;
         }
     }
@@ -41,8 +41,8 @@ unsigned char is_keyword(Token token) {
 
 unsigned char get_keyword(Token token) {
     for (int i = 0; i < arr_size(tokens); i++) {
-        if (!strcmp(token.token, tokens[i].token)) {
-            return tokens[i].op;
+        if (!strcmp(token.value, tokens[i].value)) {
+            return tokens[i].type;
         }
     }
     return 0;
@@ -50,11 +50,11 @@ unsigned char get_keyword(Token token) {
 
 unsigned char get_opcode(char token) {
     Token cmp;
-    cmp.token = new(char);
-    *cmp.token = token;
+    cmp.value = new(char);
+    *cmp.value = token;
     for (int i = 0; i < arr_size(tokens); i++) {
-        if (!strcmp(cmp.token, tokens[i].token)) {
-            return tokens[i].op;
+        if (!strcmp(cmp.value, tokens[i].value)) {
+            return tokens[i].type;
         }
     }
     
@@ -221,17 +221,17 @@ int lex(Lex_instance* L, char* input) {
         Token* current = &refcast(L->result)->value[i];
         
         if (is_keyword(*current)) {
-            current->op = get_keyword(*current);
+            current->type = get_keyword(*current);
             continue;
         }
         
-        if (is_identifier(current->token)) {
-            current->op = T_IDENTIFIER;
+        if (is_identifier(current->value)) {
+            current->type = T_IDENTIFIER;
             continue;
         }
         
-        if (is_number(current->token)) {
-            current->op = T_NUMBER;
+        if (is_number(current->value)) {
+            current->type = T_NUMBER;
             continue;
         }
     }
@@ -243,7 +243,7 @@ int lex(Lex_instance* L, char* input) {
     list_init(refcast(lexmod));
     
     for (int i = 0; i < L->result.top; i++) {
-        if (list_get(refcast(L->result), i).op != 0) {
+        if (list_get(refcast(L->result), i).type != 0) {
             list_push(refcast(lexmod), list_get(refcast(L->result), i));
         }
     }

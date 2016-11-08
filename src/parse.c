@@ -59,8 +59,8 @@ Parse_rule get_parse_node(Parse_instance* P, int type) {
 void check_precedence(Parse_instance* P, Tokenlist* stack) {
     if (stack->top > 2) {
         Parse_rule op1, op2;
-        op1 = get_parse_node(P, list_get_top(stack).op);
-        op2 = get_parse_node(P, list_get_from_top(stack, -1).op);
+        op1 = get_parse_node(P, list_get_top(stack).type);
+        op2 = get_parse_node(P, list_get_from_top(stack, -1).type);
         if (is_op(op1.type) && is_op(op2.type)) {
             if (op2.prec >= op1.prec && op1.asso == ASSO_LR) {
                 Token temp = list_get_top(stack);
@@ -168,7 +168,7 @@ int parse_expression(Parse_instance* P, unsigned int from, unsigned int to) {
         for (int i = from;; i++) {
             current = list_get(refcast(P->lexed), i);
 //            printf("> %s\n", current.token);
-            switch (current.op) {
+            switch (current.type) {
                 case OP_ADD:
                 case OP_SUB:
                 case OP_MUL:
@@ -192,7 +192,7 @@ int parse_expression(Parse_instance* P, unsigned int from, unsigned int to) {
                 case OP_WHILE:
                 case OP_IF: {
                     /* ... */
-                    Parse_rule rule = get_parse_node(P, current.op);
+                    Parse_rule rule = get_parse_node(P, current.type);
                     Offset_list block_list, block_list_unsorted;
                     list_init(refcast(block_list));
                     list_init(refcast(block_list_unsorted));
@@ -231,7 +231,7 @@ int parse_expression(Parse_instance* P, unsigned int from, unsigned int to) {
 
                     for (int i = 0; i < block_list.top; i++) {
                         Offset block = list_get(refcast(block_list), i);
-                        if (check_current(P, P->lexed, block.x) == current.op) {
+                        if (check_current(P, P->lexed, block.x) == current.type) {
                             list_push(P->result, current);  /* do not parse same rule again */
                             continue;
                         }
@@ -259,7 +259,7 @@ int parse_expression(Parse_instance* P, unsigned int from, unsigned int to) {
 
                 case TOK_RIGHT_P: {
                     while (stack->top > 0) {
-                        if (list_get_top(stack).op == TOK_LEFT_P) {
+                        if (list_get_top(stack).type == TOK_LEFT_P) {
                             list_pop2(stack);
                             break;
                         }
@@ -303,7 +303,7 @@ int parse(Parse_instance* P, char* input) {
         return 0;
 
     for (int i = 0; i < P->result->top; i++) {
-        printf("%s ", list_get(P->result, i).token);
+        printf("%s ", list_get(P->result, i).value);
     }
     puts("");
 
@@ -324,7 +324,7 @@ int* check_next(Parse_instance* P, Tokenlist what, int index, int steps) {
 
     int i = index;
     while (steps > 0 && i < lex_top) {    /* while there are steps left */
-        int op = list_get(refcast(what), i).op;
+        int op = list_get(refcast(what), i).type;
         switch (op) {
             case OP_ADD:
             case OP_SUB:
@@ -367,11 +367,11 @@ int* check_next(Parse_instance* P, Tokenlist what, int index, int steps) {
                 int delta = 0;  /* how big difference */
 
                 while (i < lex_top) {
-                    if (list_get(refcast(what), i).op == op) {
+                    if (list_get(refcast(what), i).type == op) {
                         delta++;
                     }
 
-                    if (list_get(refcast(what), i).op == op + 1 /* matching token */) {
+                    if (list_get(refcast(what), i).type == op + 1 /* matching token */) {
                         delta--;
                     }
 

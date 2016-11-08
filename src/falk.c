@@ -175,8 +175,8 @@ Object falk_create_null(VM_instance* VM) {
 
 Token falk_create_token(char* string, unsigned int type) {
     Token token;
-    token.token = string;
-    token.op = type;
+    token.value = string;
+    token.type = type;
     return token;
 }
 

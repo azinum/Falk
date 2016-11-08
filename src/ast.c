@@ -116,7 +116,7 @@ int ast_print_ast(AST_node* node, int level) {
         while (j--)
             printf("---");
         
-        printf("%s\n", it->value.token);
+        printf("%s\n", it->value.value);
         if (it->children) {
             if (!ast_print_ast(it, level + 1))
                 continue;
@@ -142,7 +142,7 @@ void ast_print_branch(AST_node* node) {
     }
     
     for (int i = 0; i < node->top; i++) {
-        printf("%s\n", node->children[i].value.token);
+        printf("%s\n", node->children[i].value.value);
     }
 }
 
@@ -155,7 +155,7 @@ void ast_node_print_node(AST_node* node) {
         ast_node_throw_error(node, AST_ERR_NULL, "ast_node_print_node");
         return;
     }
-    printf("%s\n", node->value.token);
+    printf("%s\n", node->value.value);
 }
 
 

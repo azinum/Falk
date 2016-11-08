@@ -69,8 +69,8 @@ typedef struct Object {
 } Object;
 
 typedef struct Token {
-    char* token;
-    unsigned int op;
+    char* value;
+    unsigned int type;
 } Token;
 
 typedef struct Offset {
