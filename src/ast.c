@@ -15,7 +15,6 @@ void ast_node_init(AST_node* node, AST_node* root) {
     node->top = 0;
     node->size = 1;     /* allocated memory for children */
     node->children = new(AST_node);
-    node->children->children = NULL;
     node->root = root;
 }
 
