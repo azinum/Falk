@@ -8,7 +8,10 @@
 #include "libstandard.h"
 #include <time.h>
 
-void VM_init(VM_instance* VM) {
+int VM_init(VM_instance* VM) {
+    if (!VM) {
+        return 0;
+    }
     VM->init = 0;   /* initialize VM instructions */
     /* custom stack init { */
     VM->stack_size = 28;
@@ -40,6 +43,7 @@ void VM_init(VM_instance* VM) {
     table_push_object(VM->global->variables, "a", number = 7, T_NUMBER);
     table_push_object(VM->global->variables, "vm", ptr = &VM, -1);
     */
+    return 1;
 }
 
 int VM_execute(VM_instance* VM, int mode, char* input) {

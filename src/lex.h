@@ -45,7 +45,7 @@ static const char* allowed_characters_after = "0123456789";
 
 int lex(Lex_instance* L, char* input);
 
-void lex_instance_init(Lex_instance* L);
+int lex_instance_init(Lex_instance* L);
 
 void lex_instance_free(Lex_instance* L);
 

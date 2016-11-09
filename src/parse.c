@@ -6,7 +6,10 @@
 #include "parse.h"
 #include "falk.h"
 
-void parse_instance_init(Parse_instance* P) {
+int parse_instance_init(Parse_instance* P) {
+    if (!P) {
+        return 0;
+    }
     P->error = PARSE_NO_ERROR;
     P->warning = 0;
     P->line = 0;
@@ -29,7 +32,7 @@ void parse_instance_init(Parse_instance* P) {
     parse_rules[6].rule_size = 3;
     parse_rules[6].rule = intarr_create(parse_rules[6].rule_size, OP_WHILE, EXPRESSION, BODY | END);
     parse_rules[6].prio = intarr_create(3, 1, 2, 0);
-
+    return 1;
 }
 
 PRule get_prod_rule(unsigned char a, unsigned char b) {

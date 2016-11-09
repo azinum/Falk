@@ -129,7 +129,7 @@ typedef struct Parse_instance {
     int lim;    /* do not parse beyond this */
 } Parse_instance;
 
-void parse_instance_init(Parse_instance* P);
+int parse_instance_init(Parse_instance* P);
 
 int parse_throw_error(Parse_instance* P, unsigned char error);
 

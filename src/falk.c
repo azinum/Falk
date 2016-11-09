@@ -11,16 +11,35 @@
 #include "io.h"
 #include "libstandard.h"
 
-void falk_instance_init(Falk_instance* F) {
+int falk_instance_init(Falk_instance* F) {
+    if (!F) {
+        return 0;
+    }
+    
     F->parse_instance = new(Parse_instance);
-    parse_instance_init(F->parse_instance);
+    if (!parse_instance_init(F->parse_instance)) {
+        printf("%s\n", "Parse instance could not be created.");
+        return 0;
+    }
+    
+    
     F->parse_instance->lex_instance = new(Lex_instance);
-    lex_instance_init(F->parse_instance->lex_instance);
+    if (!lex_instance_init(F->parse_instance->lex_instance)) {
+        printf("%s\n", "Lex instance could not be created.");
+        return 0;
+    }
+    
     F->vm_instance = new(VM_instance);
-    VM_init(F->vm_instance);
+    if (!VM_init(F->vm_instance)) {
+        printf("%s\n", "VM could not be created.");
+        return 0;
+    }
+    
     F->init = 1;
     
     falk_openlib(F->vm_instance, falklib_standard);
+    
+    return 1;
 }
 
 

@@ -198,7 +198,7 @@ typedef struct VM_instance {
 
 int VM_execute(VM_instance* VM, int mode, char* input);
 
-void VM_init(VM_instance* VM);
+int VM_init(VM_instance* VM);
 
 void VM_instance_free(VM_instance* VM);
 

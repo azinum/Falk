@@ -9,11 +9,15 @@
 /*
 ** initialize any Lex_instance
 */
-void lex_instance_init(Lex_instance* L) {
+int lex_instance_init(Lex_instance* L) {
+    if (!L) {
+        return 0;
+    }
     L->error = LEX_NO_ERROR;
     L->warning = 0;
     L->line = 1;
     list_init(refcast(L->result));
+    return 1;
 }
 
 

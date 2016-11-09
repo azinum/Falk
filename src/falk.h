@@ -24,7 +24,7 @@ typedef struct Falk_instance {
     unsigned char init;
 } Falk_instance;
 
-void falk_instance_init(Falk_instance* F);
+int falk_instance_init(Falk_instance* F);
 
 void falk_execute(Falk_instance* F);
 
