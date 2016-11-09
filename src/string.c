@@ -41,3 +41,35 @@ char* string_random_range(unsigned int length, int min, int max) {
     
     return string;
 }
+
+char* string_to_upper(char* string) {
+    char* result = newx(char, strlen(string));
+    if (*string == '\0')
+        return NULL;
+    
+    for (int i = 0; string[i] != '\0'; i++) {
+        char ch = string[i];
+        if (ch >= 'a' && ch <= 'z') {
+            result[i] = ch ^ 0x20;
+            continue;
+        }
+        result[i] = ch;
+    }
+    return result;
+}
+
+char* string_to_lower(char* string) {
+    char* result = newx(char, strlen(string));
+    if (*string == '\0')
+        return NULL;
+    
+    for (int i = 0; string[i] != '\0'; i++) {
+        char ch = string[i];
+        if (ch >= 'A' && ch <= 'Z') {
+            result[i] = ch ^ 0x20;
+            continue;
+        }
+        result[i] = ch;
+    }
+    return result;
+}

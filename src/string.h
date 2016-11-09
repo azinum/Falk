@@ -15,4 +15,8 @@ char* string_random(unsigned int length);
 
 char* string_random_range(unsigned int length, int min, int max);
 
+char* string_to_upper(char* string);
+
+char* string_to_lower(char* string);
+
 #endif /* string_h */
