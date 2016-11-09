@@ -12,6 +12,7 @@
 
 #include "vm.h"
 #include "parse.h"
+#include "string.h"
 
 #define FALK_PROMPT "=> "
 #define MAXINPUT 512

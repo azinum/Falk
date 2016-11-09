@@ -36,6 +36,7 @@ int falk_instance_init(Falk_instance* F) {
     }
     
     F->init = 1;
+    srand((unsigned int)time(NULL));
     
     falk_openlib(F->vm_instance, falklib_standard);
     

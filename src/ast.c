@@ -151,7 +151,7 @@ int ast_print_ast(AST_node* node, int level) {
         it = ast_node_get_child(node, i);
             
         while (j--)
-            printf("---");
+            printf("  ");
         
         printf("%s\n", it->value.value);
         if (it->children) {
