@@ -7,15 +7,19 @@
 /*
 ** initialize AST node
 */
-void ast_node_init(AST_node* node, AST_node* parent, AST_node* root) {
+int ast_node_init(AST_node* node, AST_node* parent, AST_node* root) {
     if (!node) {
         ast_node_throw_error(node, AST_ERR_NULL, "ast_node_init");
-        return;
+        return 0;
     }
     node->top = 0;
     node->size = 1;     /* allocated memory for children */
     node->children = new(AST_node);
+    node->children->size = 0;
+    node->children->top = 0;
+    node->children->children = NULL;
     node->root = root;
+    return 1;
 }
 
 
@@ -30,21 +34,29 @@ void ast_node_setv(AST_node* node, Token value) {
 /*
 ** create new child
 */
-void ast_node_push_child_value(AST_node* node, AST_node* root, Token value) {
+int ast_node_push_child_value(AST_node* node, AST_node* root, Token value) {
     if (!node) {
         ast_node_throw_error(node, AST_ERR_NULL, "ast_node_push_child_value");
-        return;
+        return 0;
+    }
+    
+    if (!node->children) {
+        if (!ast_node_init(node, node->parent, root)) {
+            ast_node_throw_error(node, AST_ERR_INIT, "ast_node_push_child_value");
+            return 0;
+        }
     }
     
     if (node->top >= node->size) {
         ast_node_realloc(node, 1);
     }
     
-    if (!node->children) {
-        ast_node_init(node, node->parent, root);
+    AST_node* child = &node->children[node->top];
+    if (!child) {
+        ast_node_throw_error(node, AST_ERR_CHILD_NULL, "ast_node_push_child_value");
+        return 0;
     }
     
-    AST_node* child = &node->children[node->top];
     child->root = root;
     child->value = value;
     child->parent = node;
@@ -53,6 +65,7 @@ void ast_node_push_child_value(AST_node* node, AST_node* root, Token value) {
     /* NULL terminate last child */
     AST_node* tmp = &node->children[node->top];
     tmp = NULL;
+    return 1;
 }
 
 
@@ -60,15 +73,36 @@ void ast_node_push_child_value(AST_node* node, AST_node* root, Token value) {
 ** assign value to child
 */
 void ast_node_set_child_value(AST_node* node, Token value, unsigned int index) {
+    if (!node) {
+        ast_node_throw_error(node, AST_ERR_NULL, "ast_node_set_child_value");
+        return;
+    }
+    
     AST_node* child = ast_node_get_child(node, index);
-    if (child)
-        child->value = value;
+    
+    if (!child) {
+        ast_node_throw_error(child, AST_ERR_CHILD_NULL, "ast_node_set_child_value");
+        return;
+    }
+    
+    child->value = value;
 }
 
 
 void ast_node_realloc(AST_node* node, unsigned int size) {
-    node->children = (AST_node*)realloc(node->children, node->size + (sizeof(AST_node) * size));
-    node->size += sizeof(AST_node) * size;
+    if (!node) {
+        ast_node_throw_error(node, AST_ERR_NULL, "ast_node_realloc");
+        return;
+    }
+    
+    if (!node->children) {
+        ast_node_throw_error(node, AST_ERR_CHILD_NULL, "ast_node_realloc");
+        return;
+    }
+    
+    node->children = (AST_node*)realloc(node->children, node->size + (sizeof(AST_node) * (sizeof(AST_node) + size)));
+    node->size += size;
+
 }
 
 
@@ -115,7 +149,7 @@ int ast_print_ast(AST_node* node, int level) {
     
     for (int i = 0; i < node->top; i++) {
         it = ast_node_get_child(node, i);
-        
+            
         while (j--)
             printf("---");
         

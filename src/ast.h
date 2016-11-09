@@ -9,8 +9,7 @@
 #include "object.h"
 
 typedef struct AST_node {
-    struct AST_node* root, *children;
-    struct AST_node* parent;
+    struct AST_node* root, *children, *parent;
     unsigned int top, size;
     Token value;
 } AST_node;
@@ -22,6 +21,8 @@ enum AST_errors {
     AST_ERR_NO_CHILDREN,
     AST_ERR_CHILD_NOT_FOUND,
     AST_ERR_INVALID_INDEX,
+    AST_ERR_INIT,
+    AST_ERR_CHILD_NULL
 };
 
 static const char* AST_error_messages[] = {
@@ -29,14 +30,16 @@ static const char* AST_error_messages[] = {
     "Node is null",
     "Node is childless",
     "Child not found in this node",
-    "Index out of range"
+    "Index out of range",
+    "Failed to initialize node",
+    "Child node is null"
 };
 
-void ast_node_init(AST_node* node, AST_node* parent, AST_node* root);
+int ast_node_init(AST_node* node, AST_node* parent, AST_node* root);
 
 void ast_node_setv(AST_node* node, Token value);
 
-void ast_node_push_child_value(AST_node* node, AST_node* root, Token value);
+int ast_node_push_child_value(AST_node* node, AST_node* root, Token value);
 
 void ast_node_set_child_value(AST_node* node, Token value, unsigned int index);
 
