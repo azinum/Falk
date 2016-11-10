@@ -12,6 +12,7 @@
 LL* NAME = new(LL); \
 llist_init(NAME)
 
+
 /*
 ** define doubly linked list
 */
@@ -29,11 +30,13 @@ typedef struct NAME { \
 LLIST->next = NULL; \
 LLIST->prev = NULL; \
 
+
 /*
 ** create a new node
 */
 #define llist_create_node(NODE) \
 NODE->next, NODE->prev = new(typeof(*NODE)); \
+
 
 /*
 ** add new item to linked list
@@ -52,6 +55,41 @@ NODE->next, NODE->prev = new(typeof(*NODE)); \
     newnode->prev = current; \
     newnode->value = VALUE; \
 }
+
+/*
+** swap value between two linked list nodes
+*/
+#define llist_swap(LLIST, A, B) { \
+    do { \
+        typeof(LLIST) first; \
+        typeof(LLIST) second; \
+        llist_get(LLIST, first, A); \
+        llist_get(LLIST, second, B); \
+        if (!first || !second) \
+            break; \
+        typeof(LLIST->value) temp = first->value; \
+        first->value = second->value; \
+        second->value = temp; \
+    } while (0); \
+}
+
+
+#define llist_get(LLIST, RET, INDEX) { \
+    RET = NULL; \
+    do { \
+        typeof(LLIST) it = LLIST; \
+        if (!it) \
+            break; \
+        int count = INDEX; \
+        while (it->next) { \
+            it = it->next; \
+            if (!count) \
+                RET = it; \
+            count--; \
+        } \
+    } while (0); \
+}
+
 
 /*
 ** insert value at specific index on list
@@ -85,7 +123,6 @@ NODE->next, NODE->prev = new(typeof(*NODE)); \
 
 /*
 ** remove a link from list at an index
-** do {...} while(0); is used so that we can break out of macro scope
 */
 #define llist_erase(LLIST, INDEX) { \
     do { \
