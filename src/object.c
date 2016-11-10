@@ -3,9 +3,12 @@
 /* Date: 2016-08-30 */
 
 #include <limits.h>
+#include <string.h>
+#include <math.h>
 
 #include "object.h"
 #include "table.h"
+#include "falk.h"
 
 unsigned char is_number(const char* string) {
     if (strlen(string) <= 0)
@@ -47,7 +50,7 @@ begin:
             break;
             
         case T_SCOPE: {
-            printf("Scope @: $%i\n", (int)object.value.ptr);
+            printf("Scope @: $%p\n", object.value.ptr);
         }
             break;
             
@@ -103,3 +106,11 @@ int object_is_true(Object obj) {
     }
     return 0;
 }
+
+
+int object_is_cstring(Object obj) {
+    if (obj.type == T_CSTRING)
+        return 1;
+    return 0;
+}
+

@@ -142,13 +142,21 @@ list_realloc(LIST, -1)
 ** instead of pushing one character at a time, we can now push a full string onto our target string
 */
 #define string_push(STRING, VALUE) \
-for (int i = 0; i < arr_size(VALUE) - 1; i++) { \
+for (int i = 0; i < arr_size(VALUE); i++) { \
+    list_push(STRING, VALUE[i]); \
+} 
+
+#define string_push2(STRING, VALUE, LEN) \
+for (int i = 0; i < LEN; i++) { \
     list_push(STRING, VALUE[i]); \
 }
 
 #define string_pop(STRING) \
 STRING->value[STRING->top--] = '\0'; \
 list_realloc(STRING, -1)
+
+#define string_pop2(STRING) \
+STRING->value[STRING->top--] = '\0'; \
 
 #define string_print(STRING) \
 puts(STRING->value)
@@ -160,6 +168,13 @@ puts(STRING->value)
 while (STRING->top > 0) { \
     string_pop(STRING); \
 }
+
+#define string_clear2(STRING) \
+while (STRING->top > 0) { \
+    string_pop2(STRING); \
+}
+
+
 
 /*
 ** "normal" strings (char*)

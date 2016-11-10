@@ -20,3 +20,18 @@ Object falk_print(VM_instance* VM) {
 Object falk_time(VM_instance* VM) {
     return falk_create_number(VM, clock());
 }
+
+Object falk_string_compile(VM_instance* VM) {
+    return falk_create_cstring(VM, "");
+}
+
+void falklib_standard_help(VM_instance* VM, const char* function) {
+    
+    for (int i = 0; i < arr_size(falklib_standard); i++) {
+        if (falklib_standard[i].name == function) {
+            printf("%s\n%s\n", function, falklib_standard[i].doc_string);
+            return;
+        }
+    }
+    printf("%s\n", "Function was not found in this library.");
+}

@@ -51,7 +51,7 @@ void falk_execute(Falk_instance* F) {
                 case '-': {
                     switch (F->argv[i][1]) {
                         case 'c': {     /* execute compiled file */
-                            VM_execute(F->vm_instance, VM_EXEC_FILE, (char*)F->argv[i + 1]);
+                            VM_execute(F->vm_instance, VM_EXEC_FILE, F->argv[i + 1]);
                             i++;
                         }
                             break;
@@ -63,7 +63,7 @@ void falk_execute(Falk_instance* F) {
                             break;
                             
                         case 's': {     /* execute string */
-                            VM_execute(F->vm_instance, VM_EXEC_INTERPRET, (char*)F->argv[i + 1]);
+                            VM_execute(F->vm_instance, VM_EXEC_INTERPRET, F->argv[i + 1]);
                             i++;
                         }
                             break;
@@ -202,9 +202,6 @@ Token falk_create_token(char* string, unsigned int type) {
 
 
 void falk_instance_free(Falk_instance* F) {
-    parse_instance_free(F->parse_instance);
-    lex_instance_free(F->parse_instance->lex_instance);
-    VM_instance_free(F->vm_instance);
-    free(F);
+    /* something went wrong here */
 }
 

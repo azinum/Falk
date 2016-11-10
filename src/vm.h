@@ -198,6 +198,8 @@ typedef struct VM_instance {
 
 int VM_execute(VM_instance* VM, int mode, char* input);
 
+Object variable_find(VM_instance* VM, char* name);
+
 int VM_init(VM_instance* VM);
 
 void VM_instance_free(VM_instance* VM);

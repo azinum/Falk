@@ -35,14 +35,13 @@ int VM_init(VM_instance* VM) {
     VM->obj_null.type = T_NULL;
     VM->obj_null.value.number = 0;
     
-    /*
+    
     table_push_object(VM->global->variables, "global", ptr = VM->global, T_SCOPE);
     table_push_object(VM->global->variables, "null", ptr = NULL, T_NULL);
     table_push_object(VM->global->variables, "undefined", ptr = NULL, T_NULL);
     table_push_object(VM->global->variables, "pi", number = 3.14159265359, T_NUMBER);
-    table_push_object(VM->global->variables, "a", number = 7, T_NUMBER);
     table_push_object(VM->global->variables, "vm", ptr = &VM, -1);
-    */
+    
     return 1;
 }
 
@@ -162,26 +161,28 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         Object* next = (Object*)(((VM->program[ip + 1])));
         char* name = next->value.string;
         
-        if (table_find(VM->global->variables, name) != NULL) {
+        Object var = variable_find(VM, name);
+        
+        if (var.type != T_NULL) {
             /*
             ** variable exist
             ** optimize: create opcode (VM_PUSHP, addr)
             */
-            tobject_create(obj, obj = &table_find(VM->global->variables, name)->value, T_VAR);
+            tobject_create(obj, obj = &var, T_VAR);
             vm_stack_push(obj, "@VM_PUSHI");
             VM->program[ip++] = list_get(VM->instructions, VMI_PUSHP);
             VM->program[ip] = &obj;
             vm_next;
-        } else {
-            /*
-            ** variable does not exist
-            ** create variable
-            ** optimize code
-            */
-            table_push_object(VM->global->variables, name, ptr = NULL, T_NULL);
-            tobject_create(obj, obj = &table_find(VM->global->variables, name)->value, T_VAR);
-            vm_stack_push(obj, "@VM_PUSHI");
         }
+        /*
+        ** variable does not exist
+        ** create variable
+        ** optimize code
+        */
+        table_push_object(VM->global->variables, name, ptr = NULL, T_NULL);
+        tobject_create(obj, obj = &table_find(VM->global->variables, name)->value, T_VAR);
+        vm_stack_push(obj, "@VM_PUSHI");
+    
         vm_jump(2);
     });
     
@@ -300,6 +301,14 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     return 0;
 }
 
+
+Object variable_find(VM_instance* VM, char* name) {
+    if (table_find(VM->global->variables, name)) {
+        TValue* var = table_find(VM->global->variables, name);
+        return var->value;
+    }
+    return falk_create_null(VM);
+}
 
 /*
 ** convert input of tokens to an array of instructions

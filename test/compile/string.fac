@@ -1,0 +1,15 @@
+#
+# string.fac
+# Author: Azinum
+# Date: 2016-11-10
+#
+
+T   ?name?
+S   "Bob Marley"
+G
+U
+
+T   ?strcompile?
+S   "name => !{name}"
+S   %1%
+O

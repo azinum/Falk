@@ -2,6 +2,7 @@
 /* Author: Azinum */
 /* Date: 2016-11-09 */
 
+#include <math.h>
 
 #include "string.h"
 #include "object.h"
@@ -72,4 +73,16 @@ char* string_to_lower(char* string) {
         result[i] = ch;
     }
     return result;
+}
+
+
+
+
+
+char* string_int2string(int number) {
+    int size = (int)floor(log(number));
+    char* output = newx(char, size);
+    output[size] = '\0';
+    snprintf(output, size, "%i", number);
+    return output;
 }

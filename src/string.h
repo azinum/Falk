@@ -19,4 +19,6 @@ char* string_to_upper(char* string);
 
 char* string_to_lower(char* string);
 
+char* string_int2string(int number);
+
 #endif /* string_h */
