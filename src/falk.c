@@ -202,6 +202,9 @@ Token falk_create_token(char* string, unsigned int type) {
 
 
 void falk_instance_free(Falk_instance* F) {
-    /* something went wrong here */
+    VM_instance_free(F->vm_instance);
+    lex_instance_free(F->parse_instance->lex_instance);
+    parse_instance_free(F->parse_instance);
+    free(F);
 }
 
