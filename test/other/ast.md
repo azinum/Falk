@@ -1,8 +1,8 @@
-``` Ruby
 Azinum - 2016.11.10
 Abstract Syntax Tree with 2 child nodes
 
-Node structure: [value, left, right]
+``` Ruby
+# Node structure: [value, left, right]
 
 [value: "Root",
     [value: "Hello",
