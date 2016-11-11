@@ -21,4 +21,6 @@ char* string_to_lower(char* string);
 
 char* string_int2string(int number);
 
+char string_rand_char(unsigned char from, unsigned char to);
+
 #endif /* string_h */

@@ -86,3 +86,8 @@ char* string_int2string(int number) {
     snprintf(output, size, "%i", number);
     return output;
 }
+
+
+char string_rand_char(unsigned char from, unsigned char to) {
+    return from + rand() % to;
+}
