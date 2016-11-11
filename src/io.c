@@ -46,3 +46,12 @@ int file_exist(const char* fname) {
     }
     return 0;
 }
+
+/*
+** print what, x number of times
+*/
+void printx(const char* what, unsigned int count) {
+    while (count--) {
+        printf("%s", what);
+    }
+}

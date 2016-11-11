@@ -14,4 +14,6 @@ char* file_read(const char* fname);
 
 int file_exist(const char* fname);
 
+void printx(const char* what, unsigned int count);
+
 #endif /* io_h */
