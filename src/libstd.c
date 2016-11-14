@@ -25,7 +25,7 @@ Object falk_libstd_string_compile(VM_instance* VM) {
     return falk_create_cstring(VM, "");
 }
 
-void falklib_standard_help(VM_instance* VM, const char* function) {
+void falk_libstd_standard_help(VM_instance* VM, const char* function) {
     
     for (int i = 0; i < arr_size(falk_libstd); i++) {
         if (falk_libstd[i].name == function) {
