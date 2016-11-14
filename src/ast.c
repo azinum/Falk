@@ -109,6 +109,9 @@ int ast_node_swap(AST_node* node, int first, int second) {
     if (first > node->top || second > node->top) {
         return 0;
     }
+    AST_node* temp = node->children[first];
+    node->children[first] = node->children[second];
+    node->children[second] = temp;
     
     return 1;
 }
