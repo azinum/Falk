@@ -33,4 +33,6 @@ int ast_walk_ast(AST_node* node, int level);
 
 int ast_node_swap(AST_node* node, int first, int second);
 
+int ast_node_pop(AST_node* node);
+
 #endif /* ast_h */
