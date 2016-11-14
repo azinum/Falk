@@ -42,3 +42,43 @@
 # ----------------|-------------|-------|
 #
 #
+
+T?print?
+S"
+instruction name, identified as, code
+----------------|-------------|-------|
+null            | unused         -
+begin           | unused         -
+add             | C              67
+sub             | D              68
+mul             | E              69
+div             | F              70
+eq_assign       | G              71
+left_shift      | unused         -
+right_shift     | unused         -
+end             | unused         74
+goto            | K              75
+jump            | unused         -
+if              | M              -
+while           | unused         -
+callf           | O              79
+scope_begin     | unused         -
+scope_end       | unused         -
+exit            | R              82
+pushk           | S              83
+pushi           | T              84
+pop             | U              85
+lt              | V              86
+gt              | W              87
+eq              | X              88
+leq             | Y              89
+geq             | Z              90
+add_assign      | \              91
+sub_assign      | ]              92
+mul_assign      | ^              93
+div_assign      | _              94
+----------------|-------------|-------|
+"
+S%1%
+O
+U
