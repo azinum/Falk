@@ -295,7 +295,7 @@ Object variable_find(VM_instance* VM, char* name) {
 */
 void** VM_list2instructions(VM_instance* VM, Tokenlist* list) {
     Instruction_list ilist;
-    list_init(refcast(ilist));
+    list_init((&ilist));
     void** result;
 
     Token current;
@@ -305,38 +305,38 @@ void** VM_list2instructions(VM_instance* VM, Tokenlist* list) {
         switch (current.type) {
             case T_NUMBER: {
                 /* pushk, value */
-                list_push(refcast(ilist), list_get(VM->instructions, VMI_PUSHK));
-                list_push(refcast(ilist), new(Object));
-                (*(Object*)list_get_top(refcast(ilist))).type = T_NUMBER;
-                (*(Object*)list_get_top(refcast(ilist))).value.number = to_number(current.value);
+                list_push((&ilist), list_get(VM->instructions, VMI_PUSHK));
+                list_push((&ilist), new(Object));
+                (*(Object*)list_get_top((&ilist))).type = T_NUMBER;
+                (*(Object*)list_get_top((&ilist))).value.number = to_number(current.value);
             }
                 break;
 
            case T_IDENTIFIER: {
-               list_push(refcast(ilist), list_get(VM->instructions, VMI_PUSHI));
-               list_push(refcast(ilist), new(Object));
-               (*(Object*)list_get_top(refcast(ilist))) = (Object){{((union Value){}.string = current.value)}, T_IDENTIFIER};
+               list_push((&ilist), list_get(VM->instructions, VMI_PUSHI));
+               list_push((&ilist), new(Object));
+               (*(Object*)list_get_top((&ilist))) = (Object){{((union Value){}.string = current.value)}, T_IDENTIFIER};
             }
                 break;
 
             case OP_EQ_ASSIGN:
-                list_push(refcast(ilist), list_get(VM->instructions, VMI_EQ_ASSIGN));
+                list_push((&ilist), list_get(VM->instructions, VMI_EQ_ASSIGN));
                 break;
 
             case OP_ADD:
-                list_push(refcast(ilist), list_get(VM->instructions, VMI_ADD));
+                list_push((&ilist), list_get(VM->instructions, VMI_ADD));
                 break;
 
             case OP_SUB:
-                list_push(refcast(ilist), list_get(VM->instructions, VMI_SUB));
+                list_push((&ilist), list_get(VM->instructions, VMI_SUB));
                 break;
 
             case OP_DIV:
-                list_push(refcast(ilist), list_get(VM->instructions, VMI_DIV));
+                list_push((&ilist), list_get(VM->instructions, VMI_DIV));
                 break;
 
             case OP_MUL:
-                list_push(refcast(ilist), list_get(VM->instructions, VMI_MUL));
+                list_push((&ilist), list_get(VM->instructions, VMI_MUL));
                 break;
 
             default:
@@ -344,11 +344,11 @@ void** VM_list2instructions(VM_instance* VM, Tokenlist* list) {
         }
     }
 
-    list_push(refcast(ilist), list_get(VM->instructions, VMI_EXIT));     /* must not forget to exit program */
+    list_push((&ilist), list_get(VM->instructions, VMI_EXIT));     /* must not forget to exit program */
 
     result = newx(void*, ilist.size);
     for (int i = 0; i < ilist.top; i++)
-        result[i] = list_get(refcast(ilist), i);
+        result[i] = list_get((&ilist), i);
 
     return result;
 }
@@ -365,91 +365,91 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
     for (int i = 0; i < limit; i++) {
         switch (input[i] - 65) {    /* - 65 offset for making the code human readable */
             case OP_EQ_ASSIGN:
-                list_push(refcast(result),  list_get(VM->instructions, VMI_EQ_ASSIGN));
+                list_push((&result),  list_get(VM->instructions, VMI_EQ_ASSIGN));
                 break;
 
             case OP_ADD:
-                list_push(refcast(result),  list_get(VM->instructions, VMI_ADD));
+                list_push((&result),  list_get(VM->instructions, VMI_ADD));
                 break;
 
             case OP_SUB:
-                list_push(refcast(result),  list_get(VM->instructions, VMI_SUB));
+                list_push((&result),  list_get(VM->instructions, VMI_SUB));
                 break;
 
             case OP_MUL:
-                list_push(refcast(result),  list_get(VM->instructions, VMI_MUL));
+                list_push((&result),  list_get(VM->instructions, VMI_MUL));
                 break;
 
             case OP_DIV:
-                list_push(refcast(result),  list_get(VM->instructions, VMI_DIV));
+                list_push((&result),  list_get(VM->instructions, VMI_DIV));
                 break;
 
             case OP_EXIT:
-                list_push(refcast(result),  list_get(VM->instructions, VMI_EXIT));
+                list_push((&result),  list_get(VM->instructions, VMI_EXIT));
                 break;
 
             case OP_PUSHK:
-                list_push(refcast(result),  list_get(VM->instructions, VMI_PUSHK));
+                list_push((&result),  list_get(VM->instructions, VMI_PUSHK));
                 break;
 
             case OP_PUSHP:
-                list_push(refcast(result),  list_get(VM->instructions, VMI_PUSHP));
+                list_push((&result),  list_get(VM->instructions, VMI_PUSHP));
                 break;
 
             case OP_GOTO:
-                list_push(refcast(result),  list_get(VM->instructions, VMI_GOTO));
+                list_push((&result),  list_get(VM->instructions, VMI_GOTO));
                 break;
 
             case OP_IF:
-                list_push(refcast(result),  list_get(VM->instructions, VMI_IF));
+                list_push((&result),  list_get(VM->instructions, VMI_IF));
                 break;
 
             case OP_PUSHI:
-                list_push(refcast(result),  list_get(VM->instructions, VMI_PUSHI));
+                list_push((&result),  list_get(VM->instructions, VMI_PUSHI));
                 break;
 
             case OP_LT:
-                list_push(refcast(result), list_get(VM->instructions, VMI_LT));
+                list_push((&result), list_get(VM->instructions, VMI_LT));
                 break;
 
             case OP_GT:
-                list_push(refcast(result), list_get(VM->instructions, VMI_GT));
+                list_push((&result), list_get(VM->instructions, VMI_GT));
                 break;
 
             case OP_EQ:
-                list_push(refcast(result), list_get(VM->instructions, VMI_EQ));
+                list_push((&result), list_get(VM->instructions, VMI_EQ));
                 break;
 
             case OP_LEQ:
-                list_push(refcast(result), list_get(VM->instructions, VMI_LEQ));
+                list_push((&result), list_get(VM->instructions, VMI_LEQ));
                 break;
 
             case OP_GEQ:
-                list_push(refcast(result), list_get(VM->instructions, VMI_GEQ));
+                list_push((&result), list_get(VM->instructions, VMI_GEQ));
                 break;
 
             case OP_POP:
-                list_push(refcast(result), list_get(VM->instructions, VMI_POP));
+                list_push((&result), list_get(VM->instructions, VMI_POP));
                 break;
 
             case OP_CALLF:
-                list_push(refcast(result), list_get(VM->instructions, VMI_CALLF));
+                list_push((&result), list_get(VM->instructions, VMI_CALLF));
                 break;
 
             case OP_ADD_ASSIGN:
-                list_push(refcast(result), list_get(VM->instructions, VMI_ADD_ASSIGN));
+                list_push((&result), list_get(VM->instructions, VMI_ADD_ASSIGN));
                 break;
 
             case OP_SUB_ASSIGN:
-                list_push(refcast(result), list_get(VM->instructions, VMI_SUB_ASSIGN));
+                list_push((&result), list_get(VM->instructions, VMI_SUB_ASSIGN));
                 break;
 
             case OP_MUL_ASSIGN:
-                list_push(refcast(result), list_get(VM->instructions, VMI_MUL_ASSIGN));
+                list_push((&result), list_get(VM->instructions, VMI_MUL_ASSIGN));
                 break;
 
             case OP_DIV_ASSIGN:
-                list_push(refcast(result), list_get(VM->instructions, VMI_DIV_ASSIGN));
+                list_push((&result), list_get(VM->instructions, VMI_DIV_ASSIGN));
                 break;
 
             case '#' - 65: {
@@ -467,7 +467,7 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
 
             case '%' - 65: {    /* fetch number: %number% */
                 String temp;
-                list_init(refcast(temp));
+                list_init((&temp));
                 Offset block;
                 block.x = i + 1;
                 block.y = block.x;
@@ -479,7 +479,7 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
                 }
 
                 for (int i = block.x; i < block.y; i++) {
-                    list_push(refcast(temp), input[i]);
+                    list_push((&temp), input[i]);
                 }
 
                 string_push((&temp), "");
@@ -490,15 +490,15 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
 
                 object_create(number, number = to_number(temp.value), T_NUMBER);
 
-                list_push(refcast(result), (void*)number);
+                list_push((&result), (void*)number);
 
-                string_clear(refcast(temp));
+                string_clear((&temp));
             }
                 break;
 
             case '\"' - 65: {   /* string: "string" */
                 String temp;
-                list_init(refcast(temp));
+                list_init((&temp));
                 Offset block;
                 block.x = i + 1;
                 while (i++ < limit) {
@@ -509,14 +509,14 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
                 }
 
                 for (int i = block.x; i < block.y; i++) {
-                    list_push(refcast(temp), input[i]);
+                    list_push((&temp), input[i]);
                 }
 
-                list_push(refcast(temp), '\0');
+                list_push((&temp), '\0');
 
                 object_create(string, string = temp.value, T_CSTRING);
 
-                list_push(refcast(result), string);
+                list_push((&result), string);
 
                 temp.top = 0;
             }
@@ -524,7 +524,7 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
 
             case '?' - 65: {    /* identifier: ?test? */
                 String temp;
-                list_init(refcast(temp));
+                list_init((&temp));
                 Offset block;
                 block.x = i + 1;
                 while (i++ < limit) {
@@ -535,10 +535,10 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
                 }
 
                 for (int i = block.x; i < block.y; i++) {
-                    list_push(refcast(temp), input[i]);
+                    list_push((&temp), input[i]);
                 }
 
-                list_push(refcast(temp), '\0');
+                list_push((&temp), '\0');
 
                 if (!is_identifier(temp.value)) {
                     VM_throw_error(VM, 0, 0, "Not a valid identifier");
@@ -547,7 +547,7 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
 
                 object_create(identifier, string = temp.value, T_IDENTIFIER);
 
-                list_push(refcast(result), identifier);
+                list_push((&result), identifier);
 
                 temp.top = 0;
             }
@@ -558,7 +558,7 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
         }
     }
 
-    list_push(refcast(result), list_get(VM->instructions, VMI_EXIT));
+    list_push((&result), list_get(VM->instructions, VMI_EXIT));
     return result.value;
 }
 

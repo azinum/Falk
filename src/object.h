@@ -14,11 +14,6 @@
 #define newx(TYPE, SIZE) ((TYPE*)malloc(SIZE * sizeof(TYPE)))
 
 /*
-** reference cast
-*/
-#define refcast(X) (&(X))
-
-/*
 ** pointer to null address
 */
 #define null ((void*)0x0)
