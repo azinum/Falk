@@ -18,6 +18,8 @@ Object falk_libstd_print(VM_instance* VM) {
 
 
 Object falk_libstd_time(VM_instance* VM) {
+    double time = clock();
+    printf("%.7g\n", time);
     return falk_create_number(VM, clock());
 }
 
@@ -25,41 +27,41 @@ Object falk_libstd_string_compile(VM_instance* VM) {
     String result;
     list_init((&result));
     
-    Object top = falk_create_null(VM);
+    Object top;
     if (VM->stack->top > 0) {
         top = list_get_top(VM->stack);
         if (object_is_cstring(top)) {
             unsigned long size = strlen(top.value.string);
-            for (int i = 0; i < size; i++) {
+            for (unsigned long i = 0; i < size; i++) {
                 char current = top.value.string[i];
                 switch (current) {
-                        
-                    case '|': {
+                    case '!': {
                         String temp;
                         list_init((&temp));
-                        while (i < size) {
-                            if (top.value.string[++i] == '|')
-                                break;
-                            list_push((&temp), top.value.string[i]);
+                        if (top.value.string[++i] == '{') {
+                            while (i < size) {
+                                if (top.value.string[++i] == '}')
+                                    break;
+                                list_push((&temp), top.value.string[i]);
+                            }
+                            string_push((&temp), "");   /* null terminate string */
+                            char* varname = object2string(obj_convert(variable_find(VM, temp.value)));
+                            if (*varname != '\0')
+                                string_push2((&result), varname, strlen(varname));
                         }
-                        list_push((&temp), '\0');   /* null terminate string */
-                        
-                        Object var = obj_convert(variable_find(VM, temp.value));
-                        char* varstring = object2string(var);
-                        if (*varstring != '\0')
-                            string_push2((&result), varstring, strlen(varstring));
                     }
                         break;
                         
-                    default:
+                    default: {
                         list_push((&result), current);
+                    }
                         break;
                 }
             }
         }
     }
     
-    string_push2((&result), "\0", 1);
+    string_push((&result), "");
     return falk_create_cstring(VM, result.value);
 }
 

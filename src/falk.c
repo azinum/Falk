@@ -169,7 +169,7 @@ void falk_popx(VM_instance* VM, int x) {
 }
 
 void falk_push_cfunction(VM_instance* VM, char* name, Cfunction function) {
-    table_push_object(VM->global->variables, name, ptr = function, T_CFUNCTION);
+    table_push_object(VM->global->variables, name, func = function, T_CFUNCTION);
 }
 
 /*

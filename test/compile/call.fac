@@ -9,8 +9,8 @@
 # (func, args, argc, callf)
 #
 
-T   ?print?         # pushi print
-S   "Hello World"   # pushk "Hello World"
-S   %1%             # pushk 1 (argc)
-O                   # callf
-U                   # pop rvalue (null)
+T  ?print?  # pushi
+S  "Hello"  # pushk
+S  %1%      # argc
+O           # callf (print)
+U           # pop rvalue

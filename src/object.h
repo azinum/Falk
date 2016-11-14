@@ -50,7 +50,7 @@ NAME->type = TYPE
 ** if variable is detected, convert it to object
 ** else: do nothing with it
 */
-#define obj_convert(O) (O.type == T_VAR ? (*O.value.obj) : O)
+#define obj_convert(O) ((O.type == T_VAR) ? (*O.value.obj) : O)
 
 
 #define obj2TValue(O) (O.value.obj)
@@ -130,6 +130,7 @@ enum Instructions {
     T_SCOPE,
     T_VAR,
     T_CFUNCTION,    /* 34 */
+    T_POINTER,
     
     TOK_NEWLINE,  /* not an instruction / op code */
     TOK_LEFT_P,     /* left parenthesis "(" */

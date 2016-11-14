@@ -51,7 +51,7 @@ int ast_node_realloc(AST_node* node) {
         return 0;
     }
     
-    node->children = realloc(node->children, sizeof(AST_node) * (1 + node->size));
+    node->children = (AST_node**)realloc(node->children, sizeof(AST_node*) * (1 + node->size));
     node->children[node->top] = new(AST_node);
     ast_node_init(node->children[node->top], node);
     node->size++;

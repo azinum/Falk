@@ -17,11 +17,11 @@
 list_define(Stack, Object);
 list_define(Instruction_list, void*);
 
-#define vm_begin goto *(VM->program[ip])
-#define vm_next goto *(VM->program[++ip])
-#define vm_skip(N) (ip += N)
+#define vm_begin goto *(VM->program[VM->ip])
+#define vm_next goto *(VM->program[++VM->ip])
+#define vm_skip(N) (VM->ip += N)
 
-#define vm_jump(N) goto *(VM->program[ip += N])
+#define vm_jump(N) goto *(VM->program[VM->ip += N])
 
 #define vm_getip(I) (VM->program[I])
 
@@ -36,8 +36,8 @@ else { \
 #define vm_stack_pop() \
 VM->stack->top--
 
-#define vmcase(CASE, BODY) { \
-    CASE : { BODY ; } \
+#define vmcase(CASE, BODY, ...) { \
+    CASE : { BODY } \
     vm_next; \
 }
 
@@ -190,7 +190,7 @@ typedef struct VM_instance {
     unsigned char init;     /* VM initialized? */
     unsigned char exit_on_error;
     void** program;
-    int ip;     /* pointer to an instruction */
+    unsigned int ip;     /* pointer to an instruction */
     Instruction_list* instructions;     /* all instructions */
     Stack* stack;   /* list of objects */
     Scope* global;  /* global scope */

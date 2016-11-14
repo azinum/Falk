@@ -26,26 +26,28 @@ int VM_init(VM_instance* VM) {
     VM->dummy->type = T_NULL;
     VM->exit_on_error = 1;
     VM->ip = 0;
-    
+
     VM->global = new(Scope);
     VM->global->global = VM->global;
     VM->global->variables = new(HashTable);
     table_init(VM->global->variables);
-    
+
     VM->obj_null.type = T_NULL;
     VM->obj_null.value.number = 0;
-    
-    
+
+
     table_push_object(VM->global->variables, "global", ptr = VM->global, T_SCOPE);
     table_push_object(VM->global->variables, "null", ptr = NULL, T_NULL);
     table_push_object(VM->global->variables, "undefined", ptr = NULL, T_NULL);
     table_push_object(VM->global->variables, "pi", number = 3.14159265359, T_NUMBER);
-    table_push_object(VM->global->variables, "vm", ptr = &VM, -1);
-    
+    table_push_object(VM->global->variables, "vm", ptr = &VM, T_POINTER);
+
     return 1;
 }
 
 int VM_execute(VM_instance* VM, int mode, char* input) {
+    double start = clock();
+
     if (!VM->init) {
         list_push(VM->instructions, &&VM_EQ_ASSIGN);
         list_push(VM->instructions, &&VM_ADD);
@@ -71,31 +73,13 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         list_push(VM->instructions, &&VM_DIV_ASSIGN);
         VM->init = 1;
     }
-    
-    double start = clock();
 
     switch (mode) {
         case VM_EXEC_INTERPRET: {
-            /* Lex_instance* lex_instance = new(Lex_instance);
-            lex_instance_init(lex_instance);
-            
-            if (!lex(lex_instance, input)) {
-                return 0;
-            }
-            
-            Tokenlist* lexresult = new(Tokenlist);
-            list_init(lexresult);
-            *lexresult = lex_instance->result;
-            
-            if (!lexresult) {
-                return 0;
-            }
-            
-            VM->program = VM_list2instructions(VM, lexresult); */
             VM->program = VM_string2bytecode(VM, input);
         }
             break;
-            
+
         case VM_EXEC_FILE: {
             char* read = file_read(input);
             if (read != NULL) {
@@ -104,17 +88,17 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             }
             return 0;
         }
-            
+
         default:
             VM_throw_error(VM, 0, 0, "Invalid exec mode");
             break;
     }
-    
+
     if (!VM->program)
         return 0;
-    
-    unsigned int ip = 0;
-    
+
+    VM->ip = 0;
+
     vm_begin;
 
     /*
@@ -132,37 +116,37 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         }
         VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_EQ_ASSIGN");
     });
-    
+
     vmcase(VM_ADD_ASSIGN, {
         num_assign(+=, "@VM_ADD_ASSIGN");
     });
-    
+
     vmcase(VM_SUB_ASSIGN, {
         num_assign(-=, "@VM_SUB_ASSIGN");
     });
-    
+
     vmcase(VM_MUL_ASSIGN, {
         num_assign(*=, "@VM_MUL_ASSIGN");
     });
-    
+
     vmcase(VM_DIV_ASSIGN, {
         num_assign(/=, "@VM_DIV_ASSIGN");
     });
-    
+
     vmcase(VM_PUSHK, {
-        vm_stack_push(*((Object*)VM->program[++ip]), "@VM_PUSHK");
+        vm_stack_push(*((Object*)VM->program[++VM->ip]), "@VM_PUSHK");
     });
-    
+
     vmcase(VM_PUSHP, {
-        vm_stack_push(*((Object*)VM->program[++ip]), "@VM_PUSHP");
+        vm_stack_push(*((Object*)VM->program[++VM->ip]), "@VM_PUSHP");
     });
-    
+
     vmcase(VM_PUSHI, {
-        Object* next = (Object*)(((VM->program[ip + 1])));
+        Object* next = (Object*)(((VM->program[VM->ip + 1])));
         char* name = next->value.string;
-        
+
         Object var = variable_find(VM, name);
-        
+
         if (var.type != T_NULL) {
             /*
             ** variable exist
@@ -170,8 +154,8 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             */
             tobject_create(obj, obj = &var, T_VAR);
             vm_stack_push(obj, "@VM_PUSHI");
-            VM->program[ip++] = list_get(VM->instructions, VMI_PUSHP);
-            VM->program[ip] = &obj;
+            VM->program[VM->ip++] = list_get(VM->instructions, VMI_PUSHP);
+            VM->program[VM->ip] = &obj;
             vm_next;
         }
         /*
@@ -182,10 +166,10 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         table_push_object(VM->global->variables, name, ptr = NULL, T_NULL);
         tobject_create(obj, obj = &table_find(VM->global->variables, name)->value, T_VAR);
         vm_stack_push(obj, "@VM_PUSHI");
-    
+
         vm_jump(2);
     });
-    
+
     /*
     ** if we can do arithmetic operation,
     ** jump to next instruction, else: throw error message
@@ -193,31 +177,31 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     vmcase(VM_ADD, {
         num_arith(+, "@VM_ADD");
     });
-    
+
     vmcase(VM_SUB, {
         num_arith(-, "@VM_SUB");
     });
-    
+
     vmcase(VM_DIV, {
         num_arith(/, "@VM_DIV");
     });
-    
+
     vmcase(VM_MUL, {
         num_arith(*, "@VM_MUL");
     });
-    
+
     vmcase(VM_LT, {
         num_arith(<, "@VM_LT");
     });
-    
+
     vmcase(VM_GT, {
         num_arith(>, "@VM_GT");
     });
-    
+
     vmcase(VM_EQ, {
         num_arith(==, "@VM_EQ");
     });
-    
+
     vmcase(VM_LEQ, {
         num_arith(<=, "@VM_LEQ");
     });
@@ -225,11 +209,11 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     vmcase(VM_GEQ, {
         num_arith(>=, "@VM_GEQ");
     });
-    
+
     vmcase(VM_GOTO, {
-        ip = (int)((Object*)VM->program[ip + 1])->value.number - 1;
+        VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number - 1;
     });
-    
+
     vmcase(VM_POP, {
         if (VM->stack->top > 0) {
             vm_stack_pop();
@@ -237,7 +221,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         }
         VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_POP");
     });
-    
+
     /*
     ** call C/Falk function
     */
@@ -246,31 +230,27 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         ** number of items on stack must be 2 or more (function and argc)
         */
         if (VM->stack->top > 1) {
-            /*
-            ** calling conversion:
-            ** (func_addr, args, argc, callf)
-            */
-            Object argc = obj_convert(list_get_top(VM->stack));
             Object func;
-            Object rvalue;
-            vm_stack_pop();
-            if (argc.type == T_NUMBER) {
-                func = obj_convert(list_get_from_top(VM->stack, -(int)argc.value.number));
-                if (func.type == T_CFUNCTION && func.value.func != NULL) {
-                    rvalue = func.value.func(VM);
-                    int i = (int)argc.value.number;
-                    while (i-- >= 0)
-                        vm_stack_pop();     /* pop args & function off stack */
-                    vm_stack_push(rvalue, "@VM_CALLF");     /* push new value (rvalue) */
-                    vm_next;
+            Object argc;
+            
+            func = obj_convert(list_get_from_top(VM->stack, -1));
+            argc = list_get_top(VM->stack);
+            
+            if (func.type == T_CFUNCTION && argc.type == T_NUMBER) {
+                vm_stack_pop();     /* pop function */
+                vm_stack_pop();     /* pop argc */
+                /* leftovers are all the args */
+                Object rvalue = func.value.func(VM);
+                /* pop all args (Cfunctions may not increment or decrement stack, it's okay to modify items on stack though) */
+                for (int i = 0; i < (int)argc.value.number; i++) {
+                    vm_stack_pop();
                 }
-                VM_throw_error(VM, VM_ERR_CALL, VM_ERRC_NOT_A_FUNC, "@VM_CALLF");
+                vm_stack_push(rvalue, "@VM_CALLF");     /* push rvalue to stack */
+                vm_next;
             }
-            VM_throw_error(VM, VM_ERR_CALL, VM_ERRC_NOT_A_NUMBER, "@VM_CALLF");
         }
-        VM_throw_error(VM, VM_ERR_CALL, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_CALLF");
     });
-    
+
     vmcase(VM_IF, {
         if (VM->stack->top > 0) {   /* stack can not be empty */
             if (object_is_true(list_get_top(VM->stack))) {      /* if (true) {...} */
@@ -283,18 +263,18 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             **          jump  ^
             */
             vm_stack_pop();
-            ip = (int)((Object*)VM->program[ip + 1])->value.number;
+            VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number;
             vm_next;
         }
         VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_IF");
     });
-    
+
     vmcase(VM_EXIT, {
         if (VM->stack->top > 0) {
             print_object(list_get_top(VM->stack));
-            list_clear2(VM->stack);
-            printf("%.6g ms\n", (double)(clock() - start) / 1000.0f);
+            list_sclear(VM->stack);
         }
+        printf("%.6g ms\n", (double)(clock() - start) / 1000.0f);
         return 1;
     });
 
@@ -379,99 +359,99 @@ void** VM_list2instructions(VM_instance* VM, Tokenlist* list) {
 */
 void** VM_string2bytecode(VM_instance* VM, char* input) {
     Instruction_list result;
-    list_init(refcast(result));
-    
+    list_init((&result));
+
     int limit = (int)strlen(input);
     for (int i = 0; i < limit; i++) {
         switch (input[i] - 65) {    /* - 65 offset for making the code human readable */
             case OP_EQ_ASSIGN:
                 list_push(refcast(result),  list_get(VM->instructions, VMI_EQ_ASSIGN));
                 break;
-            
+
             case OP_ADD:
                 list_push(refcast(result),  list_get(VM->instructions, VMI_ADD));
                 break;
-            
+
             case OP_SUB:
                 list_push(refcast(result),  list_get(VM->instructions, VMI_SUB));
                 break;
-            
+
             case OP_MUL:
                 list_push(refcast(result),  list_get(VM->instructions, VMI_MUL));
                 break;
-            
+
             case OP_DIV:
                 list_push(refcast(result),  list_get(VM->instructions, VMI_DIV));
                 break;
-            
+
             case OP_EXIT:
                 list_push(refcast(result),  list_get(VM->instructions, VMI_EXIT));
                 break;
-            
+
             case OP_PUSHK:
                 list_push(refcast(result),  list_get(VM->instructions, VMI_PUSHK));
                 break;
-                
+
             case OP_PUSHP:
                 list_push(refcast(result),  list_get(VM->instructions, VMI_PUSHP));
                 break;
-                
+
             case OP_GOTO:
                 list_push(refcast(result),  list_get(VM->instructions, VMI_GOTO));
                 break;
-                
+
             case OP_IF:
                 list_push(refcast(result),  list_get(VM->instructions, VMI_IF));
                 break;
-                
+
             case OP_PUSHI:
                 list_push(refcast(result),  list_get(VM->instructions, VMI_PUSHI));
                 break;
-                
+
             case OP_LT:
                 list_push(refcast(result), list_get(VM->instructions, VMI_LT));
                 break;
-                
+
             case OP_GT:
                 list_push(refcast(result), list_get(VM->instructions, VMI_GT));
                 break;
-                
+
             case OP_EQ:
                 list_push(refcast(result), list_get(VM->instructions, VMI_EQ));
                 break;
-                
+
             case OP_LEQ:
                 list_push(refcast(result), list_get(VM->instructions, VMI_LEQ));
                 break;
-                
+
             case OP_GEQ:
                 list_push(refcast(result), list_get(VM->instructions, VMI_GEQ));
                 break;
-            
+
             case OP_POP:
                 list_push(refcast(result), list_get(VM->instructions, VMI_POP));
                 break;
-                
+
             case OP_CALLF:
                 list_push(refcast(result), list_get(VM->instructions, VMI_CALLF));
                 break;
-            
+
             case OP_ADD_ASSIGN:
                 list_push(refcast(result), list_get(VM->instructions, VMI_ADD_ASSIGN));
                 break;
-                
+
             case OP_SUB_ASSIGN:
                 list_push(refcast(result), list_get(VM->instructions, VMI_SUB_ASSIGN));
                 break;
-                
+
             case OP_MUL_ASSIGN:
                 list_push(refcast(result), list_get(VM->instructions, VMI_MUL_ASSIGN));
                 break;
-                
+
             case OP_DIV_ASSIGN:
                 list_push(refcast(result), list_get(VM->instructions, VMI_DIV_ASSIGN));
                 break;
-            
+
             case '#' - 65: {
                 /*
                 ** skip till comment end (newline, #)
@@ -484,37 +464,38 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
                 }
             }
                 break;
-            
+
             case '%' - 65: {    /* fetch number: %number% */
                 String temp;
                 list_init(refcast(temp));
                 Offset block;
                 block.x = i + 1;
+                block.y = block.x;
                 while (i++ < limit) {
                     if (input[i] == '%') {
                         block.y = i;
                         break;
                     }
                 }
-                
+
                 for (int i = block.x; i < block.y; i++) {
                     list_push(refcast(temp), input[i]);
                 }
-                
-                list_push(refcast(temp), '\0');
+
+                string_push((&temp), "");
                 if (!is_number(temp.value)) {
                     VM_throw_error(VM, 0, 0, "Not a number");
                     return null;
                 }
-                
+
                 object_create(number, number = to_number(temp.value), T_NUMBER);
-                
+
                 list_push(refcast(result), (void*)number);
-                
+
                 string_clear(refcast(temp));
             }
                 break;
-                
+
             case '\"' - 65: {   /* string: "string" */
                 String temp;
                 list_init(refcast(temp));
@@ -526,21 +507,21 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
                         break;
                     }
                 }
-                
+
                 for (int i = block.x; i < block.y; i++) {
                     list_push(refcast(temp), input[i]);
                 }
-                
+
                 list_push(refcast(temp), '\0');
-                
+
                 object_create(string, string = temp.value, T_CSTRING);
-                
+
                 list_push(refcast(result), string);
-                
+
                 temp.top = 0;
             }
                 break;
-            
+
             case '?' - 65: {    /* identifier: ?test? */
                 String temp;
                 list_init(refcast(temp));
@@ -552,31 +533,31 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
                         break;
                     }
                 }
-                
+
                 for (int i = block.x; i < block.y; i++) {
                     list_push(refcast(temp), input[i]);
                 }
-                
+
                 list_push(refcast(temp), '\0');
-                
+
                 if (!is_identifier(temp.value)) {
                     VM_throw_error(VM, 0, 0, "Not a valid identifier");
                     return null;
                 }
-                
+
                 object_create(identifier, string = temp.value, T_IDENTIFIER);
-                
+
                 list_push(refcast(result), identifier);
-                
+
                 temp.top = 0;
             }
                 break;
-            
+
             default:
                 break;
         }
     }
-    
+
     list_push(refcast(result), list_get(VM->instructions, VMI_EXIT));
     return result.value;
 }

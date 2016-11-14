@@ -4,4 +4,15 @@
 # Date: 2016-10-31
 #
 
-S"Hello World"
+# calling conversion
+# (args argc function callf)
+
+
+T   ?print?  # pushi print
+S   "The number of pi: !{pi}"   # pushk String
+T   ?strcompile?  # pushi print
+S   %1%      # push argc (strcompile)
+O            # callf (strcompile)
+S   %1%      # push argc (print)
+O            # callf (print)
+U            # pop rvalue (print)

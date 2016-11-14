@@ -50,12 +50,12 @@ begin:
             break;
             
         case T_SCOPE: {
-            printf("Scope @: $%p\n", object.value.ptr);
+            printf("Scope: %p\n", object.value.ptr);
         }
             break;
             
         case T_CFUNCTION: {
-            printf("Cfunction @:%i\n", (int)object.value.ptr);
+            printf("Cfunction: %p\n", object.value.ptr);
         }
             break;
             
@@ -143,6 +143,13 @@ char* object2string(Object obj) {
             break;
         
         case T_CFUNCTION: {
+            sprintf(what, "%p", obj.value.ptr);
+            ret = newx(char, strlen(what));
+            strcpy(ret, what);
+        }
+            break;
+        
+        case T_POINTER: {
             sprintf(what, "%p", obj.value.ptr);
             ret = newx(char, strlen(what));
             strcpy(ret, what);

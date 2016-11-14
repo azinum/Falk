@@ -4,12 +4,16 @@
 # Date: 2016-11-10
 #
 
-T   ?name?
-S   "Bob Marley"
-G
-U
+T   ?test?          # 00 pushi test
+S   "Hey!"          # 02 pushk "Hey!"
+G                   # 04 eq_assign
+U                   # 05 pop
 
-T   ?strcompile?
-S   "Hello |name|, how are you?"
-S   %1%
-O
+T   ?print?         # 06 pushi print
+T   ?strcompile?    # 08 pushi strcompile
+S   "|test|"        # 10 pushk
+S   %1%             # 12 pushk 1
+O                   # 14 callf (strcompile)
+S   %1%             # 15 pushk 1
+O                   # 17 callf (print)
+U                   # 18 pop rvalue
