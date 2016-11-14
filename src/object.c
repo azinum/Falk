@@ -114,3 +114,52 @@ int object_is_cstring(Object obj) {
     return 0;
 }
 
+char* object2string(Object obj) {
+    char what[128];
+    for (int i = 0; i < 128; i++)
+        what[i] = '\0';
+    
+    char* ret;
+    switch (obj.type) {
+        case T_NUMBER: {
+            sprintf(what, "%.6g", obj.value.number);
+            ret = newx(char, strlen(what));
+            strcpy(ret, what);
+        }
+            break;
+            
+        case T_CSTRING: {
+            sprintf(what, "%s", obj.value.string);
+            ret = newx(char, strlen(what));
+            strcpy(ret, what);
+        }
+            break;
+            
+        case T_SCOPE: {
+            sprintf(what, "%p", obj.value.ptr);
+            ret = newx(char, strlen(what));
+            strcpy(ret, what);
+        }
+            break;
+        
+        case T_CFUNCTION: {
+            sprintf(what, "%p", obj.value.ptr);
+            ret = newx(char, strlen(what));
+            strcpy(ret, what);
+        }
+            break;
+        
+        case T_NULL: {
+            sprintf(what, "%s", "null");
+            ret = newx(char, strlen(what));
+            strcpy(ret, what);
+        }
+            break;
+        
+        default:
+            ret = newx(char, 1);
+            *ret = '\0';
+            break;
+    }
+    return ret;
+}

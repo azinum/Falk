@@ -22,7 +22,45 @@ Object falk_libstd_time(VM_instance* VM) {
 }
 
 Object falk_libstd_string_compile(VM_instance* VM) {
-    return falk_create_cstring(VM, "");
+    String result;
+    list_init((&result));
+    
+    Object top = falk_create_null(VM);
+    if (VM->stack->top > 0) {
+        top = list_get_top(VM->stack);
+        if (object_is_cstring(top)) {
+            unsigned long size = strlen(top.value.string);
+            for (int i = 0; i < size; i++) {
+                char current = top.value.string[i];
+                switch (current) {
+                        
+                    case '|': {
+                        String temp;
+                        list_init((&temp));
+                        while (i < size) {
+                            if (top.value.string[++i] == '|')
+                                break;
+                            list_push((&temp), top.value.string[i]);
+                        }
+                        list_push((&temp), '\0');   /* null terminate string */
+                        
+                        Object var = obj_convert(variable_find(VM, temp.value));
+                        char* varstring = object2string(var);
+                        if (*varstring != '\0')
+                            string_push2((&result), varstring, strlen(varstring));
+                    }
+                        break;
+                        
+                    default:
+                        list_push((&result), current);
+                        break;
+                }
+            }
+        }
+    }
+    
+    string_push2((&result), "\0", 1);
+    return falk_create_cstring(VM, result.value);
 }
 
 void falk_libstd_standard_help(VM_instance* VM, const char* function) {

@@ -169,4 +169,6 @@ int object_is_true(Object obj);
 
 int object_is_cstring(Object obj);
 
+char* object2string(Object obj);
+
 #endif /* object_h */

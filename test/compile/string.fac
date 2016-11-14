@@ -7,3 +7,9 @@
 T   ?name?
 S   "Bob Marley"
 G
+U
+
+T   ?strcompile?
+S   "Hello |name|, how are you?"
+S   %1%
+O
