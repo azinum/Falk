@@ -17,4 +17,4 @@ S%100000000%    # 10 pushk ..
 V               # 11 less_than
 M%17%           # 12 if
 K%05%           # 14 goto 05
-R               # 16 exit
+R

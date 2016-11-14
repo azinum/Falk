@@ -26,10 +26,12 @@ list_define(Instruction_list, void*);
 #define vm_getip(I) (VM->program[I])
 
 #define vm_stack_push(VALUE, MSG) \
-if (VM->stack->top < VM->stack->size) \
+if (VM->stack->top < VM->stack->size) { \
     VM->stack->value[VM->stack->top++] = VALUE; \
-else \
-    VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_OVERFLOW, MSG)
+} \
+else { \
+    VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_OVERFLOW, MSG); \
+}
 
 #define vm_stack_pop() \
 VM->stack->top--

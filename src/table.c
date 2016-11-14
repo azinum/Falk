@@ -27,7 +27,7 @@ unsigned long hash(const char* key) {
 */
 TValue* table_find(HashTable* table, char* key) {
     unsigned long hashed = hash(key);
-    TValue* h = new(TValue);
+    TValue* h = NULL;
     for (int i = 0; i < table->top; i++) {
         h = &table->items[i];
         if (h->key == hashed) {

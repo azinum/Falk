@@ -7,9 +7,3 @@
 T   ?name?
 S   "Bob Marley"
 G
-U
-
-T   ?strcompile?
-S   "name => !{name}"
-S   %1%
-O

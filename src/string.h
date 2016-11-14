@@ -29,6 +29,10 @@ char* string_int2string(int number);
 
 char string_rand_char(unsigned char from, unsigned char to);
 
+char string_rand_char_skip(unsigned char from, unsigned char to, const char* skip);
+
 char* string_transform(char* string, int flag);
+
+int string_char_in_string(const char* string, char ch);
 
 #endif /* string_h */

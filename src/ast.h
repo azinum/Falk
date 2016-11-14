@@ -9,52 +9,28 @@
 #include "object.h"
 
 typedef struct AST_node {
-    struct AST_node* root, *children, *parent;
+    struct AST_node* root;
+    struct AST_node** children;
     unsigned int top, size;
-    Token value;
+    char value;
 } AST_node;
 
+int ast_node_init(AST_node* node, AST_node* root);
 
-enum AST_errors {
-    AST_ERR_NONE,
-    AST_ERR_NULL,
-    AST_ERR_NO_CHILDREN,
-    AST_ERR_CHILD_NOT_FOUND,
-    AST_ERR_INVALID_INDEX,
-    AST_ERR_INIT,
-    AST_ERR_CHILD_NULL
-};
+int ast_node_push_child(AST_node* node, AST_node* child);
 
-static const char* AST_error_messages[] = {
-    "",
-    "Node is null",
-    "Node is childless",
-    "Child not found in this node",
-    "Index out of range",
-    "Failed to initialize node",
-    "Child node is null"
-};
+AST_node* ast_node_create_child(char value);
 
-int ast_node_init(AST_node* node, AST_node* parent, AST_node* root);
+int ast_node_realloc(AST_node* node);
 
-void ast_node_setv(AST_node* node, Token value);
-
-int ast_node_push_child_value(AST_node* node, AST_node* root, Token value);
-
-void ast_node_set_child_value(AST_node* node, Token value, unsigned int index);
-
-void ast_node_realloc(AST_node* node, unsigned int size);
+int ast_node_print_node(AST_node* node);
 
 AST_node* ast_node_get_child(AST_node* node, unsigned int index);
 
-int ast_print_ast(AST_node* node, int level);
+int ast_node_set_value(AST_node* node, char value);
 
-void ast_print_branch(AST_node* node);
+int ast_walk_ast(AST_node* node, int level);
 
-void ast_node_print_node(AST_node* node);
-
-int ast_node_swap(AST_node* first, AST_node* second);
-
-void ast_node_throw_error(AST_node* node, int error, const char* function);
+int ast_node_swap(AST_node* node, int first, int second);
 
 #endif /* ast_h */

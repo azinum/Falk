@@ -6,6 +6,7 @@
 
 #include "string.h"
 #include "object.h"
+#include "list.h"
 
 /*
 ** random string with readable characters
@@ -46,8 +47,10 @@ char* string_random_range(unsigned int length, int min, int max) {
 
 char* string_to_upper(char* string) {
     char* result = newx(char, strlen(string));
-    if (*string == '\0')
+    if (*string == '\0') {
+        free(result);
         return NULL;
+    }
     
     for (int i = 0; string[i] != '\0'; i++) {
         char ch = string[i];
@@ -88,7 +91,39 @@ char* string_int2string(int number) {
 
 
 char string_rand_char(unsigned char from, unsigned char to) {
-    return from + rand() % to;
+    return from + rand() % (from - to);
+}
+
+/*
+** create random char but skip certain characters
+** example:
+**    string_rand_char_skip('a', 'f', "bc");
+** result can only be: (a|d|e|f)
+*/
+char string_rand_char_skip(unsigned char from, unsigned char to, const char* skip) {
+    if (string_char_in_string(skip, from) || string_char_in_string(skip, to))
+        return 0;
+    
+    unsigned long size = strlen(skip);
+    if (size == 0)  /* nothing to exclude */
+        return string_rand_char(from, to);
+    
+    int ret = from + rand() % ((from) - (to+1));
+    
+    for (int i = 0; i < size; i++) {
+        if (ret == skip[i]) {
+            if (ret + 1 <= to) {
+                ret++;
+                continue;
+            }
+            if (ret - 1 >= from) {
+                ret--;
+                continue;
+            }
+        }
+    }
+    
+    return ret;
 }
 
 char* string_transform(char* string, int flag) {
@@ -147,4 +182,13 @@ char* string_transform(char* string, int flag) {
     }
     
     return output;
+}
+
+int string_char_in_string(const char* string, char ch) {
+    unsigned long size = strlen(string);
+    while (size--) {
+        if (string[size] == ch)
+            return 1;
+    }
+    return 0;
 }
