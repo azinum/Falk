@@ -333,3 +333,17 @@ A + B := s;
 
 ```s``` betyder swap eller switch. Alltså att dom ska byta plats med varandra. När man skannar igenom trädet så ska man utföra handlingar utifrån vad grammatiken säger. Om man inte hittar en regel för en symbol, då kommer det visas ett error.
 Grammatikreglerna kommer säga vad som är tillåtet, förbjud allt annat. Att göra så kallas whitelist eller vitlista. Man säger dom saker man får göra och förbjuder allt annnat.
+
+
+# V44 2016-11-14
+
+Under denna vecka har jag konstruerat AST (Abstract Syntax Tree). Man kan lägga in noder i trädet. Jag jobbar just nu på att man ska kunna byta ut en nod med en annan nod. Jag fixade så att man kan skriva ut hela trädet till konsolen. Här är ett exempel:
+
+<img src="https://raw.githubusercontent.com/Azinum/Falk/master/docs/Log/images/ast.png" width="512">
+
+Man går igenom trädet from roten till sista lövet eller barnet. Detta är ett stort träd:
+
+<img src="https://raw.githubusercontent.com/Azinum/Falk/master/docs/Log/images/huge_tree.png" width="512">
+
+När man har fått denna trädstruktur att fungera, ta bort, ersätta, byta noder, då kan man forma den riktiga syntaxen. Egentligen är denna sorts träd inte ett abstrakt syntax träd, utan är ett (CST), alltså, concrete syntax tree. Människan kan förstå trädets struktur, det är ett konkret träd. Man har ingen nytta av detta träd, datorn kan inte läsa den på något bra sett.
+Resultatet man vill ha med detta träd är en endimensionell lista med instruktioner. Så man gör på detta vis, först konverterar man ingången av symboler till en konkret syntax träd. Sedan så gör man det till abstrakt. Slutligen så går man igenom det abstrakta trädet och gör en linjär utgång av instruktioner. När man har instruktionerna då kan man exekvera dom i VM.
