@@ -8,18 +8,18 @@
 #include <stdio.h>
 #include "vm.h"
 
-Object falk_print(VM_instance* VM);
+Object falk_libstd_print(VM_instance* VM);
 
-Object falk_time(VM_instance* VM);
+Object falk_libstd_time(VM_instance* VM);
 
-Object falk_string_compile(VM_instance* VM);
+Object falk_libstd_string_compile(VM_instance* VM);
 
-void falklib_standard_help(VM_instance* VM, const char* function);
+void falk_libstd_standard_help(VM_instance* VM, const char* function);
 
-static CLibfunction falklib_standard[] = {
-    {"print", falk_print, "Print stuff to console."},
-    {"time", falk_time, "Get time."},
-    {"strcompile", falk_string_compile, "Evaluate blocks in string."},
+static CLibfunction falk_libstd[] = {
+    {"print", falk_libstd_print, "Print stuff to console."},
+    {"time", falk_libstd_time, "Get time."},
+    {"strcompile", falk_libstd_string_compile, "Evaluate blocks in string."},
     {NULL, NULL, NULL}
 };
 
