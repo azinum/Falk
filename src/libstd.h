@@ -1,4 +1,4 @@
-/* libstandard.h */
+/* libstd.h */
 /* Author: Azinum */
 /* Date: 2016-10-26 */
 

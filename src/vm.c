@@ -5,7 +5,7 @@
 #include "vm.h"
 #include "falk.h"
 #include "io.h"
-#include "libstandard.h"
+#include "libstd.h"
 #include <time.h>
 
 int VM_init(VM_instance* VM) {
