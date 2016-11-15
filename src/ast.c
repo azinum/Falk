@@ -13,6 +13,7 @@ int ast_node_init(AST_node* node, AST_node* root) {
     node->size = 0;
     node->children = NULL;
     node->root = root;
+    node->value = falk_create_token("", T_NULL);
     return 1;
 }
 
