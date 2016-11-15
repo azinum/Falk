@@ -11,6 +11,7 @@
 #include "lex.h"
 #include "table.h"
 #include "llist.h"
+#include "ast.h"
 
 #define PARSE_DEBUG 0
 
@@ -50,72 +51,15 @@ static const char* parse_error_info[] = {
     "SyntaxError"
 };
 
-/*
-** flags for grammar checking
-*/
-enum Gflags {
-    NONE        = 1 << 0,
-    ELSE        = 1 << 1,
-    FUNC        = 1 << 2,
-    EXPRESSION  = 1 << 3,
-    BODY        = 1 << 4,
-    END         = 1 << 5,
-    OP          = 1 << 6,
-    OPR         = 1 << 7,
-    ANY = NONE | ELSE | FUNC | EXPRESSION | BODY | END
-};
 
-/*
-** grammar flag info
-*/
-static const char* gf_info[] = {
-    "none",
-    "if",
-    "else",
-    "while",
-    "function",
-    "expression",
-    "body",
-    "end",
-    "op",
-    "operand",
-    "any"
-};
+typedef struct Grammar_rule {
+    const char* key, *action;
+} Grammar_rule;
 
-/*
-** rule for creating extra tokens
-*/
-typedef struct PRule {
-    unsigned char a, b, value;    /* a + b = value */
-} PRule;
 
-static PRule prod_rules[] = {
-    {T_IDENTIFIER, EXPRESSION, OP_CALLF},
-    {EXPRESSION, EXPRESSION, OP_CALLF},
-    {0, 0, 0}
-};
-
-typedef struct Parse_rule {
-    int type,   /* if, while, +, - */
-        asso,   /* x(x) or (x)x */
-        prec,   /* operator priority */
-        *rule,  /* array of what can follow this type */
-        *prio,  /* priority in which order a rule is parsed */
-        rule_size;  /* how many items in rule */
-} Parse_rule;
-
-/*
-** these are initialized at parse_instance_init
-*/
-static Parse_rule parse_rules[] = {
-/*  type,   asso,   prec,   rule,   prio,   rule size   */
-    {OP_MUL, ASSO_LR, 10, NULL, NULL, 0},
-    {OP_MUL, ASSO_LR, 10, NULL, NULL, 0},
-    {OP_ADD, ASSO_LR, 5, NULL, NULL, 0},
-    {OP_SUB, ASSO_LR, 5, NULL, NULL, 0},
-    {OP_EQ_ASSIGN, ASSO_RL, 1, NULL, NULL, 0},
-    {OP_IF, ASSO_NONE, 0, NULL, NULL, 0},
-    {OP_WHILE, ASSO_NONE, 0, NULL, NULL, 0}
+static Grammar_rule grammar_rules[] = {
+    {"ident|expr + expr", "s"},
+    {NULL, NULL}
 };
 
 typedef struct Parse_instance {
@@ -135,30 +79,12 @@ int parse_throw_error(Parse_instance* P, unsigned char error);
 
 void parse_instance_free(Parse_instance* P);
 
-PRule get_prod_rule(unsigned char a, unsigned char b);
-
-Parse_rule get_parse_node(Parse_instance* P, int type);
-
 int* intarr_create(int flagc, ...);
 
 int parse(Parse_instance* P, char* input);
 
-int produce(Parse_instance* P);
-
-int parse_expression(Parse_instance* P, unsigned int from, unsigned int to);
-
-void check_precedence(Parse_instance* P, Tokenlist* stack);
-
-int* check_next(Parse_instance* P, Tokenlist what, int index, int steps);
-
-int check_current(Parse_instance* P, Tokenlist what, int index);
-
-int check_validity(Parse_instance* P, Parse_rule rule, Int_list comp);
-
-Offset_list get_next(Parse_instance* P, Tokenlist what, int index, int steps);
+AST_node* parse_tree(Parse_instance* P, AST_node* node, unsigned int from, unsigned int to);
 
 unsigned char is_op(int op);
-
-void gf_info_print(unsigned char flag);
 
 #endif /* parse_h */
