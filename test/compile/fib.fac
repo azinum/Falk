@@ -1,0 +1,10 @@
+#
+# fib.fac
+# Author: Azinum
+# Date: 2016-11-15
+#
+
+S   %12%
+T   ?fib?
+S   %1%
+O

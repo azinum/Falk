@@ -147,6 +147,16 @@ int falk_push_number(VM_instance* VM, double number) {
     return 1;   /* success */
 }
 
+/*
+** push any object to stack
+*/
+int falk_push_obj(VM_instance* VM, Object obj) {
+    if (VM->stack->top >= VM->stack->size)      /* stack overflow */
+        return 0;
+    list_push(VM->stack, obj);
+    return 1;
+}
+
 int falk_openlib(VM_instance* VM, CLibfunction lib[]) {
     int i = 0;
     while (lib[i].func != NULL) {
@@ -194,6 +204,56 @@ Object falk_create_null(VM_instance* VM) {
     return VM->obj_null;
 }
 
+Object falk_create_pointer(VM_instance* VM, void* p) {
+    Object obj;
+    obj.type = T_POINTER;
+    obj.value.ptr = p;
+    return obj;
+}
+
+/*
+** formats available:
+** i (int)
+** d (double)
+** s (char*)
+** p (void*)
+*/
+Object falk_create_object(VM_instance* VM, char format, void* value) {
+    Object obj = falk_create_null(VM);
+    
+    switch (format) {
+        case 'i': {
+            obj.type = T_NUMBER;
+            obj.value.number = (double)(*(int*)value);
+        }
+            break;
+            
+        case 'd': {
+            obj.type = T_NUMBER;
+            obj.value.number = *(double*)value;
+        }
+            break;
+            
+        case 's': {
+            obj.type = T_CSTRING;
+            obj.value.string = (char*)value;
+        }
+            break;
+            
+        case 'p': {
+            obj.type = T_POINTER;
+            obj.value.ptr = value;
+        }
+            break;
+        
+        default:
+            printf("Invalid format '%c'\n", format);
+            break;
+    }
+    
+    return obj;
+}
+
 Token falk_create_token(char* string, unsigned int type) {
     Token token;
     token.value = string;
@@ -202,9 +262,12 @@ Token falk_create_token(char* string, unsigned int type) {
 }
 
 
-int falk_build_args(VM_instance* VM, const char* format, int argc, ...) {
+/*
+** build args from Falk stack to C variables
+*/
+int falk_build_args(VM_instance* VM, const char* format, ...) {
     va_list ap;
-    va_start(ap, argc);
+    va_start(ap, format);
     int success = 1;
     
     for (int i = 0; i < strlen(format); i++) {
@@ -241,7 +304,7 @@ int falk_build_args(VM_instance* VM, const char* format, int argc, ...) {
                 
                 void* arg = va_arg(ap, void*);
                 if (obj.type == T_POINTER || obj.type == T_SCOPE) {
-                    arg = obj.value.ptr;
+                    arg = (void*)obj.value.ptr;
                     break;
                 }
                 if (obj.type == T_VAR) {
@@ -266,19 +329,23 @@ int falk_build_args(VM_instance* VM, const char* format, int argc, ...) {
             }
                 break;
                 
-            case 's': {       /* string */
+            case 's': {       /* cstring */
                 Object obj = list_get_top(VM->stack);
                 vm_stack_pop();
-                if (obj.type == T_STRING) {
+                if (obj.type == T_CSTRING) {
                     char* arg = va_arg(ap, char*);
-                    arg = obj.value.string;     /* they now share same address */
+                    arg = newx(char, strlen(obj.value.string) + 1);
+                    strcpy(arg, obj.value.string);
+                    puts(arg);
                     break;
                 }
                 success = 0;
+                goto done;
             }
                 break;
                 
             default: {
+                printf("Incorrect format \"%c\"\n", format[i]);
                 success = 0;
             }
                 break;

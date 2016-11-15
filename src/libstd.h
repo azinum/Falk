@@ -10,16 +10,20 @@
 
 Object falk_libstd_print(VM_instance* VM);
 
+double falk_libstd_ctime();
+
 Object falk_libstd_time(VM_instance* VM);
 
-Object falk_libstd_string_compile(VM_instance* VM);
+int falk_libstd_cfib(int n);
+
+Object falk_libstd_fib(VM_instance* VM);
 
 void falk_libstd_standard_help(VM_instance* VM, const char* function);
 
 static CLibfunction falk_libstd[] = {
     {"print", falk_libstd_print, "Print stuff to console."},
     {"time", falk_libstd_time, "Get time."},
-    {"strcompile", falk_libstd_string_compile, "Evaluate blocks in string."},
+    {"fib", falk_libstd_fib, "Calculate the fibonacci number."},
     {NULL, NULL, NULL}
 };
 

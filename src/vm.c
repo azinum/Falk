@@ -242,9 +242,9 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
                 /* leftovers are all the args */
                 Object rvalue = func.value.func(VM);
                 /* pop all args (Cfunctions may not increment or decrement stack, it's okay to modify items on stack though) */
-                for (int i = 0; i < (int)argc.value.number; i++) {
+                /* for (int i = 0; i < (int)argc.value.number; i++) {
                     vm_stack_pop();
-                }
+                } */
                 vm_stack_push(rvalue, "@VM_CALLF");     /* push rvalue to stack */
                 vm_next;
             }

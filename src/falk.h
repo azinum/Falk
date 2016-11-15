@@ -38,6 +38,8 @@ void falk_instance_free(Falk_instance* F);
 
 int falk_push_number(VM_instance* VM, double number);
 
+int falk_push_obj(VM_instance* VM, Object obj);
+
 int falk_openlib(VM_instance* VM, CLibfunction lib[]);
 
 void falk_pop(VM_instance* VM);
@@ -52,8 +54,12 @@ Object falk_create_cstring(VM_instance* VM, char* string);
 
 Object falk_create_null(VM_instance* VM);
 
+Object falk_create_pointer(VM_instance* VM, void* p);
+
+Object falk_create_object(VM_instance* VM, char format, void* value);
+
 Token falk_create_token(char* string, unsigned int type);
 
-int falk_build_args(VM_instance* VM, const char* format, int argc, ...);
+int falk_build_args(VM_instance* VM, const char* format, ...);
 
 #endif /* falk_h */
