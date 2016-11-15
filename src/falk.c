@@ -48,49 +48,42 @@ int falk_instance_init(Falk_instance* F) {
 void falk_execute(Falk_instance* F) {
     if (F->argc >= 2) {
         for (int i = 1; i < F->argc; i++) {
-            switch (F->argv[i][0]) {
-                case '-': {
-                    switch (F->argv[i][1]) {
-                        case 'c': {     /* execute compiled file */
-                            VM_execute(F->vm_instance, VM_EXEC_FILE, F->argv[i + 1]);
-                            i++;
-                        }
-                            break;
-                            
-                        case 'h': {     /* help */
-                            falk_print_help(F);
-                            goto done;
-                        }
-                            break;
-                            
-                        case 's': {     /* execute string */
-                            VM_execute(F->vm_instance, VM_EXEC_INTERPRET, F->argv[i + 1]);
-                            i++;
-                        }
-                            break;
-                            
-                        case 'i': {     /* interpret */
-                            falk_input(F, VM_EXEC_INTERPRET);
-                        }
-                            break;
-                            
-                        default: {    /* invalid option */
-                            printf("Invalid option \"-%c\". %s\n",
-                                F->argv[i][1],
-                                "-h for a list of options.");
-                            i++;
-                        }
-                            break;
+            if (F->argv[i][0] == '-') {
+                switch (F->argv[i][1]) {
+                    case 'c': {     /* execute compiled file */
+                        VM_execute(F->vm_instance, VM_EXEC_FILE, F->argv[i + 1]);
+                        i++;
                     }
+                        break;
+                        
+                    case 'h': {     /* help */
+                        falk_print_help(F);
+                        goto done;
+                    }
+                        break;
+                        
+                    case 's': {     /* execute string */
+                        VM_execute(F->vm_instance, VM_EXEC_INTERPRET, F->argv[i + 1]);
+                        i++;
+                    }
+                        break;
+                        
+                    case 'i': {     /* interpret */
+                        falk_input(F, VM_EXEC_INTERPRET);
+                    }
+                        break;
+                        
+                    default: {    /* invalid option */
+                        printf("Invalid option \"-%c\". %s\n",
+                               F->argv[i][1],
+                               "-h for a list of options.");
+                        i++;
+                    }
+                        break;
                 }
-                    break;
-                    
-                default: {
-                    /* script */
-                    VM_execute(F->vm_instance, VM_EXEC_FILE, (char*)F->argv[1]);
-                    goto done;
-                }
-                    break;
+            } else {
+                VM_execute(F->vm_instance, VM_EXEC_FILE, F->argv[1]);
+                goto done;
             }
         }
         goto done;
@@ -109,12 +102,12 @@ done:
 */
 void falk_print_help(Falk_instance* F) {
     printf("\n%s\n",
-        "-c [script]   Execute compiled file.\n"
-        "-s            Execute string.\n"
-        "-i            Run in interpreted mode.\n"
-        "-h            Print usage.\n"
-        "[script]      Execute script.\n"
-        "0 args        Run interpreter.\n"
+        "-c [script]     Execute compiled file.\n"
+        "-s              Execute string.\n"
+        "-i              Run in interpreted mode.\n"
+        "-h              Print usage.\n"
+        "[script]        Execute script.\n"
+        "None of above   Run interpreter.\n"
     );
 }
 
