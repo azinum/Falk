@@ -2,6 +2,7 @@
 /* Author: Azinum */
 /* Date: 2016-08-30 */
 
+#include <stdarg.h>
 
 #include "falk.h"
 #include "table.h"
@@ -200,6 +201,93 @@ Token falk_create_token(char* string, unsigned int type) {
     return token;
 }
 
+
+int falk_build_args(VM_instance* VM, const char* format, int argc, ...) {
+    va_list ap;
+    va_start(ap, argc);
+    int success = 1;
+    
+    for (int i = 0; i < strlen(format); i++) {
+        switch (format[i]) {
+            case 'i': {       /* integer */
+                Object obj = list_get_top(VM->stack);
+                vm_stack_pop();
+                if (obj.type == T_NUMBER) {
+                    int* arg = va_arg(ap, int*);
+                    *arg = (int)obj.value.number;
+                    break;
+                }
+                success = 0;
+                goto done;
+            }
+                break;
+                
+            case 'd': {      /* double */
+                Object obj = list_get_top(VM->stack);
+                vm_stack_pop();
+                if (obj.type == T_NUMBER) {
+                    double* arg = va_arg(ap, double*);
+                    *arg = obj.value.number;
+                    break;
+                }
+                success = 0;
+                goto done;
+            }
+                break;
+                
+            case 'p': {       /* pointer */
+                Object obj = list_get_top(VM->stack);
+                vm_stack_pop();
+                
+                void* arg = va_arg(ap, void*);
+                if (obj.type == T_POINTER || obj.type == T_SCOPE) {
+                    arg = obj.value.ptr;
+                    break;
+                }
+                if (obj.type == T_VAR) {
+                    arg = obj.value.obj;
+                    break;
+                }
+                success = 0;
+                goto done;
+            }
+                break;
+                
+            case 'c': {      /* char */
+                Object obj = list_get_top(VM->stack);
+                vm_stack_pop();
+                if (obj.type == T_NUMBER) {
+                    char* arg = va_arg(ap, char*);
+                    *arg = (char)obj.value.number;
+                    break;
+                }
+                success = 0;
+                goto done;
+            }
+                break;
+                
+            case 's': {       /* string */
+                Object obj = list_get_top(VM->stack);
+                vm_stack_pop();
+                if (obj.type == T_STRING) {
+                    char* arg = va_arg(ap, char*);
+                    arg = obj.value.string;     /* they now share same address */
+                    break;
+                }
+                success = 0;
+            }
+                break;
+                
+            default: {
+                success = 0;
+            }
+                break;
+        }
+    }
+done:
+    va_end(ap);
+    return success;
+}
 
 void falk_instance_free(Falk_instance* F) {
 //    VM_instance_free(F->vm_instance);
