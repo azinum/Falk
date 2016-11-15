@@ -35,7 +35,7 @@ int ast_node_push_child(AST_node* node, AST_node* child) {
 }
 
 
-AST_node* ast_node_create_child(char value) {
+AST_node* ast_node_create_child(Token value) {
     AST_node* ret = new(AST_node);
     ast_node_init(ret, NULL);
     ret->value = value;
@@ -69,7 +69,7 @@ int ast_node_print_node(AST_node* node) {
     if (!node) {
         return 0;
     }
-    printf("%c\n", node->value);
+    printf("%s\n", node->value.value);
     return 1;
 }
 
@@ -86,7 +86,7 @@ AST_node* ast_node_get_child(AST_node* node, unsigned int index) {
 }
 
 
-int ast_node_set_value(AST_node* node, char value) {
+int ast_node_set_value(AST_node* node, Token value) {
     if (!node) {
         return 0;
     }
