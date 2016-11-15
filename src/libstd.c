@@ -2,17 +2,13 @@
 /* Author: Azinum */
 /* Date: 2016-10-26 */
 
+#include <time.h>
+
 #include "libstd.h"
 #include "falk.h"
 
-#include <time.h>
-
-double falk_libstd_ctime() {
-    return clock();
-}
-
 Object falk_libstd_time(VM_instance* VM) {
-    return falk_create_number(VM, falk_libstd_ctime());
+    return falk_create_number(VM, clock());
 }
 
 int falk_libstd_cfib(int n) {

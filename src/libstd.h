@@ -10,8 +10,6 @@
 
 Object falk_libstd_print(VM_instance* VM);
 
-double falk_libstd_ctime();
-
 Object falk_libstd_time(VM_instance* VM);
 
 int falk_libstd_cfib(int n);
