@@ -11,11 +11,11 @@ Object falk_libstd_time(VM_instance* VM) {
     return falk_create_number(VM, clock());
 }
 
-int falk_libstd_cfib(int n) {
+int cfib(int n) {
     if (n < 2) {
         return n;
     }
-    return falk_libstd_cfib(n - 1) + falk_libstd_cfib(n - 2);
+    return cfib(n - 1) + cfib(n - 2);
 }
 
 Object falk_libstd_fib(VM_instance* VM) {
@@ -24,7 +24,7 @@ Object falk_libstd_fib(VM_instance* VM) {
     if (!falk_build_args(VM, "i", &n))
         return falk_create_null(VM);
     
-    ret = falk_libstd_cfib(n);
+    ret = cfib(n);
     
     return falk_create_object(VM, 'i', &ret);
 }
