@@ -31,28 +31,50 @@ int parse(Parse_instance* P, char* input) {
     if (!lex(P->lex_instance, input))
         return 0;
     
+    ast_node_push_child(node, ast_node_create_child(falk_create_token("BEGIN", 0)));
     node = parse_tree(P, node, 0, P->lex_instance->result.top);
-    
+    ast_node_push_child(node, ast_node_create_child(falk_create_token("END", 0)));
     ast_walk_ast(node, 0);
     
     return 1;
 }
 
 AST_node* parse_tree(Parse_instance* P, AST_node* node, unsigned int from, unsigned int to) {
-    if (!node || from > to) {
+    if (!node || !P || (from > to)) {
         return NULL;
     }
     
     Tokenlist lexed = P->lex_instance->result;
+    int branchc = 0;    /* branch count (how many branches on this node) */
     
     for (unsigned int i = from; i < to; i++) {
         switch (lexed.value[i].type) {
                 
             case TOK_LEFT_P: {
+                int begin = i + 1;
+                int end = begin;
+                int offset = 1;
                 
+                while (++i < to) {
+                    if (lexed.value[i].type == TOK_LEFT_P)
+                        offset++;
+                    
+                    if (lexed.value[i].type == TOK_RIGHT_P)
+                        offset--;
+                    
+                    if (offset == 0) {
+                        end = i;
+                        break;
+                    }
+                }
+                AST_node* temp = ast_node_get_child(node, branchc);
+                if (temp) {
+                    ast_node_push_child(temp, ast_node_create_child(falk_create_token("", 0)));
+                    parse_tree(P, temp, begin, end);
+                }
             }
                 break;
-            
+                
             case OP_ADD:
             case OP_SUB:
             case OP_MUL:
@@ -70,9 +92,11 @@ AST_node* parse_tree(Parse_instance* P, AST_node* node, unsigned int from, unsig
             case OP_MUL_ASSIGN:
             case OP_DIV_ASSIGN:
             
+            case T_IDENTIFIER:
             case T_NUMBER:
             case T_STRING: {
                 ast_node_push_child(node, ast_node_create_child(lexed.value[i]));
+                branchc++;
             }
                 break;
                 
