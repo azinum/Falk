@@ -82,6 +82,9 @@ AST_node* ast_node_get_child(AST_node* node, unsigned int index) {
     if (node->top < index) {
         return NULL;
     }
+    if (!node->children) {
+        return NULL;
+    }
     
     return node->children[index];
 }
