@@ -137,6 +137,30 @@ static const char* VMI_info[] = {
     "VMI_DIV_ASSIGN"
 };
 
+static Token vm_asm_keywords[] = {
+    {"if", VMI_IF},
+    {"push", VMI_PUSHK},
+    {"pushi", VMI_PUSHI},
+    {"pop", VMI_POP},
+    {"call", VMI_CALLF},
+    {"goto", VMI_GOTO},
+    {"add", VMI_ADD},
+    {"sub", VMI_SUB},
+    {"mul", VMI_MUL},
+    {"div", VMI_DIV},
+    {"eq_assign", VMI_EQ_ASSIGN},
+    {"add_assign", VMI_ADD_ASSIGN},
+    {"sub_assign", VMI_SUB_ASSIGN},
+    {"mul_assign", VMI_MUL_ASSIGN},
+    {"div_assign", VMI_DIV_ASSIGN},
+    {"eq", VMI_EQ},
+    {"lt", VMI_LT},
+    {"gt", VMI_GT},
+    {"leq", VMI_LEQ},
+    {"geq", VMI_GEQ},
+};
+
+
 enum VM_errors {
     VM_NO_ERROR = 0,
     VM_ERR_STACK,
@@ -211,6 +235,8 @@ void** VM_ins_add_instructions(int insc, void* ins, ...);
 void** VM_list2instructions(VM_instance* VM, Tokenlist* list);
 
 void** VM_string2bytecode(VM_instance* VM, char* input);
+
+void** VM_asm2bytecode(VM_instance* VM, char* input);
 
 void VM_push_cfunction(VM_instance* VM, char* name, Cfunction function);
 

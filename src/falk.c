@@ -89,7 +89,7 @@ void falk_execute(Falk_instance* F) {
         goto done;
     }
     
-    VM_execute(F->vm_instance, VM_EXEC_FILE, "test/compile/autoexec.fac");
+    // VM_execute(F->vm_instance, VM_EXEC_FILE, "test/compile/autoexec.fac");
     
     falk_input(F, VM_EXEC_INTERPRET);
 done:

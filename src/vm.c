@@ -35,7 +35,6 @@ int VM_init(VM_instance* VM) {
     VM->obj_null.type = T_NULL;
     VM->obj_null.value.number = 0;
 
-
     table_push_object(VM->global->variables, "global", ptr = VM->global, T_SCOPE);
     table_push_object(VM->global->variables, "null", ptr = NULL, T_NULL);
     table_push_object(VM->global->variables, "undefined", ptr = NULL, T_NULL);
@@ -76,7 +75,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
 
     switch (mode) {
         case VM_EXEC_INTERPRET: {
-            VM->program = VM_string2bytecode(VM, input);
+            VM->program = VM_asm2bytecode(VM, input);
         }
             break;
 
@@ -559,6 +558,61 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
     }
 
     list_push((&result), list_get(VM->instructions, VMI_EXIT));
+    return result.value;
+}
+
+void** VM_asm2bytecode(VM_instance* VM, char* input) {
+    Instruction_list result;
+    list_init((&result));
+    
+    Lex_instance* lex_instance = new(Lex_instance);
+    lex_instance_init(lex_instance);
+    lex(lex_instance, input);
+    
+    for (int i = 0; i < lex_instance->result.top; i++) {
+        Token current = list_get((&lex_instance->result), i);
+        switch (current.type) {
+            case T_STRING: {
+                object_create(obj, string = current.value, T_STRING);
+                list_push((&result), (void*)obj);
+            }
+                break;
+            
+            case T_NUMBER: {
+                object_create(obj, number = to_number(current.value), T_NUMBER);
+                list_push((&result), (void*)obj);
+            }
+                break;
+                
+            case T_IDENTIFIER: {
+                Token temp = current;
+                for (int i = 0; i < arr_size(vm_asm_keywords); i++) {
+                    if (!strcmp(current.value, vm_asm_keywords[i].value)) {
+                        temp = vm_asm_keywords[i];
+                        break;
+                    }
+                }
+                
+                if (temp.type == T_IDENTIFIER) {
+                    object_create(obj, string = temp.value, T_IDENTIFIER);
+                    list_push((&result), (void*)obj);
+                } else {
+                    list_push((&result),  list_get(VM->instructions, temp.type));
+                }
+            }
+                break;
+                
+            default:
+                break;
+        }
+    }
+    
+    /*
+    ** now analyze code (do error checking)
+    */
+    
+    list_push((&result), list_get(VM->instructions, VMI_EXIT));
+    
     return result.value;
 }
 
