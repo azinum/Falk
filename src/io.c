@@ -12,7 +12,8 @@ char* file_read(const char* fname) {
     
     if (f == NULL) {
         printf("Could not open file \"%s\".\n", fname);
-        return NULL;
+        fclose(f);
+        return buffer;
     }
     
     fseek(f, 0, SEEK_END);
