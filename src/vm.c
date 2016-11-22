@@ -82,7 +82,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         case VM_EXEC_FILE: {
             char* read = file_read(input);
             if (read != NULL) {
-                VM->program = VM_string2bytecode(VM, read);
+                VM->program = VM_asm2bytecode(VM, read);
                 break;
             }
             return 0;
@@ -231,10 +231,10 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         if (VM->stack->top > 1) {
             Object func;
             Object argc;
-            
+
             func = obj_convert(list_get_from_top(VM->stack, -1));
             argc = list_get_top(VM->stack);
-            
+
             if (func.type == T_CFUNCTION && argc.type == T_NUMBER) {
                 vm_stack_pop();     /* pop function */
                 vm_stack_pop();     /* pop argc */
@@ -564,11 +564,11 @@ void** VM_string2bytecode(VM_instance* VM, char* input) {
 void** VM_asm2bytecode(VM_instance* VM, char* input) {
     Instruction_list result;
     list_init((&result));
-    
+
     Lex_instance* lex_instance = new(Lex_instance);
     lex_instance_init(lex_instance);
     lex(lex_instance, input);
-    
+
     for (int i = 0; i < lex_instance->result.top; i++) {
         Token current = list_get((&lex_instance->result), i);
         switch (current.type) {
@@ -577,13 +577,13 @@ void** VM_asm2bytecode(VM_instance* VM, char* input) {
                 list_push((&result), (void*)obj);
             }
                 break;
-            
+
             case T_NUMBER: {
                 object_create(obj, number = to_number(current.value), T_NUMBER);
                 list_push((&result), (void*)obj);
             }
                 break;
-                
+
             case T_IDENTIFIER: {
                 Token temp = current;
                 for (int i = 0; i < arr_size(vm_asm_keywords); i++) {
@@ -592,7 +592,7 @@ void** VM_asm2bytecode(VM_instance* VM, char* input) {
                         break;
                     }
                 }
-                
+
                 if (temp.type == T_IDENTIFIER) {
                     object_create(obj, string = temp.value, T_IDENTIFIER);
                     list_push((&result), (void*)obj);
@@ -601,18 +601,14 @@ void** VM_asm2bytecode(VM_instance* VM, char* input) {
                 }
             }
                 break;
-                
+
             default:
                 break;
         }
     }
-    
-    /*
-    ** now analyze code (do error checking)
-    */
-    
+
     list_push((&result), list_get(VM->instructions, VMI_EXIT));
-    
+
     return result.value;
 }
 
