@@ -114,6 +114,13 @@ int object_is_cstring(Object obj) {
     return 0;
 }
 
+int object_is_number(Object obj) {
+    if (obj.type == T_NUMBER) {
+        return 1;
+    }
+    return 0;
+}
+
 char* object2string(Object obj) {
     char what[128];
     for (int i = 0; i < 128; i++)

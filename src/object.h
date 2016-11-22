@@ -47,6 +47,8 @@ NAME->type = TYPE
 */
 #define obj_convert(O) ((O.type == T_VAR) ? (*O.value.obj) : O)
 
+#define obj_convert2(O) ((O.type == T_VAR) ? ((Object*)O.value.obj) : &O)
+
 
 #define obj2TValue(O) (O.value.obj)
 
@@ -163,6 +165,8 @@ void print_object(Object object);
 int object_is_true(Object obj);
 
 int object_is_cstring(Object obj);
+
+int object_is_number(Object obj);
 
 char* object2string(Object obj);
 

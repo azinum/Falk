@@ -104,6 +104,8 @@ enum VM_instructions {
     VMI_SUB_ASSIGN,
     VMI_MUL_ASSIGN,
     VMI_DIV_ASSIGN,
+    VMI_GOTO2,
+    VMI_LABEL_DEFINE,
 };
 
 
@@ -134,7 +136,9 @@ static const char* VMI_info[] = {
     "VMI_ADD_ASSIGN",
     "VMI_SUB_ASSIGN",
     "VMI_MUL_ASSIGN",
-    "VMI_DIV_ASSIGN"
+    "VMI_DIV_ASSIGN",
+    "VMI_GOTO2",
+    "VMI_LABEL_DEFINE"
 };
 
 static Token vm_asm_keywords[] = {
@@ -144,6 +148,8 @@ static Token vm_asm_keywords[] = {
     {"pop", VMI_POP},
     {"call", VMI_CALLF},
     {"goto", VMI_GOTO},
+    {"goto2", VMI_GOTO2},
+    {"label", VMI_LABEL_DEFINE},
     {"add", VMI_ADD},
     {"sub", VMI_SUB},
     {"mul", VMI_MUL},

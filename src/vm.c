@@ -70,6 +70,8 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         list_push(VM->instructions, &&VM_SUB_ASSIGN);
         list_push(VM->instructions, &&VM_MUL_ASSIGN);
         list_push(VM->instructions, &&VM_DIV_ASSIGN);
+        list_push(VM->instructions, &&VM_GOTO2);
+        list_push(VM->instructions, &&VM_LABEL_DEFINE);
         VM->init = 1;
     }
 
@@ -212,7 +214,39 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     vmcase(VM_GOTO, {
         VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number - 1;
     });
-
+    
+    vmcase(VM_GOTO2, {
+        if (VM->stack->top > 0) {
+            Object obj = obj_convert(list_get_top(VM->stack));
+            if (object_is_number(obj)) {
+                VM->ip = (int)obj.value.number;
+                vm_stack_pop();
+                vm_begin;    /* success, goto next instruction */
+            }
+            VM_throw_error(VM, 0, VM_ERRC_NOT_A_NUMBER, "@VM_GOTO2");
+        }
+        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_GOTO2");
+    });
+    
+    /*
+     ** define a label
+     **
+     ** pushi test label
+     **   # BODY
+     ** goto2 test
+     */
+    vmcase(VM_LABEL_DEFINE, {
+        if (VM->stack->top > 0) {
+            Object obj = list_get_top(VM->stack);
+            if (obj.type == T_VAR) {
+                obj_convert2(obj)->type = T_NUMBER;
+                obj_convert2(obj)->value.number = VM->ip + 1;
+            }
+            vm_next;
+        }
+        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_LABEL_DEFINE");
+    });
+    
     vmcase(VM_POP, {
         if (VM->stack->top > 0) {
             vm_stack_pop();

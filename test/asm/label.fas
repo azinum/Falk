@@ -1,0 +1,10 @@
+#
+# label.fas
+# Author: Azinum
+# Date: 2016-11-22
+#
+
+
+pushi start label
+    # loop forever
+pushi start goto2
