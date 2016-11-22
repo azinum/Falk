@@ -1,0 +1,10 @@
+#
+# loop.fasm
+# Author: Azinum
+# Date: 2016-11-22
+#
+
+pushi test
+push 5
+eq_assign
+pop

@@ -1,0 +1,14 @@
+#
+# function.fas
+# Author: Azinum
+# Date: 2016-11-22
+#
+
+
+pushi time
+push 1
+call    # time
+pushi print
+push 1
+call    # print
+pop
