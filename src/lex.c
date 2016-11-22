@@ -169,12 +169,10 @@ int lex(Lex_instance* L, char* input) {
         
         switch (temp_token) {
             case '#': {     /* comment */
-                while (i++ < inputlim || input[i] == '\n');
-            }
-                break;
-        
-            case '\n': {
-                L->line++;
+                while (i++ < inputlim) {
+                    if (input[i] == '\n')
+                        break;
+                }
             }
                 break;
                 
@@ -200,7 +198,7 @@ int lex(Lex_instance* L, char* input) {
                     break;
                 }
                 
-                if (temp_token == ' ') {
+                if (temp_token == ' ' || temp_token == '\n') {
                     char* copy;
                     string_copy(copy, ((&item)->value));
                     list_push((&L->result), ((Token){copy}));
