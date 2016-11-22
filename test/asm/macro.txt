@@ -1,0 +1,28 @@
+Maybe add macros?
+
+
+
+define var_def(name, value)
+    pushi name
+    push value
+    eq_assign
+    pop
+end_define
+
+define var_copy(var0, var1)
+    pushi var0
+    pushi var1
+    eq_assign
+    pop
+end_define
+
+define var_print(var)
+    pushi var
+    pushi print
+    push 1
+    call
+    pop
+end_define
+
+var_def(test, "Hello World!")
+var_print(test)
