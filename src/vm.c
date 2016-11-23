@@ -70,7 +70,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         list_push(VM->instructions, &&VM_SUB_ASSIGN);
         list_push(VM->instructions, &&VM_MUL_ASSIGN);
         list_push(VM->instructions, &&VM_DIV_ASSIGN);
-        list_push(VM->instructions, &&VM_GOTO2);
+        list_push(VM->instructions, &&VM_GOTO_LABEL);
         list_push(VM->instructions, &&VM_LABEL_DEFINE);
         VM->init = 1;
     }
@@ -111,35 +111,36 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             /* if we do not do obj_convert then, we assign by reference / pointer */
             /* it is a feature to be added later */
             /* must put up safety guards here */
+            // *obj_convert2(list_get_from_top(VM->stack, -1))->value.obj = list_get_top(VM->stack);
             *list_get_from_top(VM->stack, -1).value.obj = list_get_top(VM->stack);
             vm_stack_pop();
             vm_next;
         }
-        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_EQ_ASSIGN");
+        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "eq_assign");
     });
 
     vmcase(VM_ADD_ASSIGN, {
-        num_assign(+=, "@VM_ADD_ASSIGN");
+        num_assign(+=, "add_assign");
     });
 
     vmcase(VM_SUB_ASSIGN, {
-        num_assign(-=, "@VM_SUB_ASSIGN");
+        num_assign(-=, "sub_assign");
     });
 
     vmcase(VM_MUL_ASSIGN, {
-        num_assign(*=, "@VM_MUL_ASSIGN");
+        num_assign(*=, "mul_assign");
     });
 
     vmcase(VM_DIV_ASSIGN, {
-        num_assign(/=, "@VM_DIV_ASSIGN");
+        num_assign(/=, "div_assign");
     });
 
     vmcase(VM_PUSHK, {
-        vm_stack_push(*((Object*)VM->program[++VM->ip]), "@VM_PUSHK");
+        vm_stack_push(*((Object*)VM->program[++VM->ip]), "pushk");
     });
 
     vmcase(VM_PUSHP, {
-        vm_stack_push(*((Object*)VM->program[++VM->ip]), "@VM_PUSHP");
+        vm_stack_push(*((Object*)VM->program[++VM->ip]), "pushp");
     });
 
     vmcase(VM_PUSHI, {
@@ -154,7 +155,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             ** optimize: create opcode (VM_PUSHP, addr)
             */
             tobject_create(obj, obj = &var, T_VAR);
-            vm_stack_push(obj, "@VM_PUSHI");
+            vm_stack_push(obj, "pushi");
             VM->program[VM->ip++] = list_get(VM->instructions, VMI_PUSHP);
             VM->program[VM->ip] = &obj;
             vm_next;
@@ -166,7 +167,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         */
         table_push_object(VM->global->variables, name, ptr = NULL, T_NULL);
         tobject_create(obj, obj = &table_find(VM->global->variables, name)->value, T_VAR);
-        vm_stack_push(obj, "@VM_PUSHI");
+        vm_stack_push(obj, "pushi");
 
         vm_jump(2);
     });
@@ -176,75 +177,96 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     ** jump to next instruction, else: throw error message
     */
     vmcase(VM_ADD, {
-        num_arith(+, "@VM_ADD");
+        num_arith(+, "add");
     });
 
     vmcase(VM_SUB, {
-        num_arith(-, "@VM_SUB");
+        num_arith(-, "sub");
     });
 
     vmcase(VM_DIV, {
-        num_arith(/, "@VM_DIV");
+        num_arith(/, "div");
     });
 
     vmcase(VM_MUL, {
-        num_arith(*, "@VM_MUL");
+        num_arith(*, "mul");
     });
 
     vmcase(VM_LT, {
-        num_arith(<, "@VM_LT");
+        num_arith(<, "lt");
     });
 
     vmcase(VM_GT, {
-        num_arith(>, "@VM_GT");
+        num_arith(>, "gt");
     });
 
     vmcase(VM_EQ, {
-        num_arith(==, "@VM_EQ");
+        num_arith(==, "eq");
     });
 
     vmcase(VM_LEQ, {
-        num_arith(<=, "@VM_LEQ");
+        num_arith(<=, "leq");
     });
 
     vmcase(VM_GEQ, {
-        num_arith(>=, "@VM_GEQ");
+        num_arith(>=, "geq");
     });
 
     vmcase(VM_GOTO, {
         VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number - 1;
     });
     
-    vmcase(VM_GOTO2, {
-        if (VM->stack->top > 0) {
-            Object obj = obj_convert(list_get_top(VM->stack));
+    vmcase(VM_GOTO_LABEL, {
+        Object obj = *(Object*)VM->program[VM->ip + 1];
+        
+        if (obj.type == T_VAR) {
+            obj = obj_convert(obj);
             if (object_is_number(obj)) {
-                VM->ip = (int)obj.value.number;
-                vm_stack_pop();
-                vm_begin;    /* success, goto next instruction */
+                if (obj.value.number <= VM->program_size) {
+                    VM->ip = (int)obj.value.number;
+                    vm_begin;
+                }
+                VM_throw_error(VM, VM_ERR_LABEL, VM_ERRC_NUMBER_TOO_BIG, "goto_label");
             }
-            VM_throw_error(VM, 0, VM_ERRC_NOT_A_NUMBER, "@VM_GOTO2");
+            VM_throw_error(VM, VM_ERR_LABEL, VM_ERRC_NOT_A_NUMBER, "goto_label");
         }
-        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_GOTO2");
+        if (obj.type == T_IDENTIFIER) {
+            Object var = variable_find(VM, obj.value.string);
+            if (var.type != T_NULL) {
+                tobject_create(obj, obj = &var, T_VAR);
+                (*(Object*)VM->program[VM->ip + 1]) = obj;
+                if (object_is_number(var)) {
+                    if (var.value.number <= VM->program_size) {
+                        VM->ip = (int)var.value.number;
+                        vm_begin;
+                    }
+                    VM_throw_error(VM, VM_ERR_LABEL, VM_ERRC_NUMBER_TOO_BIG, "goto_label");
+                }
+                VM_throw_error(VM, VM_ERR_LABEL, VM_ERRC_NOT_A_NUMBER, "goto_label");
+            }
+            VM_throw_error(VM, VM_ERR_LABEL, VM_ERRC_INVALID_LABEL, "goto_label");
+        }
+        VM_throw_error(VM, VM_ERR_LABEL, VM_ERRC_INVALID_LABEL, "goto_label");
     });
     
     /*
-     ** define a label
-     **
-     ** pushi test label
-     **   # BODY
-     ** goto2 test
-     */
+    ** define a label
+    **
+    ** pushi test label
+    **   # BODY
+    ** pushi test goto2
+    */
     vmcase(VM_LABEL_DEFINE, {
         if (VM->stack->top > 0) {
             Object obj = list_get_top(VM->stack);
             if (obj.type == T_VAR) {
                 obj_convert2(obj)->type = T_NUMBER;
                 obj_convert2(obj)->value.number = VM->ip + 1;
+                vm_stack_pop();
             }
             vm_next;
         }
-        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_LABEL_DEFINE");
+        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "label_define");
     });
     
     vmcase(VM_POP, {
@@ -252,7 +274,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             vm_stack_pop();
             vm_next;
         }
-        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_POP");
+        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "pop");
     });
 
     /*
@@ -278,7 +300,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
                 /* for (int i = 0; i < (int)argc.value.number; i++) {
                     vm_stack_pop();
                 } */
-                vm_stack_push(rvalue, "@VM_CALLF");     /* push rvalue to stack */
+                vm_stack_push(rvalue, "callf");     /* push rvalue to stack */
                 vm_next;
             }
         }
@@ -299,7 +321,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number;
             vm_next;
         }
-        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@VM_IF");
+        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "if");
     });
 
     vmcase(VM_EXIT, {
@@ -642,12 +664,13 @@ void** VM_asm2bytecode(VM_instance* VM, char* input) {
     }
 
     list_push((&result), list_get(VM->instructions, VMI_EXIT));
-
+    VM->program_size = result.top;
+    
     return result.value;
 }
 
 void VM_throw_error(VM_instance* VM, int error, int cause, const char* msg) {
-    printf("%s%s%s\n",
+    printf("%s%s@%s instruction.\n",
            VM_error_messages[error],
            VM_error_cause_messages[cause],
            msg);

@@ -39,6 +39,11 @@ double to_number(const char* string) {
 void print_object(Object object) {
 begin:
     switch (object.type) {
+        case T_IDENTIFIER: {
+            printf("Identifier\n");
+        }
+            break;
+        
         case T_NUMBER: {
             printf("%.8g\n", object.value.number);
         }

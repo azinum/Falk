@@ -6,5 +6,5 @@
 
 
 pushi start label
-    # loop forever
-pushi start goto2
+  # infinite loop
+goto_label start

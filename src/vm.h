@@ -104,7 +104,7 @@ enum VM_instructions {
     VMI_SUB_ASSIGN,
     VMI_MUL_ASSIGN,
     VMI_DIV_ASSIGN,
-    VMI_GOTO2,
+    VMI_GOTO_LABEL,
     VMI_LABEL_DEFINE,
 };
 
@@ -137,7 +137,7 @@ static const char* VMI_info[] = {
     "VMI_SUB_ASSIGN",
     "VMI_MUL_ASSIGN",
     "VMI_DIV_ASSIGN",
-    "VMI_GOTO2",
+    "VMI_GOTO_LABEL",
     "VMI_LABEL_DEFINE"
 };
 
@@ -148,7 +148,7 @@ static Token vm_asm_keywords[] = {
     {"pop", VMI_POP},
     {"call", VMI_CALLF},
     {"goto", VMI_GOTO},
-    {"goto2", VMI_GOTO2},
+    {"goto_label", VMI_GOTO_LABEL},
     {"label", VMI_LABEL_DEFINE},
     {"add", VMI_ADD},
     {"sub", VMI_SUB},
@@ -173,7 +173,9 @@ enum VM_errors {
     VM_ERR_ARITH,
     VM_INS_CONV_ERR,    /* instruction conversion error */
     VM_ERR_CALL,    /* function call error */
-    VM_ERR_REGISTER
+    VM_ERR_REGISTER,
+    VM_ERR_VM,
+    VM_ERR_LABEL,
 };
 
 enum VM_error_causes {
@@ -187,6 +189,8 @@ enum VM_error_causes {
     
     VM_ERRC_NOT_A_FUNC,
     VM_ERRC_NOT_A_NUMBER,
+    VM_ERRC_INVALID_LABEL,
+    VM_ERRC_NUMBER_TOO_BIG,
 };
 
 static const char* VM_error_messages[] = {
@@ -195,7 +199,9 @@ static const char* VM_error_messages[] = {
     "Arithmetic Error: ",
     "Instruction Conversion Error: ",
     "Call Error: ",
-    "Register Error: "
+    "Register Error: ",
+    "VM Error: ",
+    "Label Error: "
 };
 
 static const char* VM_error_cause_messages[] = {
@@ -209,6 +215,9 @@ static const char* VM_error_cause_messages[] = {
     "Invalid types on arithmetic operation; ",
     "Not a function; ",
     "Not a number; ",
+    
+    "Not a valid label; ",
+    "Number too big; "
 };
 
 typedef struct Scope {
@@ -221,6 +230,7 @@ typedef struct VM_instance {
     unsigned char exit_on_error;
     void** program;
     unsigned int ip;     /* pointer to an instruction */
+    unsigned int program_size;
     Instruction_list* instructions;     /* all instructions */
     Stack* stack;   /* list of objects */
     Scope* global;  /* global scope */
