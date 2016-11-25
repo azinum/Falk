@@ -176,6 +176,25 @@ int lex(Lex_instance* L, char* input) {
             }
                 break;
                 
+            case '\"': {
+                Token token;
+                String temp;
+                list_init(&temp);
+                
+                while (++i < inputlim) {
+                    if (input[i] == '\"') {
+                        break;
+                    }
+                    list_push(&temp, input[i]);
+                }
+                
+                list_push(&temp, '\0');
+                token.value = temp.value;
+                token.type = T_CSTRING;
+                list_push(&L->result, token);
+            }
+                break;
+                
             default: {
                 /*
                 ** if op then
@@ -221,6 +240,10 @@ int lex(Lex_instance* L, char* input) {
     for (int i = 0; i < (&L->result)->top; i++) {
         /* find token instruction/type */
         Token* current = &(&L->result)->value[i];
+        
+        if (current->type == T_CSTRING) {
+            continue;
+        }
         
         if (is_keyword(*current)) {
             current->type = get_keyword(*current);

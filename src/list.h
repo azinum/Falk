@@ -37,9 +37,9 @@ typedef struct NAME { \
 ** initialize list
 */
 #define list_init(LIST) \
-LIST->value = new(typeof(*LIST->value)); \
-LIST->size = 1; \
-LIST->top = 0
+(LIST)->value = new(typeof(*(LIST)->value)); \
+(LIST)->size = 1; \
+(LIST)->top = 0
 
 /*
 ** smart reallocation macro for increase and decrease size of list
@@ -100,10 +100,10 @@ list_set(LIST, LIST->top + DELTA, VALUE)
 ** push item to list
 */
 #define list_push(LIST, VALUE) \
-if (list_need_space(LIST)) { \
-    list_realloc(LIST, 1); \
+if (list_need_space((LIST))) { \
+    list_realloc((LIST), 1); \
 } \
-LIST->value[LIST->top++] = VALUE
+(LIST)->value[(LIST)->top++] = VALUE
 
 /*
 ** free not only items in list, but the list itself too

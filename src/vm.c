@@ -649,8 +649,8 @@ void** VM_asm2bytecode(VM_instance* VM, char* input) {
     for (int i = 0; i < lex_instance->result.top; i++) {
         Token current = list_get((&lex_instance->result), i);
         switch (current.type) {
-            case T_STRING: {
-                object_create(obj, string = current.value, T_STRING);
+            case T_CSTRING: {
+                object_create(obj, string = current.value, T_CSTRING);
                 list_push((&result), (void*)obj);
             }
                 break;
