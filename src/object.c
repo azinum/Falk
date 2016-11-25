@@ -55,12 +55,12 @@ begin:
             break;
             
         case T_SCOPE: {
-            printf("Scope: %p\n", object.value.ptr);
+            printf("Scope: (%p)\n", object.value.ptr);
         }
             break;
             
         case T_CFUNCTION: {
-            printf("Cfunction: %p\n", object.value.ptr);
+            printf("Cfunction: (%p)\n", object.value.ptr);
         }
             break;
             
@@ -75,7 +75,8 @@ begin:
             break;
         
         case T_VAR: {
-            if (object.value.ptr != NULL) {
+            printf("Variable @(%p) => ", (void*)object.value.obj);
+            if (object.value.obj != NULL) {
                 object = *object.value.obj;
                 goto begin;
             } else {
@@ -85,7 +86,7 @@ begin:
             break;
         
         default: {
-            printf("Extern data @: $%i. Type: %i.\n", (int)object.value.ptr, object.type);
+            printf("Extern data @: (%p). Type: %i.\n", object.value.ptr, object.type);
         }
             break;
     }
