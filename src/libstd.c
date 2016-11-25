@@ -36,7 +36,7 @@ Object falk_libstd_print(VM_instance* VM) {
         vm_stack_pop();
         return falk_create_null(VM);
     }
-    VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "@falk_print lib function");
+    VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "falk_print lib function");
     return falk_create_null(VM);
 }
 

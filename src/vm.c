@@ -691,7 +691,7 @@ void** VM_asm2bytecode(VM_instance* VM, char* input) {
 }
 
 void VM_throw_error(VM_instance* VM, int error, int cause, const char* msg) {
-    printf("%s%s@%s instruction.\n",
+    printf("%s%s@%s.\n",
            VM_error_messages[error],
            VM_error_cause_messages[cause],
            msg);
