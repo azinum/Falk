@@ -11,11 +11,11 @@
 /*
  Example:
  
- define test(a, b)
+ @define test(a, b)
     push a
     push b
     add
- end_define
+ @end_define
 */
 
 
@@ -28,6 +28,7 @@ Preprocessor steps:
 */
 
 enum Prep_types {
+    PREP_MACRO_TOKEN,   /* use this to identify macros */
     PREP_MACRO_BEGIN,
     PREP_MACRO_END,
     PREP_MACRO_ARGS_BEGIN,
@@ -36,6 +37,7 @@ enum Prep_types {
 };
 
 static const char* Prep_tokens[] = {
+    "@",
     "define",
     "end_define",
     "(",
