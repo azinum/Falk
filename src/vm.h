@@ -59,18 +59,27 @@ VM->stack->top--
 */
 #define num_arith(OP, MSG) \
 if (VM->stack->top > 1) { \
-    list_get_from_top(VM->stack, -1).value.number = op_arith( \
-        obj_convert(list_get_from_top(VM->stack, -1)), \
+    Object left = obj_convert(list_get_from_top(VM->stack, -1)); \
+    left.value.number = op_arith( \
+        left, \
         obj_convert(list_get_top(VM->stack)), \
     OP); \
     vm_stack_pop(); \
+    vm_stack_pop(); \
+    vm_stack_push(left, "num_arith"); \
     vm_next; \
 } \
 VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \
 
 #define num_assign(OP, MSG) { \
 if (VM->stack->top > 0) { \
-    op_arith((*list_get_from_top(VM->stack, -1).value.obj), obj_convert(list_get_top(VM->stack)), OP); \
+    Object left = list_get_from_top(VM->stack, -1); \
+    const Object right = obj_convert(list_get_top(VM->stack)); \
+    if (left.type == T_VAR) { \
+        if (op_arith_issafe((*left.value.obj), right, T_NUMBER)) { \
+            left.value.obj->value.number OP right.value.number; \
+        } \
+    } \
     vm_stack_pop(); \
     vm_next; \
 } \

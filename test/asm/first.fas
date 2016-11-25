@@ -5,6 +5,18 @@
 # Date: 2016-11-21
 #
 
-push 7
-push 5
-add
+pushi test
+push 64
+eq_assign
+pop
+
+pushi test
+push 2
+mul_assign
+pop
+
+pushi test
+pushi print
+push 1
+call
+pop

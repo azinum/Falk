@@ -40,7 +40,8 @@ int VM_init(VM_instance* VM) {
     table_push_object(VM->global->variables, "undefined", ptr = NULL, T_NULL);
     table_push_object(VM->global->variables, "pi", number = 3.14159265359, T_NUMBER);
     table_push_object(VM->global->variables, "vm", ptr = &VM, T_POINTER);
-
+    table_push_object(VM->global->variables, "test", number = 32, T_NUMBER);
+    
     return 1;
 }
 
@@ -108,11 +109,28 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     */
     vmcase(VM_EQ_ASSIGN, {
         if (VM->stack->top > 1) {
-            /* if we do not do obj_convert then, we assign by reference / pointer */
-            /* it is a feature to be added later */
-            /* must put up safety guards here */
-            // *obj_convert2(list_get_from_top(VM->stack, -1))->value.obj = list_get_top(VM->stack);
-            *list_get_from_top(VM->stack, -1).value.obj = list_get_top(VM->stack);
+            Object left = list_get_from_top(VM->stack, -1);
+            const Object right = list_get_top(VM->stack);
+            
+            switch (right.type) {
+                case T_NUMBER: {
+                    left.value.obj->value.number = right.value.number;
+                }
+                    break;
+                    
+                case T_CSTRING: {
+                    char* value = right.value.string;
+                    unsigned long len = strlen(value);
+                    left.value.string = newx(char, len);
+                    strcpy(left.value.string, value);
+                }
+                    break;
+                
+                default: {
+                    puts("Invalid variable assignment");
+                }
+                    break;
+            }
             vm_stack_pop();
             vm_next;
         }
@@ -146,19 +164,19 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     vmcase(VM_PUSHI, {
         Object* next = (Object*)(((VM->program[VM->ip + 1])));
         char* name = next->value.string;
-
-        Object var = variable_find(VM, name);
-
-        if (var.type != T_NULL) {
+        
+        TValue* var = table_find(VM->global->variables, name);
+        
+        if (var->value.type != T_NULL) {
             /*
             ** variable exist
             ** optimize: create opcode (VM_PUSHP, addr)
             */
-            tobject_create(obj, obj = &var, T_VAR);
+            tobject_create(obj, obj = &var->value, T_VAR);
             vm_stack_push(obj, "pushi");
             VM->program[VM->ip++] = list_get(VM->instructions, VMI_PUSHP);
-            VM->program[VM->ip] = &obj;
-            vm_next;
+            VM->program[VM->ip++] = &obj;
+            vm_begin;
         }
         /*
         ** variable does not exist
@@ -319,7 +337,10 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             */
             vm_stack_pop();
             VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number;
-            vm_next;
+            if (VM->ip > VM->program_size) {
+                VM->ip = VM->program_size - 1;
+            }
+            vm_begin;
         }
         VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "if");
     });
