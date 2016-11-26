@@ -198,10 +198,12 @@ char* string_replace(char* string, char* a, char* b) {
     String output;
     list_init(&output);
     
-    unsigned long size_string = strlen(string);
-    unsigned long size_old = strlen(a);
-    unsigned long size_new = strlen(b);
-    unsigned long where = string_item_in_string_index(string, a) - 1;
+    unsigned long size_string, size_old, size_new, where;
+    
+    size_string = strlen(string);
+    size_old = strlen(a);
+    size_new = strlen(b);
+    where = string_item_in_string_index(string, a) - 1;
     
     for (unsigned long i = 0; i < where; i++) {
         list_push(&output, string[i]);
