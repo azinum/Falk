@@ -232,8 +232,25 @@ unsigned char string_item_in_string(char* string, char* item) {
 
 /*
 ** find item in string and return that index
+** if function return 0 then that means that item in string was not found
 */
 unsigned long string_item_in_string_index(char* string, char* item) {
+    unsigned long lookahead = strlen(item);
+    unsigned long matchc = 1;
+    int item_index = 0;
     
+    for (unsigned long i = 0; i < strlen(string); i++) {
+        if (string[i] == item[item_index]) {
+            for (unsigned long j = 1; j < lookahead; j++) {
+                item_index++;
+                if (string[i + j] == item[item_index]) {
+                    matchc++;
+                }
+            }
+            if (matchc == lookahead) {
+                return 1 + i;
+            }
+        }
+    }
     return 0;
 }
