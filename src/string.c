@@ -205,10 +205,10 @@ char* string_replace(char* string, char* a, char* b) {
     return output.value;
 }
 
-
+/*
+** return true|false for if item exists in source string
+*/
 unsigned char string_item_in_string(char* string, char* item) {
-    String temp;
-    list_init(&temp);
     unsigned long lookahead = strlen(item);
     unsigned long matchc = 0;   /* how many characters are matching */
     int item_index = 0;
@@ -227,5 +227,13 @@ unsigned char string_item_in_string(char* string, char* item) {
             }
         }
     }
+    return 0;
+}
+
+/*
+** find item in string and return that index
+*/
+unsigned long string_item_in_string_index(char* string, char* item) {
+    
     return 0;
 }
