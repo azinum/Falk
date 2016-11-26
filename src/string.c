@@ -203,7 +203,12 @@ char* string_replace(char* string, char* a, char* b) {
     size_string = strlen(string);
     size_old = strlen(a);
     size_new = strlen(b);
-    where = string_item_in_string_index(string, a) - 1;
+    where = string_item_in_string_index(string, a);
+    
+    if (where == 0)
+        return output.value;
+    
+    where -= 1;
     
     for (unsigned long i = 0; i < where; i++) {
         list_push(&output, string[i]);
