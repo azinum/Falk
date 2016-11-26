@@ -35,4 +35,8 @@ char* string_transform(char* string, int flag);
 
 int string_char_in_string(const char* string, char ch);
 
+char* string_replace(char* source_string, char* a, char* b);
+
+unsigned char string_item_in_string(char* source_string, char* item);
+
 #endif /* string_h */

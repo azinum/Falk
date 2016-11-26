@@ -192,3 +192,40 @@ int string_char_in_string(const char* string, char ch) {
     }
     return 0;
 }
+
+
+char* string_replace(char* string, char* a, char* b) {
+    String output;
+    list_init(&output);
+    
+    
+    
+    
+    list_push(&output, '\0');   /* null terminate string */
+    return output.value;
+}
+
+
+unsigned char string_item_in_string(char* string, char* item) {
+    String temp;
+    list_init(&temp);
+    unsigned long lookahead = strlen(item);
+    unsigned long matchc = 0;   /* how many characters are matching */
+    int item_index = 0;
+    
+    for (unsigned long i = 0; i < strlen(string); i++) {
+        if (string[i] == item[item_index]) {    /* got the first character */
+            matchc++;
+            for (unsigned long j = 1; j < lookahead; j++) {
+                item_index++;
+                if (string[i + j] == item[item_index]) {
+                    matchc++;
+                }
+            }
+            if (matchc == lookahead) {  /* we have got a match */
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
