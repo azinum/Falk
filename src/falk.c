@@ -3,13 +3,9 @@
 /* Date: 2016-08-30 */
 
 #include <stdarg.h>
+#include <dlfcn.h>
 
 #include "falk.h"
-#include "table.h"
-#include "object.h"
-#include "list.h"
-#include "llist.h"
-#include "io.h"
 #include "libstd.h"
 
 int falk_instance_init(Falk_instance* F) {
@@ -40,6 +36,7 @@ int falk_instance_init(Falk_instance* F) {
     srand((unsigned int)time(NULL));
     
     falk_openlib(F->vm_instance, falk_libstd);
+    falk_openlib2(F->vm_instance, "test.so");
     
     return 1;
 }
@@ -156,6 +153,23 @@ int falk_openlib(VM_instance* VM, CLibfunction lib[]) {
         falk_push_cfunction(VM, lib[i].name, lib[i].func);
         i++;
     }
+    return 1;
+}
+
+int falk_openlib2(VM_instance* VM, const char* path) {
+    void* handle;
+    Cfunction func;
+    handle = dlopen(path, RTLD_LAZY);
+    if (!handle) {
+        printf("Could not open library \"%s\"\n", path);
+        return 0;
+    }
+    func = dlsym(handle, "Init");
+    if (!func) {
+        printf("Init function does not exist\n");
+        return 0;
+    }
+    func(VM);
     return 1;
 }
 
