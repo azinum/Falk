@@ -36,7 +36,7 @@ int falk_instance_init(Falk_instance* F) {
     srand((unsigned int)time(NULL));
     
     falk_openlib(F->vm_instance, falk_libstd);
-    falk_openlib2(F->vm_instance, "test.so");
+    falk_loadlib(F->vm_instance, "test.so");
     
     return 1;
 }
@@ -156,7 +156,7 @@ int falk_openlib(VM_instance* VM, CLibfunction lib[]) {
     return 1;
 }
 
-int falk_openlib2(VM_instance* VM, const char* path) {
+int falk_loadlib(VM_instance* VM, const char* path) {
     void* handle;
     Cfunction func;
     handle = dlopen(path, RTLD_LAZY);
@@ -170,6 +170,7 @@ int falk_openlib2(VM_instance* VM, const char* path) {
         return 0;
     }
     func(VM);
+    printf("Loaded library \"%s\"\n", path);
     return 1;
 }
 

@@ -42,7 +42,7 @@ int falk_push_obj(VM_instance* VM, Object obj);
 
 int falk_openlib(VM_instance* VM, CLibfunction lib[]);
 
-int falk_openlib2(VM_instance* VM, const char* path);
+int falk_loadlib(VM_instance* VM, const char* path);
 
 void falk_pop(VM_instance* VM);
 

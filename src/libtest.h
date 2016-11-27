@@ -10,6 +10,15 @@
 
 Object libtest_test(VM_instance* VM);
 
+Object libtest_test0(VM_instance* VM);
+
 Object Init(VM_instance* VM);
+
+static struct CLibfunction libtest[] = {
+    {"test", libtest_test, "Test function"},
+    {"test0", libtest_test0, "Test function 0"},
+    {NULL, NULL, NULL}
+};
+
 
 #endif /* libtest_h */
