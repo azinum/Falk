@@ -24,7 +24,6 @@ static Object falk_fib(VM_instance* VM) {
 
 static struct CLibfunction mylib[] = {
     {"fib", falk_fib, "Fib."},
-    {"print", print, "Print to console."},
     {NULL, NULL, NULL}
 };
 
