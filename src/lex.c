@@ -3,8 +3,8 @@
 /* Date: 2016-08-30 */
 
 
-#include "lex.h"
-#include "falk.h"
+#include "include/lex.h"
+#include "include/falk.h"
 
 /*
 ** initialize any Lex_instance

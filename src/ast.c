@@ -2,8 +2,8 @@
 /* Author: Azinum */
 /* Date: 2016-10-26 */
 
-#include "ast.h"
-#include "io.h"
+#include "include/ast.h"
+#include "include/io.h"
 
 int ast_node_init(AST_node* node, AST_node* root) {
     if (!node) {

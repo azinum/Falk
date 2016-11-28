@@ -3,7 +3,7 @@
 /* Date: 2016-10-09 */
 
 
-#include "io.h"
+#include "include/io.h"
 
 char* file_read(const char* fname) {
     char* buffer = NULL;

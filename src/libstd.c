@@ -4,8 +4,8 @@
 
 #include <time.h>
 
-#include "libstd.h"
-#include "falk.h"
+#include "include/libstd.h"
+#include "include/falk.h"
 
 Object falk_libstd_time(VM_instance* VM) {
     return falk_create_number(VM, clock());

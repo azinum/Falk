@@ -36,7 +36,7 @@ enum Prep_types {
     PREP_MACRO_ARG_SEPERATOR,
 };
 
-static const char* Prep_tokens[] = {
+static const char* prep_tokens[] = {
     "@",
     "define",
     "end_define",
@@ -46,7 +46,7 @@ static const char* Prep_tokens[] = {
 };
 
 typedef struct Prep_macro {
-    const char* name;
+    const char* name, *body;
     const char** args;
     unsigned int argc;
 } Prep_macro;

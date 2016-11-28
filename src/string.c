@@ -4,9 +4,9 @@
 
 #include <math.h>
 
-#include "string.h"
-#include "object.h"
-#include "list.h"
+#include "include/string.h"
+#include "include/object.h"
+#include "include/list.h"
 
 /*
 ** random string with readable characters

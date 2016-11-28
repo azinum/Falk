@@ -5,10 +5,10 @@
 #include <time.h>
 #include <string.h>
 
-#include "vm.h"
-#include "falk.h"
-#include "io.h"
-#include "libstd.h"
+#include "include/vm.h"
+#include "include/falk.h"
+#include "include/io.h"
+#include "include/libstd.h"
 
 int VM_init(VM_instance* VM) {
     if (!VM) {

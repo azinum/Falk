@@ -5,8 +5,8 @@
 #include <stdarg.h>
 #include <dlfcn.h>
 
-#include "falk.h"
-#include "libstd.h"
+#include "include/falk.h"
+#include "include/libstd.h"
 
 int falk_instance_init(Falk_instance* F) {
     if (!F) {

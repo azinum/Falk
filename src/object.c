@@ -6,9 +6,9 @@
 #include <string.h>
 #include <math.h>
 
-#include "object.h"
-#include "table.h"
-#include "falk.h"
+#include "include/object.h"
+#include "include/table.h"
+#include "include/falk.h"
 
 unsigned char is_number(const char* string) {
     if (strlen(string) <= 0)

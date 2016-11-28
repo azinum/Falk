@@ -57,8 +57,22 @@ typedef struct Grammar_rule {
 } Grammar_rule;
 
 
+
+enum Parser_commands {
+    PARSERC_NONE,   /* do nothing */
+    PARSERC_SWAP,   /* swap current node with last node */
+    PARSERC_PUSH,   /* push node after current node */
+};
+
+static const char parsercommands_keys[] = {
+    'n',
+    's',
+    'p',     /* push(what) */
+};
+
 static Grammar_rule grammar_rules[] = {
-    {"ident|expr + expr", "s"},
+    {"ident|expr + expr", "sp(callf)"},
+    {"add|sub + mul|div", "sn"},
     {NULL, NULL}
 };
 
