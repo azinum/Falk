@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 #include "list.h"
 #include "object.h"
 #include "lex.h"

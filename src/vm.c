@@ -2,11 +2,13 @@
 /* Author: Azinum */
 /* Date: 2016-09-19 */
 
+#include <time.h>
+#include <string.h>
+
 #include "vm.h"
 #include "falk.h"
 #include "io.h"
 #include "libstd.h"
-#include <time.h>
 
 int VM_init(VM_instance* VM) {
     if (!VM) {
