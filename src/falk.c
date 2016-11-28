@@ -4,9 +4,10 @@
 
 #include <stdarg.h>
 #include <dlfcn.h>
+#include <string.h>
+#include <stdio.h>
 
 #include "include/falk.h"
-#include "include/libstd.h"
 
 int falk_instance_init(Falk_instance* F) {
     if (!F) {
@@ -34,8 +35,6 @@ int falk_instance_init(Falk_instance* F) {
     
     F->init = 1;
     srand((unsigned int)time(NULL));
-    
-    falk_openlib(F->vm_instance, falk_libstd);
     
     return 1;
 }

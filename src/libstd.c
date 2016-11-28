@@ -4,7 +4,6 @@
 
 #include <time.h>
 
-#include "include/libstd.h"
 #include "include/falk.h"
 
 Object falk_libstd_time(VM_instance* VM) {
@@ -39,6 +38,13 @@ Object falk_libstd_print(VM_instance* VM) {
     VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "falk_print lib function");
     return falk_create_null(VM);
 }
+
+static CLibfunction falk_libstd[] = {
+    {"print", falk_libstd_print, "Print stuff to console."},
+    {"time", falk_libstd_time, "Get time."},
+    {"fib", falk_libstd_fib, "Calculate the fibonacci number."},
+    {NULL, NULL, NULL}
+};
 
 void falk_libstd_standard_help(VM_instance* VM, const char* function) {
     for (int i = 0; i < arr_size(falk_libstd); i++) {

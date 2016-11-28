@@ -8,7 +8,6 @@
 #include "include/vm.h"
 #include "include/falk.h"
 #include "include/io.h"
-#include "include/libstd.h"
 
 int VM_init(VM_instance* VM) {
     if (!VM) {
