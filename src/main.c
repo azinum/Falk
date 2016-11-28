@@ -2,7 +2,13 @@
 /* Author: Azinum */
 /* Date: 2016-08-30 */
 
-#include "falk.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
+
+#include "include/falk.h"
+#include "include/preprocessor.h"
 
 
 int main(int argc, char** argv) {
@@ -13,6 +19,7 @@ int main(int argc, char** argv) {
     }
     F->argc = argc;
     F->argv = argv;
+    
     falk_execute(F);
     falk_instance_free(F);
     return 1;

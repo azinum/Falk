@@ -3,8 +3,8 @@
 /* Date: 2016-09-05 */
 
 
-#include "parse.h"
-#include "falk.h"
+#include "include/parse.h"
+#include "include/falk.h"
 
 int parse_instance_init(Parse_instance* P) {
     if (!P) {
@@ -31,9 +31,7 @@ int parse(Parse_instance* P, char* input) {
     if (!lex(P->lex_instance, input))
         return 0;
     
-    ast_node_push_child(node, ast_node_create_child(falk_create_token("BEGIN", 0)));
     node = parse_tree(P, node, 0, P->lex_instance->result.top);
-    ast_node_push_child(node, ast_node_create_child(falk_create_token("END", 0)));
     ast_walk_ast(node, 0);
     
     return 1;
@@ -49,17 +47,26 @@ AST_node* parse_tree(Parse_instance* P, AST_node* node, unsigned int from, unsig
     
     for (unsigned int i = from; i < to; i++) {
         switch (lexed.value[i].type) {
-                
+            
+            case TOK_LEFT_CURLY_BRACKET:
             case TOK_LEFT_P: {
+                int type = lexed.value[i].type;
                 int begin = i + 1;
                 int end = begin;
                 int offset = 1;
                 
+                if (type == TOK_LEFT_P) {
+                    ast_node_push_child(node, ast_node_create_child(falk_create_token("expr", AST_NODE_EXPR)));
+                }
+                if (type == TOK_LEFT_CURLY_BRACKET) {
+                    ast_node_push_child(node, ast_node_create_child(falk_create_token("body", AST_NODE_BODY)));
+                }
+                
                 while (++i < to) {
-                    if (lexed.value[i].type == TOK_LEFT_P)
+                    if (lexed.value[i].type == type)
                         offset++;
                     
-                    if (lexed.value[i].type == TOK_RIGHT_P)
+                    if (lexed.value[i].type == type + 1)    /* matching token => type + 1 */
                         offset--;
                     
                     if (offset == 0) {
@@ -67,40 +74,21 @@ AST_node* parse_tree(Parse_instance* P, AST_node* node, unsigned int from, unsig
                         break;
                     }
                 }
+                
                 AST_node* temp = ast_node_get_child(node, branchc);
+                
                 if (temp) {
-                    ast_node_push_child(temp, ast_node_create_child(falk_create_token("", 0)));
+                    if (!node->children) {
+                        node->children = new(AST_node*);
+                    }
                     parse_tree(P, temp, begin, end);
                 }
             }
                 break;
                 
-            case OP_ADD:
-            case OP_SUB:
-            case OP_MUL:
-            case OP_DIV:
-            case OP_EQ:
-                
-            case OP_LT:
-            case OP_GT:
-            case OP_LEQ:
-            case OP_GEQ:
-            
-            case OP_EQ_ASSIGN:
-            case OP_ADD_ASSIGN:
-            case OP_SUB_ASSIGN:
-            case OP_MUL_ASSIGN:
-            case OP_DIV_ASSIGN:
-            
-            case T_IDENTIFIER:
-            case T_NUMBER:
-            case T_STRING: {
+            default:
                 ast_node_push_child(node, ast_node_create_child(lexed.value[i]));
                 branchc++;
-            }
-                break;
-                
-            default:
                 break;
         }
     }
