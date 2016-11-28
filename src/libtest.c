@@ -22,7 +22,7 @@ static Object falk_fib(VM_instance* VM) {
     return falk_create_object(VM, 'i', &ret);
 }
 
-static Object falk_print(VM_instance* VM) {
+static Object print(VM_instance* VM) {
     if (VM->stack->top > 0) {
         print_object(list_get_top(VM->stack));
         vm_stack_pop();
@@ -34,7 +34,7 @@ static Object falk_print(VM_instance* VM) {
 
 static struct CLibfunction mylib[] = {
     {"fib", falk_fib, "Fib."},
-    {"print", falk_print, "Print to console."},
+    {"print", print, "Print to console."},
     {NULL, NULL, NULL}
 };
 
