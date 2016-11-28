@@ -201,6 +201,9 @@ enum VM_error_causes {
     VM_ERRC_NOT_A_NUMBER,
     VM_ERRC_INVALID_LABEL,
     VM_ERRC_NUMBER_TOO_BIG,
+    
+    VM_ERRC_CALL_INVALID_NUM_ARGS,
+    
 };
 
 static const char* VM_error_messages[] = {
@@ -211,7 +214,7 @@ static const char* VM_error_messages[] = {
     "Call Error: ",
     "Register Error: ",
     "VM Error: ",
-    "Label Error: "
+    "Label Error: ",
 };
 
 static const char* VM_error_cause_messages[] = {
@@ -227,7 +230,9 @@ static const char* VM_error_cause_messages[] = {
     "Not a number; ",
     
     "Not a valid label; ",
-    "Number too big; "
+    "Number too big; ",
+    
+    "Invalid amount of args; ",
 };
 
 typedef struct Scope {

@@ -305,13 +305,13 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
                 vm_stack_pop();     /* pop function */
                 vm_stack_pop();     /* pop argc */
                 /* leftovers are all the args */
-                Object rvalue = func.value.func(VM);
-                /* pop all args (Cfunctions may not increment or decrement stack, it's okay to modify items on stack though) */
-                /* for (int i = 0; i < (int)argc.value.number; i++) {
-                    vm_stack_pop();
-                } */
-                vm_stack_push(rvalue, "callf");     /* push rvalue to stack */
-                vm_next;
+                if (func.value.func.argc != (int)argc.value.number) {
+                    VM_throw_error(VM, VM_ERR_CALL, VM_ERRC_CALL_INVALID_NUM_ARGS, "callf");
+                } else {
+                    Object rvalue = func.value.func.func(VM);
+                    vm_stack_push(rvalue, "callf");     /* push rvalue to stack */
+                    vm_next;
+                }
             }
         }
     });

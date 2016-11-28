@@ -154,7 +154,7 @@ int falk_push_obj(VM_instance* VM, Object obj) {
 
 int falk_openlib(VM_instance* VM, CLibfunction lib[]) {
     int i = 0;
-    while (lib[i].func != NULL) {
+    while (lib[i].name != NULL) {
         falk_push_cfunction(VM, lib[i].name, lib[i].func);
         i++;
     }
@@ -163,13 +163,12 @@ int falk_openlib(VM_instance* VM, CLibfunction lib[]) {
 
 int falk_loadlib(VM_instance* VM, const char* path) {
     void* handle;
-    Cfunction func = NULL;
-    handle = dlopen(path, RTLD_LAZY);
+    Func func;
+    handle = dlopen(path, RTLD_NOW);
     if (!handle) {
         printf("Could not open library \"%s\"\n", path);
         return 0;
     }
-
     
     func = dlsym(handle, "Init");
     if (!func) {

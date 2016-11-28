@@ -52,7 +52,12 @@ NAME->type = TYPE
 
 #define obj2TValue(O) (O.value.obj)
 
-typedef struct Object (*Cfunction)();
+typedef struct Object (*Func)();
+
+typedef struct Cfunction {
+    Func func;
+    unsigned int argc;
+} Cfunction;
 
 typedef struct Object {
     union Value {

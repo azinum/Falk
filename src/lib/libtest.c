@@ -22,6 +22,19 @@ static Object falk_fib(VM_instance* VM) {
     return falk_create_object(VM, 'i', &ret);
 }
 
+int what(int a, int b, int c, int d) {
+    return (a + b) << (c + d);
+}
+
+static Object lib_what(VM_instance* VM) {
+    int ret, a, b, c, d;
+    if (!falk_build_args(VM, "iiii", &a, &b, &c, &d)) {
+        return falk_create_null(VM);
+    }
+    ret = what(a, b, c, d);
+    return falk_create_object(VM, 'i', &ret);
+}
+
 static Object print(VM_instance* VM) {
     if (VM->stack->top > 0) {
         print_object(list_get_top(VM->stack));
@@ -33,9 +46,10 @@ static Object print(VM_instance* VM) {
 }
 
 static struct CLibfunction mylib[] = {
-    {"fib", falk_fib, "Fib."},
-    {"print", print, "Print to console."},
-    {NULL, NULL, NULL}
+    {"fib", {falk_fib, 1}, "Fib."},
+    {"print", {print, 1}, "Print to console."},
+    {"what", {lib_what, 4}, "What?"},
+    {NULL, {NULL, 0}, NULL}
 };
 
 Object Init(VM_instance* VM) {
