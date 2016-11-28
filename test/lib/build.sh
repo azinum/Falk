@@ -1,1 +1,1 @@
-# gcc -shared -fPIC module.c -o module.so -std=c99 -Os
+# gcc -bundle -undefined dynamic_lookup -fPIC -o module.so -I/path/to/include module.c

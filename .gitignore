@@ -20,3 +20,7 @@ test/lib/test/build
 *.o
 
 *.so
+
+test/lib/test0/build
+
+src/Falk
