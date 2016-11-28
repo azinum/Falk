@@ -169,26 +169,17 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         
         TValue* var = table_find(VM->global->variables, name);
         
-        if (var->value.type != T_NULL) {
-            /*
-            ** variable exist
-            ** optimize: create opcode (VM_PUSHP, addr)
-            */
+        if (var != NULL) {  /* variable exist */
             tobject_create(obj, obj = &var->value, T_VAR);
             vm_stack_push(obj, "pushi");
             VM->program[VM->ip++] = list_get(VM->instructions, VMI_PUSHP);
             VM->program[VM->ip++] = &obj;
             vm_begin;
         }
-        /*
-        ** variable does not exist
-        ** create variable
-        ** optimize code
-        */
+        /* variable does not exist */
         table_push_object(VM->global->variables, name, ptr = NULL, T_NULL);
         tobject_create(obj, obj = &table_find(VM->global->variables, name)->value, T_VAR);
         vm_stack_push(obj, "pushi");
-
         vm_jump(2);
     });
 
