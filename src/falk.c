@@ -36,7 +36,6 @@ int falk_instance_init(Falk_instance* F) {
     srand((unsigned int)time(NULL));
     
     falk_openlib(F->vm_instance, falk_libstd);
-    falk_loadlib(F->vm_instance, "test.so");
     
     return 1;
 }
@@ -67,6 +66,12 @@ void falk_execute(Falk_instance* F) {
                         
                     case 'i': {     /* interpret */
                         falk_input(F, VM_EXEC_INTERPRET);
+                    }
+                        break;
+                        
+                    case 'l': {
+                        falk_loadlib(F->vm_instance, F->argv[i + 1]);
+                        i++;
                     }
                         break;
                         
@@ -103,6 +108,7 @@ void falk_print_help(Falk_instance* F) {
         "-s              Execute string.\n"
         "-i              Run in interpreted mode.\n"
         "-h              Print usage.\n"
+        "-l [library]    load library.\n"
         "[script]        Execute script.\n"
         "None of above   Run interpreter.\n"
     );
