@@ -94,7 +94,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         }
 
         default:
-            VM_throw_error(VM, 0, 0, "Invalid exec mode");
+            vm_throw_error(VM, 0, 0, "Invalid exec mode");
             break;
     }
 
@@ -136,7 +136,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             vm_stack_pop();
             vm_next;
         }
-        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "eq_assign");
+        vm_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "eq_assign");
     });
 
     vmcase(VM_ADD_ASSIGN, {
@@ -237,9 +237,9 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
                     VM->ip = (int)obj.value.number;
                     vm_begin;
                 }
-                VM_throw_error(VM, VM_ERR_LABEL, VM_ERRC_NUMBER_TOO_BIG, "goto_label");
+                vm_throw_error(VM, VM_ERR_LABEL, VM_ERRC_NUMBER_TOO_BIG, "goto_label");
             }
-            VM_throw_error(VM, VM_ERR_LABEL, VM_ERRC_NOT_A_NUMBER, "goto_label");
+            vm_throw_error(VM, VM_ERR_LABEL, VM_ERRC_NOT_A_NUMBER, "goto_label");
         }
         if (obj.type == T_IDENTIFIER) {
             Object var = variable_find(VM, obj.value.string);
@@ -251,13 +251,13 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
                         VM->ip = (int)var.value.number;
                         vm_begin;
                     }
-                    VM_throw_error(VM, VM_ERR_LABEL, VM_ERRC_NUMBER_TOO_BIG, "goto_label");
+                    vm_throw_error(VM, VM_ERR_LABEL, VM_ERRC_NUMBER_TOO_BIG, "goto_label");
                 }
-                VM_throw_error(VM, VM_ERR_LABEL, VM_ERRC_NOT_A_NUMBER, "goto_label");
+                vm_throw_error(VM, VM_ERR_LABEL, VM_ERRC_NOT_A_NUMBER, "goto_label");
             }
-            VM_throw_error(VM, VM_ERR_LABEL, VM_ERRC_INVALID_LABEL, "goto_label");
+            vm_throw_error(VM, VM_ERR_LABEL, VM_ERRC_INVALID_LABEL, "goto_label");
         }
-        VM_throw_error(VM, VM_ERR_LABEL, VM_ERRC_INVALID_LABEL, "goto_label");
+        vm_throw_error(VM, VM_ERR_LABEL, VM_ERRC_INVALID_LABEL, "goto_label");
     });
     
     /*
@@ -277,7 +277,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             }
             vm_next;
         }
-        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "label_define");
+        vm_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "label_define");
     });
     
     vmcase(VM_POP, {
@@ -285,7 +285,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             vm_stack_pop();
             vm_next;
         }
-        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "pop");
+        vm_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "pop");
     });
 
     /*
@@ -307,7 +307,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
                 vm_stack_pop();     /* pop argc */
                 /* leftovers are all the args */
                 if (func.value.func.argc != (int)argc.value.number) {
-                    VM_throw_error(VM, VM_ERR_CALL, VM_ERRC_CALL_INVALID_NUM_ARGS, "callf");
+                    vm_throw_error(VM, VM_ERR_CALL, VM_ERRC_CALL_INVALID_NUM_ARGS, "callf");
                 } else {
                     Object rvalue = func.value.func.func(VM);
                     vm_stack_push(rvalue, "callf");     /* push rvalue to stack */
@@ -335,7 +335,8 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             }
             vm_begin;
         }
-        VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "if");
+        vm_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "if");
+        vm_begin;
     });
 
     vmcase(VM_EXIT, {
@@ -692,7 +693,7 @@ void VM_throw_error(VM_instance* VM, int error, int cause, const char* msg) {
         /*
         ** TODO: free everything
         */
-        VM->ip = VM->program_size - 2;
+        VM->ip = VM->program_size - 1;
         VM->status = 0;
 //        VM_instance_free(VM);
 //        exit(0);

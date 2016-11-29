@@ -31,7 +31,7 @@ if (VM->stack->top < VM->stack->size) { \
     VM->stack->value[VM->stack->top++] = VALUE; \
 } \
 else { \
-    VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_OVERFLOW, MSG); \
+    vm_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_OVERFLOW, MSG); \
 }
 
 #define vm_stack_pop() \
@@ -70,7 +70,7 @@ if (VM->stack->top > 1) { \
     vm_stack_push(left, "num_arith"); \
     vm_next; \
 } \
-VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \
+vm_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \
 
 #define num_assign(OP, MSG) { \
 if (VM->stack->top > 0) { \
@@ -84,8 +84,10 @@ if (VM->stack->top > 0) { \
     vm_stack_pop(); \
     vm_next; \
 } \
-    VM_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \
+    vm_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \
 }
+
+#define vm_throw_error(VM, ERR, ERRC, MSG) VM_throw_error(VM, ERR, ERRC, MSG); vm_begin;
 
 /*
 ** WARNING!
