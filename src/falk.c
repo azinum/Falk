@@ -9,6 +9,7 @@
 
 #include "include/falk.h"
 
+
 int falk_instance_init(Falk_instance* F) {
     if (!F) {
         return 0;
@@ -35,6 +36,8 @@ int falk_instance_init(Falk_instance* F) {
     
     F->init = 1;
     srand((unsigned int)time(NULL));
+    
+    
     
     return 1;
 }

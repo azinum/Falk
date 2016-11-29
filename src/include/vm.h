@@ -160,6 +160,7 @@ static Token vm_asm_keywords[] = {
     {"goto", VMI_GOTO},
     {"goto_label", VMI_GOTO_LABEL},
     {"label", VMI_LABEL_DEFINE},
+    {"exit", VMI_EXIT},
     {"add", VMI_ADD},
     {"sub", VMI_SUB},
     {"mul", VMI_MUL},
@@ -243,6 +244,7 @@ typedef struct Scope {
 typedef struct VM_instance {
     unsigned char init;     /* VM initialized? */
     unsigned char exit_on_error;
+    int status;
     void** program;
     unsigned int ip;     /* pointer to an instruction */
     unsigned int program_size;

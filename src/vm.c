@@ -14,6 +14,7 @@ int VM_init(VM_instance* VM) {
         return 0;
     }
     VM->init = 0;   /* initialize VM instructions */
+    VM->status = 1;
     /* custom stack init { */
     VM->stack_size = 28;
     VM->stack = new(Stack);
@@ -343,7 +344,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             list_sclear(VM->stack);
         }
         printf("%.6g ms\n", (double)(clock() - start) / 1000.0f);
-        return 1;
+        return VM->status;
     });
 
     return 0;
@@ -691,8 +692,10 @@ void VM_throw_error(VM_instance* VM, int error, int cause, const char* msg) {
         /*
         ** TODO: free everything
         */
-        VM_instance_free(VM);
-        exit(0);
+        VM->ip = VM->program_size - 2;
+        VM->status = 0;
+//        VM_instance_free(VM);
+//        exit(0);
     }
 }
 
