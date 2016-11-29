@@ -167,15 +167,17 @@ int falk_openlib(VM_instance* VM, CLibfunction lib[]) {
 int falk_loadlib(VM_instance* VM, const char* path) {
     void* handle;
     Func func;
-    handle = dlopen(path, RTLD_NOW);
+    handle = dlopen(path, RTLD_LAZY);
     if (!handle) {
-        printf("Could not open library \"%s\"\n", path);
+        printf("Could not open library \"%s\"; %s\n", path, dlerror());
         return 0;
     }
     
+    dlerror();
+    
     func = dlsym(handle, "Init");
     if (!func) {
-        printf("Init function does not exist\n");
+        printf("Init function does not exist; %s\n", dlerror());
         return 0;
     }
     func(VM);

@@ -336,7 +336,6 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             vm_begin;
         }
         vm_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "if");
-        vm_begin;
     });
 
     vmcase(VM_EXIT, {
