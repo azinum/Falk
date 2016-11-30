@@ -323,16 +323,9 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
                 vm_stack_pop();   /* pop top */
                 vm_jump(2);
             }
-            /*
-            ** do a jump if statement is false
-            ** if (false) {...}
-            **          jump  ^
-            */
+  
             vm_stack_pop();
-            VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number;
-            if (VM->ip > VM->program_size) {
-                VM->ip = VM->program_size - 1;
-            }
+            VM->ip += (int)((Object*)VM->program[VM->ip + 1])->value.number;
             vm_begin;
         }
         vm_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "if");
