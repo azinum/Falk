@@ -1,1 +1,1 @@
-gcc -o Falk *.c -std=c99 -Os -lm -ldl
+gcc -o Falk *.c -std=c99 -Os -lm -ldl -rdynamic
