@@ -34,7 +34,7 @@ Object Init(VM_instance* VM) {
 
 ```
 
-Every module needs to have a function that initializes all functions in library. That function is called ``` Init ``` and requires Falk VM as first and only parameter. ``` mylib ``` structure is where to store all functions in this library. The first parameter in structure is function name. Next is pointer to that function. The last argument is a doc string for the user.
+Every module needs to have a function that initializes all functions in library. That function is called ``` Init ``` and requires Falk VM as first and only parameter. ``` mylib ``` structure is where to store all functions in this library. The first parameter in structure is function name. Next is pointer to that function and how many arguments required. The last argument is a doc string for the user.
 
 
 ## How to compile module?
@@ -49,6 +49,6 @@ Every module needs to have a function that initializes all functions in library.
 #### Linux
 
 ```
-gcc -o my_module.o.o my_module.c -c -fPIC
+gcc -o my_module.o my_module.c -c -fPIC
 gcc -shared -fPIC -o my_module.so my_module.o -I/path/to/include
 ```
