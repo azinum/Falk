@@ -132,11 +132,10 @@ void falk_input(Falk_instance* F, int mode) {
     }
 }
 
-
 /*
 ** push number to stack
 */
-int falk_push_number(VM_instance* VM, double number) {
+extern int falk_push_number(VM_instance* VM, double number) {
     Object obj;
     obj.type = T_NUMBER;
     obj.value.number = number;
@@ -148,14 +147,14 @@ int falk_push_number(VM_instance* VM, double number) {
 /*
 ** push any object to stack
 */
-int falk_push_obj(VM_instance* VM, Object obj) {
+extern int falk_push_obj(VM_instance* VM, Object obj) {
     if (VM->stack->top >= VM->stack->size)      /* stack overflow */
         return 0;
     list_push(VM->stack, obj);
     return 1;
 }
 
-int falk_openlib(VM_instance* VM, CLibfunction lib[]) {
+extern int falk_openlib(VM_instance* VM, CLibfunction lib[]) {
     int i = 0;
     while (lib[i].name != NULL) {
         falk_push_cfunction(VM, lib[i].name, lib[i].func);
@@ -164,7 +163,7 @@ int falk_openlib(VM_instance* VM, CLibfunction lib[]) {
     return 1;
 }
 
-int falk_loadlib(VM_instance* VM, const char* path) {
+extern int falk_loadlib(VM_instance* VM, const char* path) {
     void* handle;
     Func func;
     handle = dlopen(path, RTLD_LAZY);
@@ -185,45 +184,45 @@ int falk_loadlib(VM_instance* VM, const char* path) {
     return 1;
 }
 
-void falk_pop(VM_instance* VM) {
+extern void falk_pop(VM_instance* VM) {
     list_spop(VM->stack);
 }
 
 /*
 ** pop stack x times
 */
-void falk_popx(VM_instance* VM, int x) {
+extern void falk_popx(VM_instance* VM, int x) {
     while (x-- > 0) {
         list_spop(VM->stack);
     }
 }
 
-void falk_push_cfunction(VM_instance* VM, char* name, Cfunction function) {
+extern void falk_push_cfunction(VM_instance* VM, char* name, Cfunction function) {
     table_push_object(VM->global->variables, name, func = function, T_CFUNCTION);
 }
 
 /*
 ** falk_create returns a Falk object
 */
-Object falk_create_number(VM_instance* VM, double number) {
+extern Object falk_create_number(VM_instance* VM, double number) {
     Object obj;
     obj.type = T_NUMBER;
     obj.value.number = number;
     return obj;
 }
 
-Object falk_create_cstring(VM_instance* VM, char* string) {
+extern Object falk_create_cstring(VM_instance* VM, char* string) {
     Object obj;
     obj.type = T_CSTRING;
     obj.value.string = string;
     return obj;
 }
 
-Object falk_create_null(VM_instance* VM) {
+extern Object falk_create_null(VM_instance* VM) {
     return VM->obj_null;
 }
 
-Object falk_create_pointer(VM_instance* VM, void* p) {
+extern Object falk_create_pointer(VM_instance* VM, void* p) {
     Object obj;
     obj.type = T_POINTER;
     obj.value.ptr = p;
@@ -237,7 +236,7 @@ Object falk_create_pointer(VM_instance* VM, void* p) {
 ** s (char*)
 ** p (void*)
 */
-Object falk_create_object(VM_instance* VM, char format, void* value) {
+extern Object falk_create_object(VM_instance* VM, char format, void* value) {
     Object obj = falk_create_null(VM);
     
     switch (format) {
@@ -284,7 +283,7 @@ Token falk_create_token(char* string, unsigned int type) {
 /*
 ** build args from Falk stack to C variables
 */
-int falk_build_args(VM_instance* VM, const char* format, ...) {
+extern int falk_build_args(VM_instance* VM, const char* format, ...) {
     va_list ap;
     va_start(ap, format);
     int success = 1;
