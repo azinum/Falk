@@ -59,6 +59,12 @@ typedef struct Cfunction {
     unsigned int argc;
 } Cfunction;
 
+typedef struct Falk_function {
+    struct Object* args;    /* array of args */
+    int argc;               /* number of args */
+    unsigned int pos;       /* where function is located */
+} Falk_function;
+
 typedef struct Object {
     union Value {
         char* string;
@@ -66,6 +72,7 @@ typedef struct Object {
         void* ptr;
         struct Object* obj;
         Cfunction func;
+        Falk_function ffunc;
     } value;
     unsigned int type;
 } Object;

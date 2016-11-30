@@ -75,6 +75,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         list_push(VM->instructions, &&VM_DIV_ASSIGN);
         list_push(VM->instructions, &&VM_GOTO_LABEL);
         list_push(VM->instructions, &&VM_LABEL_DEFINE);
+        list_push(VM->instructions, &&VM_FUNC_DEFINE);
         VM->init = 1;
     }
 
@@ -286,6 +287,24 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             vm_next;
         }
         vm_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "pop");
+    });
+    
+    
+/*
+    pushi test  # function name
+    pusha a     # arg1
+    pusha b     # arg2
+    push 2      # argc
+    push 1      # function body size
+    func        # function define instruction
+    return      # return stack top
+
+    function test(a, b) {
+        return
+    }
+*/
+    vmcase(VM_FUNC_DEFINE, {
+        
     });
 
     /*
