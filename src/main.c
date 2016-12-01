@@ -21,6 +21,5 @@ int main(int argc, char** argv) {
     F->argv = argv;
     
     falk_execute(F);
-    falk_instance_free(F);
     return 1;
 }

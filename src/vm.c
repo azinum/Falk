@@ -749,6 +749,10 @@ void VM_print_stack(VM_instance* VM) {
 }
 
 void VM_instance_free(VM_instance* VM) {
+    free(VM->dummy);
+    free(VM->global->variables->items);
+    free(VM->global->variables);
+    free(VM->global);
     list_free(VM->stack);
     free(VM);
 }
