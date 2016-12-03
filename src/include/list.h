@@ -90,7 +90,7 @@ if (LIST->top > INDEX) LIST->value[INDEX] = VALUE
 #define list_set_from_top(LIST, DELTA, VALUE) \
 list_set(LIST, LIST->top + DELTA, VALUE)
 
-#define list_get_top(LIST) (LIST->value[LIST->top - 1])
+#define list_get_top(LIST) ((LIST)->value[(LIST)->top - 1])
 
 #define list_get(LIST, INDEX) (LIST->value[INDEX])
 

@@ -396,7 +396,7 @@ void** VM_list2instructions(VM_instance* VM, Tokenlist* list) {
            case T_IDENTIFIER: {
                list_push((&ilist), list_get(VM->instructions, VMI_PUSHI));
                list_push((&ilist), new(Object));
-               (*(Object*)list_get_top((&ilist))) = (Object){{((union Value){}.string = current.value)}, T_IDENTIFIER};
+               *(Object*)list_get_top(&ilist) = (Object) { (union Value) { .string = current.value }, T_IDENTIFIER};
             }
                 break;
 
