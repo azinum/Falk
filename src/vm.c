@@ -368,7 +368,7 @@ Object variable_find(VM_instance* VM, char* name) {
         TValue* var = table_find(VM->global->variables, name);
         return var->value;
     }
-    return falk_create_null(VM);
+    return VM->obj_null;
 }
 
 /*

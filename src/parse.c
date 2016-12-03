@@ -56,10 +56,10 @@ AST_node* parse_tree(Parse_instance* P, AST_node* node, unsigned int from, unsig
                 int offset = 1;
                 
                 if (type == TOK_LEFT_P) {
-                    ast_node_push_child(node, ast_node_create_child(falk_create_token("expr", AST_NODE_EXPR)));
+                    ast_node_push_child(node, ast_node_create_child((Token){"expr", AST_NODE_EXPR}));
                 }
                 if (type == TOK_LEFT_CURLY_BRACKET) {
-                    ast_node_push_child(node, ast_node_create_child(falk_create_token("body", AST_NODE_BODY)));
+                    ast_node_push_child(node, ast_node_create_child((Token){"body", AST_NODE_BODY}));
                 }
                 
                 while (++i < to) {
