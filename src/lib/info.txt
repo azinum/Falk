@@ -1,1 +1,2 @@
-To build a module you need to move contents of this folder to parent directory.
+Build C module by compiling it in build directory (where Falk executable is located).
+See docs for more info.
