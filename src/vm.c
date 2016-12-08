@@ -73,8 +73,6 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         list_push(VM->instructions, &&VM_SUB_ASSIGN);
         list_push(VM->instructions, &&VM_MUL_ASSIGN);
         list_push(VM->instructions, &&VM_DIV_ASSIGN);
-        list_push(VM->instructions, &&VM_GOTO_LABEL);
-        list_push(VM->instructions, &&VM_LABEL_DEFINE);
         list_push(VM->instructions, &&VM_FUNC_DEFINE);
         VM->init = 1;
     }
@@ -226,59 +224,6 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
 
     vmcase(VM_GOTO, {
         VM->ip = (int)((Object*)VM->program[VM->ip + 1])->value.number - 1;
-    });
-    
-    vmcase(VM_GOTO_LABEL, {
-        Object obj = *(Object*)VM->program[VM->ip + 1];
-        
-        if (obj.type == T_VAR) {
-            obj = obj_convert(obj);
-            if (object_is_number(obj)) {
-                if (obj.value.number <= VM->program_size) {
-                    VM->ip = (int)obj.value.number;
-                    vm_begin;
-                }
-                vm_throw_error(VM, VM_ERR_LABEL, VM_ERRC_NUMBER_TOO_BIG, "goto_label");
-            }
-            vm_throw_error(VM, VM_ERR_LABEL, VM_ERRC_NOT_A_NUMBER, "goto_label");
-        }
-        if (obj.type == T_IDENTIFIER) {
-            Object var = variable_find(VM, obj.value.string);
-            if (var.type != T_NULL) {
-                tobject_create(obj, obj = &var, T_VAR);
-                (*(Object*)VM->program[VM->ip + 1]) = obj;
-                if (object_is_number(var)) {
-                    if (var.value.number <= VM->program_size) {
-                        VM->ip = (int)var.value.number;
-                        vm_begin;
-                    }
-                    vm_throw_error(VM, VM_ERR_LABEL, VM_ERRC_NUMBER_TOO_BIG, "goto_label");
-                }
-                vm_throw_error(VM, VM_ERR_LABEL, VM_ERRC_NOT_A_NUMBER, "goto_label");
-            }
-            vm_throw_error(VM, VM_ERR_LABEL, VM_ERRC_INVALID_LABEL, "goto_label");
-        }
-        vm_throw_error(VM, VM_ERR_LABEL, VM_ERRC_INVALID_LABEL, "goto_label");
-    });
-    
-    /*
-    ** define a label
-    **
-    ** pushi test label
-    **   # BODY
-    ** pushi test goto2
-    */
-    vmcase(VM_LABEL_DEFINE, {
-        if (VM->stack->top > 0) {
-            Object obj = list_get_top(VM->stack);
-            if (obj.type == T_VAR) {
-                obj_convert2(obj)->type = T_NUMBER;
-                obj_convert2(obj)->value.number = VM->ip + 1;
-                vm_stack_pop();
-            }
-            vm_next;
-        }
-        vm_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, "label_define");
     });
     
     vmcase(VM_POP, {
