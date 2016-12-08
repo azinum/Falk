@@ -139,7 +139,7 @@ extern int falk_push_number(VM_instance* VM, double number) {
     Object obj;
     obj.type = T_NUMBER;
     obj.value.number = number;
-    list_push(VM->stack, obj);
+    list_push(&VM->stack, obj);
     
     return 1;   /* success */
 }
@@ -148,9 +148,9 @@ extern int falk_push_number(VM_instance* VM, double number) {
 ** push any object to stack
 */
 extern int falk_push_obj(VM_instance* VM, Object obj) {
-    if (VM->stack->top >= VM->stack->size)      /* stack overflow */
+    if (&VM->stack.top >= &VM->stack.size)      /* stack overflow */
         return 0;
-    list_push(VM->stack, obj);
+    list_push(&VM->stack, obj);
     return 1;
 }
 
@@ -185,7 +185,7 @@ extern int falk_loadlib(VM_instance* VM, const char* path) {
 }
 
 extern void falk_pop(VM_instance* VM) {
-    list_spop(VM->stack);
+    list_spop(&VM->stack);
 }
 
 /*
@@ -193,7 +193,7 @@ extern void falk_pop(VM_instance* VM) {
 */
 extern void falk_popx(VM_instance* VM, int x) {
     while (x-- > 0) {
-        list_spop(VM->stack);
+        list_spop(&VM->stack);
     }
 }
 
@@ -291,7 +291,7 @@ extern int falk_build_args(VM_instance* VM, const char* format, ...) {
     for (int i = 0; i < strlen(format); i++) {
         switch (format[i]) {
             case 'i': {       /* integer */
-                Object obj = list_get_top(VM->stack);
+                Object obj = list_get_top(&VM->stack);
                 vm_stack_pop();
                 if (obj.type == T_NUMBER) {
                     int* arg = va_arg(ap, int*);
@@ -304,7 +304,7 @@ extern int falk_build_args(VM_instance* VM, const char* format, ...) {
                 break;
                 
             case 'd': {      /* double */
-                Object obj = list_get_top(VM->stack);
+                Object obj = list_get_top(&VM->stack);
                 vm_stack_pop();
                 if (obj.type == T_NUMBER) {
                     double* arg = va_arg(ap, double*);
@@ -317,7 +317,7 @@ extern int falk_build_args(VM_instance* VM, const char* format, ...) {
                 break;
                 
             case 'p': {       /* pointer */
-                Object obj = list_get_top(VM->stack);
+                Object obj = list_get_top(&VM->stack);
                 vm_stack_pop();
                 
                 void* arg = va_arg(ap, void*);
@@ -335,7 +335,7 @@ extern int falk_build_args(VM_instance* VM, const char* format, ...) {
                 break;
                 
             case 'c': {      /* char */
-                Object obj = list_get_top(VM->stack);
+                Object obj = list_get_top(&VM->stack);
                 vm_stack_pop();
                 if (obj.type == T_NUMBER) {
                     char* arg = va_arg(ap, char*);
@@ -348,7 +348,7 @@ extern int falk_build_args(VM_instance* VM, const char* format, ...) {
                 break;
                 
             case 's': {       /* cstring */
-                Object obj = list_get_top(VM->stack);
+                Object obj = list_get_top(&VM->stack);
                 vm_stack_pop();
                 if (obj.type == T_CSTRING) {
                     char* arg = va_arg(ap, char*);

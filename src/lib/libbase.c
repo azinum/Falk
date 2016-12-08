@@ -5,7 +5,7 @@
 #include "include/falk.h"
 
 static Object print(VM_instance* VM) {
-    print_object(list_get_top(VM->stack));
+    print_object(list_get_top(&VM->stack));
     falk_pop(VM);
     return falk_create_null(VM);
 }

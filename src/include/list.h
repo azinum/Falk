@@ -63,7 +63,7 @@ while (LIST->top > 0) { \
 ** stack based list clear
 */
 #define list_sclear(LIST) \
-while (LIST->top > 0) \
+while ((LIST)->top > 0) \
     list_spop(LIST)
 
 /*
@@ -92,9 +92,9 @@ list_set(LIST, LIST->top + DELTA, VALUE)
 
 #define list_get_top(LIST) ((LIST)->value[(LIST)->top - 1])
 
-#define list_get(LIST, INDEX) (LIST->value[INDEX])
+#define list_get(LIST, INDEX) ((LIST)->value[INDEX])
 
-#define list_get_from_top(LIST, DELTA) (LIST->value[(LIST->top - 1) + DELTA])
+#define list_get_from_top(LIST, DELTA) ((LIST)->value[((LIST)->top - 1) + DELTA])
 
 /*
 ** push item to list
@@ -109,7 +109,7 @@ if (list_need_space((LIST))) { \
 ** free not only items in list, but the list itself too
 */
 #define list_free(LIST) \
-free(LIST->value); \
+free((LIST)->value); \
 free(LIST);
 
 /*
@@ -136,7 +136,7 @@ list_realloc(LIST, -1)
 ** what it does is, when popping an element, not giving any memory to OS but decrementing top index of stack
 */
 #define list_spop(LIST) \
---LIST->top; \
+--(LIST)->top; \
 
 /*
 ** instead of pushing one character at a time, we can now push a full string onto our target string

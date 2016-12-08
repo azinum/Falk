@@ -27,15 +27,15 @@ list_define(Instruction_list, void*);
 #define vm_getip(I) (VM->program[I])
 
 #define vm_stack_push(VALUE, MSG) \
-if (VM->stack->top < VM->stack->size) { \
-    VM->stack->value[VM->stack->top++] = VALUE; \
+if (VM->stack.top < VM->stack.size) { \
+    VM->stack.value[VM->stack.top++] = VALUE; \
 } \
 else { \
     vm_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_OVERFLOW, MSG); \
 }
 
 #define vm_stack_pop() \
-VM->stack->top--
+VM->stack.top--
 
 #define vmcase(CASE, BODY, ...) { \
     CASE : { BODY } \
@@ -59,11 +59,11 @@ VM->stack->top--
 ** TODO: throw exception on error
 */
 #define num_arith(OP, MSG) \
-if (VM->stack->top > 1) { \
-    Object left = obj_convert(list_get_from_top(VM->stack, -1)); \
+if (VM->stack.top > 1) { \
+    Object left = obj_convert(list_get_from_top(&VM->stack, -1)); \
     left.value.number = op_arith( \
         left, \
-        obj_convert(list_get_top(VM->stack)), \
+        obj_convert(list_get_top(&VM->stack)), \
     OP); \
     vm_stack_pop(); \
     vm_stack_pop(); \
@@ -73,9 +73,9 @@ if (VM->stack->top > 1) { \
 vm_throw_error(VM, VM_ERR_STACK, VM_ERRC_STACK_NOT_ENOUGH_ITEMS, MSG); \
 
 #define num_assign(OP, MSG) { \
-if (VM->stack->top > 0) { \
-    Object left = list_get_from_top(VM->stack, -1); \
-    const Object right = obj_convert(list_get_top(VM->stack)); \
+if (VM->stack.top > 0) { \
+    Object left = list_get_from_top(&VM->stack, -1); \
+    const Object right = obj_convert(list_get_top(&VM->stack)); \
     if (left.type == T_VAR) { \
         if (op_arith_issafe((*left.value.obj), right, T_NUMBER)) { \
             left.value.obj->value.number OP right.value.number; \
@@ -248,7 +248,7 @@ typedef struct VM_instance {
     unsigned int ip;     /* pointer to an instruction */
     unsigned int program_size;
     Instruction_list* instructions;     /* all instructions */
-    Stack* stack;   /* list of objects */
+    Stack stack;   /* list of objects */
     Scope* global;  /* global scope */
     Object* dummy, obj_null;
     unsigned int stack_size;

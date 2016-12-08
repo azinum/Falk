@@ -17,10 +17,9 @@ int VM_init(VM_instance* VM) {
     VM->status = 1;
     /* custom stack init { */
     VM->stack_size = 28;
-    VM->stack = new(Stack);
-    VM->stack->value = newx(Object, VM->stack_size);
-    VM->stack->top = 0;
-    VM->stack->size = VM->stack_size;
+    VM->stack.value = newx(Object, VM->stack_size);
+    VM->stack.top = 0;
+    VM->stack.size = VM->stack_size;
     /* } */
     VM->instructions = new(Instruction_list);
     list_init(VM->instructions);
@@ -109,9 +108,9 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     ** if not true, throw an error
     */
     vmcase(VM_EQ_ASSIGN, {
-        if (VM->stack->top > 1) {
-            Object left = list_get_from_top(VM->stack, -1);
-            const Object right = list_get_top(VM->stack);
+        if (VM->stack.top > 1) {
+            Object left = list_get_from_top(&VM->stack, -1);
+            const Object right = list_get_top(&VM->stack);
             
             switch (right.type) {
                 case T_NUMBER: {
@@ -227,7 +226,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     });
     
     vmcase(VM_POP, {
-        if (VM->stack->top > 0) {
+        if (VM->stack.top > 0) {
             vm_stack_pop();
             vm_next;
         }
@@ -259,12 +258,12 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
         /*
         ** number of items on stack must be 2 or more (function and argc)
         */
-        if (VM->stack->top > 1) {
+        if (VM->stack.top > 1) {
             Object func;
             Object argc;
 
-            func = obj_convert(list_get_from_top(VM->stack, -1));
-            argc = list_get_top(VM->stack);
+            func = obj_convert(list_get_from_top(&VM->stack, -1));
+            argc = list_get_top(&VM->stack);
 
             if (func.type == T_CFUNCTION && argc.type == T_NUMBER) {
                 vm_stack_pop();     /* pop function */
@@ -282,8 +281,8 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     });
 
     vmcase(VM_IF, {
-        if (VM->stack->top > 0) {   /* stack can not be empty */
-            if (object_is_true(list_get_top(VM->stack))) {      /* if (true) {...} */
+        if (VM->stack.top > 0) {   /* stack can not be empty */
+            if (object_is_true(list_get_top(&VM->stack))) {      /* if (true) {...} */
                 vm_stack_pop();   /* pop top */
                 vm_jump(2);
             }
@@ -296,9 +295,9 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     });
 
     vmcase(VM_EXIT, {
-        if (VM->stack->top > 0) {
-            print_object(list_get_top(VM->stack));
-            list_sclear(VM->stack);
+        if (VM->stack.top > 0) {
+            print_object(list_get_top(&VM->stack));
+            list_sclear(&VM->stack);
         }
         printf("%.6g ms\n", (double)(clock() - start) / 1000.0f);
         return VM->status;
@@ -688,8 +687,8 @@ void VM_debug_print_vmi(VM_instance* VM, void* vmi) {
 ** print all items in stack
 */
 void VM_print_stack(VM_instance* VM) {
-    for (int i = 0; i < VM->stack->top; i++) {
-        print_object(list_get(VM->stack, i));
+    for (int i = 0; i < VM->stack.top; i++) {
+        print_object(list_get(&VM->stack, i));
     }
 }
 
@@ -698,6 +697,6 @@ void VM_instance_free(VM_instance* VM) {
     free(VM->global->variables->items);
     free(VM->global->variables);
     free(VM->global);
-    list_free(VM->stack);
+    free(VM->stack.value);
     free(VM);
 }
