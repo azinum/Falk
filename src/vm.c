@@ -271,11 +271,12 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
                 /* leftovers are all the args */
                 if (func.value.func.argc != (int)argc.value.number) {
                     vm_throw_error(VM, VM_ERR_CALL, VM_ERRC_CALL_INVALID_NUM_ARGS, "callf");
-                } else {
-                    Object rvalue = func.value.func.func(VM);
-                    vm_stack_push(rvalue, "callf");     /* push rvalue to stack */
-                    vm_next;
                 }
+                /* else */
+                Object rvalue = func.value.func.func(VM);
+                vm_stack_push(rvalue, "callf");     /* push rvalue to stack */
+                vm_next;
+            
             }
         }
     });
