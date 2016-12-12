@@ -16,6 +16,9 @@ LIBS= -ldl -lm
 
 all: none
 
+clean:
+	rm *.o
+
 mac:
 	@echo "Compiling for mac..."
 	$(CC) -o Falk *.c $(CFLAGS) $(LIBS)
