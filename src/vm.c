@@ -622,9 +622,9 @@ void** VM_asm2bytecode(VM_instance* VM, char* input) {
                 if (temp.type == T_IDENTIFIER) {
                     object_create(obj, string = temp.value, T_IDENTIFIER);
                     list_push((&result), (void*)obj);
-                } else {
-                    list_push((&result),  list_get(VM->instructions, temp.type));
+                    break;
                 }
+                list_push((&result),  list_get(VM->instructions, temp.type));
             }
                 break;
 
