@@ -100,10 +100,8 @@ int object_is_true(Object obj) {
                 return 1;
             break;
             
-        case T_STRING:
-            if (strncmp(obj.value.string, "", strlen(obj.value.string)))
-                return 1;
-            break;
+        case T_CSTRING:
+            return ((strcmp(obj.value.string, "")) == 0) ? 0 : 1;
             
         default:
             if (obj.value.ptr != NULL)
