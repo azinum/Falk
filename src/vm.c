@@ -298,7 +298,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
     vmcase(VM_EXIT, {
         if (VM->stack.top > 0) {
             print_object(list_get_top(&VM->stack));
-            list_sclear(&VM->stack);
+            /* list_sclear(&VM->stack); */
         }
         printf("%.6g ms\n", (double)(clock() - start) / 1000.0f);
         return VM->status;
