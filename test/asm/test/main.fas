@@ -1,0 +1,27 @@
+#
+# main.fas - test
+#
+
+call main
+
+main:
+# file = fopen("myfile.txt");
+    pushi file
+    push "myfile.txt"
+    push 2
+    call fopen
+    pop
+
+# read = fread(file);
+    pushi read
+    pushi file
+    push 1
+    call fread
+    eq_assign
+    pop
+
+# fclose(file);
+    pushi file
+    push 1
+    call fclose
+    pop
