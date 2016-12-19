@@ -59,20 +59,24 @@ typedef struct Grammar_rule {
 
 
 enum Parser_commands {
-    PARSERC_NONE,   /* do nothing */
-    PARSERC_SWAP,   /* swap current node with last node */
-    PARSERC_PUSH,   /* push node after current node */
+    PARSERC_NONE,
+    PARSERC_SWAP,
+    PARSERC_PUSH,
+    PARSERC_REMOVE,
 };
 
 static const char parsercommands_keys[] = {
-    'n',
-    's',
-    'p',     /* push(what) */
+    'n',    /* do nothing (goto next token) */
+    's',    /* swap A<=>B */
+    'p',    /* push (instruction) */
+    'r',    /* remove current token */
+    'u',    /* push token as it is */
+    '$',    /* parser variable $(ip)*/
 };
 
+
 static Grammar_rule grammar_rules[] = {
-    {"ident|expr + expr", "sp(callf)"},
-    {"add|sub + mul|div", "sn"},
+    {"word:", "p(push)$(ip)"},
     {NULL, NULL}
 };
 
@@ -85,6 +89,7 @@ typedef struct Parse_instance {
     Tokenlist* stack;   /* stack for dealing with operators */
     int jump;   /* block size when do look ahead */
     int lim;    /* do not parse beyond this */
+    HashTable variables;
 } Parse_instance;
 
 int parse_instance_init(Parse_instance* P);
