@@ -1,0 +1,19 @@
+#
+# test.fas - basic loop
+# Author: Azinum
+# Date: 2016-12-19
+#
+
+pushi what
+push "Hello World"
+eq_assign
+pop
+
+# push $pos func_def
+# parser handles the ip
+begin:
+  pushi what  # argument
+  push 1      # argc
+  call print  # built-in function print
+  pop         # pop print rvalue
+  call begin  # jump to ip of "begin" function/label
