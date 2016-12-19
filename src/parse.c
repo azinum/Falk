@@ -25,14 +25,17 @@ int parse_instance_init(Parse_instance* P) {
 
 
 int parse(Parse_instance* P, char* input) {
-    AST_node* node = new(AST_node);
-    ast_node_init(node, node);
+    /* AST_node* node = new(AST_node);
+    ast_node_init(node, node); */
     
     if (!lex(P->lex_instance, input))
         return 0;
     
-    node = parse_tree(P, node, 0, P->lex_instance->result.top);
-    ast_walk_ast(node, 0);
+    if (!parse_asm(P, input))
+        return 0;
+    
+    /* node = parse_tree(P, node, 0, P->lex_instance->result.top);
+    ast_walk_ast(node, 0); */
     
     return 1;
 }
@@ -94,6 +97,11 @@ AST_node* parse_tree(Parse_instance* P, AST_node* node, unsigned int from, unsig
     }
     
     return node;
+}
+
+int parse_asm(Parse_instance* P, char* input) {
+    
+    return 1;
 }
 
 unsigned char is_op(int op) {

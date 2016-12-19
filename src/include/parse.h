@@ -99,6 +99,8 @@ int parse(Parse_instance* P, char* input);
 
 AST_node* parse_tree(Parse_instance* P, AST_node* node, unsigned int from, unsigned int to);
 
+int parse_asm(Parse_instance* P, char* input);
+
 unsigned char is_op(int op);
 
 #endif /* parse_h */

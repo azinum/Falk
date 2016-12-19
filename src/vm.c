@@ -90,7 +90,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
             }
             return 0;
         }
-
+            
         default:
             vm_throw_error(VM, 0, 0, "Invalid exec mode");
             break;

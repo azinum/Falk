@@ -123,6 +123,7 @@ enum VM_instructions {
 enum VM_exec_mode {
     VM_EXEC_INTERPRET,      /* includes lexing, parsing and final vm execution step */
     VM_EXEC_FILE,   /* deserialize file and convert to vm instructions */
+    VM_PARSE_ONLY,
 };
 
 static const char* VMI_info[] = {

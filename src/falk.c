@@ -94,8 +94,7 @@ void falk_execute(Falk_instance* F) {
     }
     
     // VM_execute(F->vm_instance, VM_EXEC_FILE, "test/compile/autoexec.fac");
-    
-    falk_input(F, VM_EXEC_INTERPRET);
+    falk_input(F, VM_PARSE_ONLY);
 done:
     falk_instance_free(F);
 }
@@ -126,7 +125,11 @@ void falk_input(Falk_instance* F, int mode) {
     while (1) {
         printf(FALK_PROMPT);
         if (getline(&input, &size, stdin) > 0) {
-            if (!(VM_execute(F->vm_instance, mode, input)))
+            if (mode == VM_PARSE_ONLY) {
+                if (!parse(F->parse_instance, input))
+                    break;
+            }
+            else if (!(VM_execute(F->vm_instance, mode, input)))
                 break;
         }
     }
