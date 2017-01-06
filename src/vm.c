@@ -44,7 +44,7 @@ int VM_init(VM_instance* VM) {
     table_push_object(VM->global->variables, "pi", number = 3.14159265359, T_NUMBER);
     table_push_object(VM->global->variables, "vm", ptr = &VM, T_POINTER);
     table_push_object(VM->global->variables, "test", number = 32, T_NUMBER);
-    
+    falk_push_cfunction(VM, "print", (Cfunction){print_obj, 1});
     return 1;
 }
 

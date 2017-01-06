@@ -68,6 +68,8 @@ Token falk_create_token(char* string, unsigned int type);
 
 extern int falk_build_args(VM_instance* VM, const char* format, ...);
 
+Object print_obj(VM_instance* VM);
+
 extern_c_end
 
 #endif /* falk_h */

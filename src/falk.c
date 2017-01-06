@@ -378,6 +378,12 @@ done:
     return success;
 }
 
+Object print_obj(VM_instance* VM) {
+    print_object(list_get_top(&VM->stack));
+    falk_pop(VM);
+    return falk_create_null(VM);
+}
+
 void falk_instance_free(Falk_instance* F) {
     VM_instance_free(F->vm_instance);
     lex_instance_free(F->parse_instance->lex_instance);
