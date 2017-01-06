@@ -9,6 +9,8 @@
 #include "include/falk.h"
 #include "include/io.h"
 
+extern_c
+
 int VM_init(VM_instance* VM) {
     if (!VM) {
         return 0;
@@ -701,3 +703,5 @@ void VM_instance_free(VM_instance* VM) {
     free(VM->stack.value);
     free(VM);
 }
+
+extern_c_end

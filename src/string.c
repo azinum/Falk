@@ -8,6 +8,8 @@
 #include "include/object.h"
 #include "include/list.h"
 
+extern_c
+
 /*
 ** random string with readable characters
 */
@@ -275,3 +277,5 @@ unsigned long string_item_in_string_index(char* string, char* item) {
     }
     return 0;
 }
+
+extern_c_end

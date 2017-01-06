@@ -10,6 +10,8 @@
 #include "object.h"
 #include "list.h"
 
+extern_c
+
 #define table_init(TABLE) \
 TABLE->size = 1; \
 TABLE->top = 0; \
@@ -72,5 +74,7 @@ TValue* table_get(HashTable* table, int index);
 unsigned char table_push(HashTable* table, char* key, Object value);
 
 unsigned char table_replace(HashTable* table, char* key, Object value);
+
+extern_c_end
 
 #endif /* table_h */

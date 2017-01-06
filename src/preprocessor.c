@@ -7,6 +7,7 @@
 #include "include/preprocessor.h"
 #include "include/falk.h"
 
+extern_c
 
 void preprocessor_init(Preprocessor* preprocessor) {
     
@@ -37,3 +38,5 @@ void preprocessor_print_macros(Preprocessor* preprocessor) {
         printf("%s\n", preprocessor->macros->name);
     }
 }
+
+extern_c_end

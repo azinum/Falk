@@ -5,6 +5,8 @@
 
 #include "include/io.h"
 
+extern_c
+
 char* file_read(const char* fname) {
     char* buffer = NULL;
     long ssize, rsize;   /* string, read size*/
@@ -56,3 +58,5 @@ void printx(const char* what, unsigned int count) {
         printf("%s", what);
     }
 }
+
+extern_c_end

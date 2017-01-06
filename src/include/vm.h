@@ -8,10 +8,13 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+
 #include "list.h"
 #include "object.h"
 #include "lex.h"
 #include "table.h"
+
+extern_c
 
 #define VM_DEBUG 0
 
@@ -278,5 +281,7 @@ void VM_throw_error(VM_instance* VM, int error, int cause, const char* msg);
 void VM_debug_print_vmi(VM_instance* VM, void* vmi);
 
 void VM_print_stack(VM_instance* VM);
+
+extern_c_end
 
 #endif /* vm_h */

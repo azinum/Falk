@@ -6,6 +6,8 @@
 #include "include/lex.h"
 #include "include/falk.h"
 
+extern_c
+
 /*
 ** initialize any Lex_instance
 */
@@ -297,3 +299,4 @@ void lex_instance_free(Lex_instance* L) {
     free(L);    /* free whole instance */
 }
 
+extern_c_end

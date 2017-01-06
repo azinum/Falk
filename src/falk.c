@@ -9,6 +9,7 @@
 
 #include "include/falk.h"
 
+extern_c
 
 int falk_instance_init(Falk_instance* F) {
     if (!F) {
@@ -94,7 +95,7 @@ void falk_execute(Falk_instance* F) {
     }
     
     // VM_execute(F->vm_instance, VM_EXEC_FILE, "test/compile/autoexec.fac");
-    falk_input(F, VM_PARSE_ONLY);
+    falk_input(F, VM_EXEC_INTERPRET);
 done:
     falk_instance_free(F);
 }
@@ -384,3 +385,4 @@ void falk_instance_free(Falk_instance* F) {
     free(F);
 }
 
+extern_c_end

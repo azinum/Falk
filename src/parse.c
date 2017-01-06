@@ -6,6 +6,8 @@
 #include "include/parse.h"
 #include "include/falk.h"
 
+extern_c
+
 int parse_instance_init(Parse_instance* P) {
     if (!P) {
         return 0;
@@ -132,3 +134,5 @@ void parse_instance_free(Parse_instance* P) {
     list_free(P->stack);
     free(P);
 }
+
+extern_c_end

@@ -10,6 +10,8 @@
 #include "include/table.h"
 #include "include/falk.h"
 
+extern_c
+
 unsigned char is_number(const char* string) {
     if (strlen(string) <= 0)
         return 0;
@@ -181,3 +183,5 @@ char* object2string(Object obj) {
     }
     return ret;
 }
+
+extern_c_end

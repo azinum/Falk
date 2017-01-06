@@ -9,10 +9,12 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "conf.h"
 #include "list.h"
 
 #define LEX_DEBUG 0
 
+extern_c
 
 enum Lex_errors {
     LEX_NO_ERROR,
@@ -60,5 +62,7 @@ unsigned char get_opcode(char token);
 unsigned char is_identifier(const char* token);
 
 void lex_throw_error(Lex_instance* L, unsigned char error);
+
+extern_c_end
 
 #endif /* lex_h */

@@ -5,6 +5,8 @@
 #include "include/ast.h"
 #include "include/io.h"
 
+extern_c
+
 int ast_node_init(AST_node* node, AST_node* root) {
     if (!node) {
         node = new(AST_node);
@@ -152,3 +154,5 @@ int ast_node_pop(AST_node* node) {
     
     return 1;
 }
+
+extern_c_end

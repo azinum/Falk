@@ -11,10 +11,13 @@
 #include <string.h>
 #include <math.h>
 
+#include "conf.h"
 #include "vm.h"
 #include "parse.h"
 #include "string.h"
 #include "object.h"
+
+extern_c
 
 #define FALK_PROMPT "=> "
 #define MAXINPUT 512
@@ -64,5 +67,7 @@ extern Object falk_create_object(VM_instance* VM, char format, void* value);
 Token falk_create_token(char* string, unsigned int type);
 
 extern int falk_build_args(VM_instance* VM, const char* format, ...);
+
+extern_c_end
 
 #endif /* falk_h */

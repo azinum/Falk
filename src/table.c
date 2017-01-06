@@ -5,6 +5,8 @@
 
 #include "include/table.h"
 
+extern_c
+
 /*
 ** string to number hash
 */
@@ -81,3 +83,5 @@ unsigned char table_replace(HashTable* table, char* key, Object value) {
     }
     return 0;
 }
+
+extern_c_end

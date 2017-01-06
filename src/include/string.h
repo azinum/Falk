@@ -11,6 +11,10 @@
 #include <string.h>
 #include <time.h>
 
+#include "conf.h"
+
+extern_c
+
 enum String_transform_flags {
     STR_TRANSF_UPPERCASE,
     STR_TRANSF_LOWERCASE,
@@ -40,5 +44,7 @@ char* string_replace(char* source_string, char* a, char* b);
 unsigned char string_item_in_string(char* source_string, char* item);
 
 unsigned long string_item_in_string_index(char* source_string, char* item);
+
+extern_c_end
 
 #endif /* string_h */

@@ -10,6 +10,10 @@
 #include <string.h>
 #include <stdint.h>
 
+#include "conf.h"
+
+extern_c
+
 #define new(TYPE) ((TYPE*)malloc(sizeof(TYPE)))
 #define newx(TYPE, SIZE) ((TYPE*)malloc(SIZE * sizeof(TYPE)))
 
@@ -181,5 +185,7 @@ int object_is_cstring(Object obj);
 int object_is_number(Object obj);
 
 char* object2string(Object obj);
+
+extern_c_end
 
 #endif /* object_h */

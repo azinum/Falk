@@ -8,10 +8,13 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+
 #include "lex.h"
 #include "table.h"
 #include "llist.h"
 #include "ast.h"
+
+extern_c
 
 #define PARSE_DEBUG 0
 
@@ -76,7 +79,7 @@ static const char parsercommands_keys[] = {
 
 
 static Grammar_rule grammar_rules[] = {
-    {"word:", "p(push)$(ip)"},
+    {"word:", "p func"},
     {NULL, NULL}
 };
 
@@ -107,5 +110,7 @@ AST_node* parse_tree(Parse_instance* P, AST_node* node, unsigned int from, unsig
 int parse_asm(Parse_instance* P, char* input);
 
 unsigned char is_op(int op);
+
+extern_c_end
 
 #endif /* parse_h */

@@ -6,7 +6,10 @@
 #define preprocessor_h
 
 #include <stdio.h>
+
 #include "table.h"
+
+extern_c
 
 /*
  Example:
@@ -65,5 +68,7 @@ char* preprocess_string(Preprocessor* preprocessor, char* input);
 Prep_macro* preprocessor_find_macros(Preprocessor* preprocessor, char* input);
 
 void preprocessor_print_macros(Preprocessor* preprocessor);
+
+extern_c_end
 
 #endif /* preprocessor_h */

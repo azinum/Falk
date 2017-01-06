@@ -6,10 +6,13 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <string.h>
+#include <pthread.h>
 
 #include "include/falk.h"
 #include "include/preprocessor.h"
 
+extern_c
 
 int main(int argc, char** argv) {
     Falk_instance* F = new(Falk_instance);
@@ -23,3 +26,5 @@ int main(int argc, char** argv) {
     falk_execute(F);
     return 1;
 }
+
+extern_c_end
