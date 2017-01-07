@@ -19,7 +19,6 @@
 
 extern_c
 
-#define FALK_PROMPT "=> "
 #define MAXINPUT 512
 
 typedef struct Falk_instance {

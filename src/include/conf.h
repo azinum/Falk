@@ -10,3 +10,5 @@
 #define extern_c
 #define extern_c_end
 #endif
+
+#define FALK_PROMPT "=> "
