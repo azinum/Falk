@@ -102,6 +102,7 @@ AST_node* parse_tree(Parse_instance* P, AST_node* node, unsigned int from, unsig
 }
 
 int parse_asm(Parse_instance* P, char* input) {
+    lex(P->lex_instance, input);
     
     return 1;
 }

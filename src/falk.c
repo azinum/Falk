@@ -95,7 +95,7 @@ void falk_execute(Falk_instance* F) {
     }
     
     // VM_execute(F->vm_instance, VM_EXEC_FILE, "test/compile/autoexec.fac");
-    falk_input(F, VM_EXEC_INTERPRET);
+    falk_input(F, VM_PARSE_ONLY);
 done:
     falk_instance_free(F);
 }
