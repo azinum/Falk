@@ -14,11 +14,13 @@
 
 #define arr_size(arr) ((sizeof(arr)) / (sizeof(arr[0])))
 
-#define stack_push(value) vm->stack[++vm->top] = *(Object*)&code[ip]
-#define stack_pop() --vm->top
+#define stack_push(value) vm->top < vm->stack_size ? vm->stack[++vm->top] = *(Object*)&code[ip] : (void)0
+#define stack_pop() vm->top > 0 ? --vm->top : (void)0
 #define stack_get_top() (vm->stack[vm->top])
 
 #define op_arith(op) vm->stack[--vm->top].value.number op stack_get_top().value.number
+
+#define cond_arith(op) vm->stack[--vm->top].value.number = vm->stack[vm->top - 1].value.number op stack_get_top().value.number
 
 enum Instructions {
     I_EXIT = 1,
@@ -32,6 +34,12 @@ enum Instructions {
     I_MUL,
     I_DIV,
     
+    I_EQ,   /* == */
+    I_LT,   /* < */
+    I_GT,   /* > */
+    I_LEQ,   /* <= */
+    I_GEQ,   /* >= */
+    
     /* Object types */
     T_NUMBER,
     T_IDENTIFIER,
@@ -39,12 +47,12 @@ enum Instructions {
 
 const char valid_characters[]       = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM_";
 const char valid_characters_after[] = "1234567890";
-const char delim_tokens[] = "!?%&|^~(){}[]+-*/=\n\t; ";
-
+const char delim_tokens[] = "!?%&|^~(){}[]+-*/=<>\n\t:; ";
 
 typedef struct Object {
     union {
         double number;
+        char* string;
         struct Object* next;
     } value;
     unsigned char type;
@@ -56,7 +64,7 @@ typedef struct Token {
 } Token;
 
 typedef struct UVM_state {
-    unsigned short top;
+    unsigned short top, stack_size;
     struct Object stack[32];
     unsigned int lex_size;
 } UVM_state;
@@ -71,10 +79,16 @@ struct Token tokens[] = {
     {"sub", I_SUB},
     {"mul", I_MUL},
     {"div", I_DIV},
+    {"eq", I_EQ},
+    {"lt", I_LT},
+    {"gt", I_GT},
+    {"leq", I_LEQ},
+    {"geq", I_GEQ}
 };
 
 int UVM_init(UVM_state* vm) {
     vm->top = 0;
+    vm->stack_size = arr_size(vm->stack);
     vm->lex_size = 0;
     return 1;
 }
@@ -94,10 +108,10 @@ void UVM_print_top(UVM_state* vm) {
 unsigned char is_delim_token(UVM_state* vm, char* str, unsigned int i) {
     char ch = str[i];
     unsigned int end = 0;
-    do {
-        if (ch == delim_tokens[end])
+    while (delim_tokens[end] != '\0') {
+        if (ch == delim_tokens[end++])
             return 1;
-    } while (delim_tokens[end++] != '\0');
+    };
     return 0;
 }
 
@@ -223,13 +237,7 @@ int UVM_exec(UVM_state* vm, char* str) {
                 }
             }
                 break;
-                
-            /*
-            ** x => stack top
-            ** x ? a, b
-            **      ^ if true goto a
-            **         ^ if false goto b
-            */
+
             case I_IF: {
                 if (vm->top >= 1) {
                     const Object top = stack_get_top();
@@ -261,15 +269,37 @@ int UVM_exec(UVM_state* vm, char* str) {
                 op_arith(/=);
                 break;
                 
+            case I_EQ:
+                cond_arith(==);
+                break;
+                
+            case I_LT:
+                cond_arith(<);
+                break;
+                
+            case I_GT:
+                cond_arith(>);
+                break;
+                
+            case I_LEQ:
+                cond_arith(<=);
+                break;
+                
+            case I_GEQ:
+                cond_arith(>=);
+                break;
+                
             case I_EXIT:
-                UVM_print_top(vm);
-                return 2;
+                goto done;
                 break;
             
             default:
                 break;
         }
     }
+    
+done:
+    UVM_print_top(vm);
     return 1;
 }
 
@@ -278,13 +308,13 @@ int UVM_free(UVM_state* vm) {
     return 1;
 }
 
-int main(int argc, const char * argv[]) {
+int main(int argc, const char* argv[]) {
     UVM_state* vm = alloc_new(UVM_state);
     UVM_init(vm);
     UVM_exec(vm,
+             "push 12;"
              "push 3;"
-             "push 3;"
-             "mul;"
+             "gt;"
              "exit;"
              );
     UVM_free(vm);
