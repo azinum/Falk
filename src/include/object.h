@@ -59,7 +59,7 @@ NAME->type = TYPE
 typedef struct Object (*Func)();
 
 typedef struct Cfunction {
-    Func func;
+    Func value;
     unsigned int argc;
 } Cfunction;
 
