@@ -19,6 +19,9 @@ all: none
 clean:
 	rm *.o
 
+help:
+	@echo "Avaiable options are: $(PLATFORMS)."
+
 mac:
 	@echo "Compiling for mac..."
 	$(CC) -o Falk *.c $(CFLAGS) $(LIBS)
@@ -30,5 +33,5 @@ linux:
 	@echo "Compilation complete"
 
 none:
-	@echo "Invalid option."
-	@echo "Avaiable options are: $(PLATFORMS)."
+	@echo "No option is selected. Using default option (Mac)"
+	mac
