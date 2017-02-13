@@ -16,6 +16,9 @@ LIBS= -ldl -lm
 
 all: none
 
+clear:
+	clean
+
 clean:
 	rm *.o
 
