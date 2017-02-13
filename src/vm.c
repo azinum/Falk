@@ -266,7 +266,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
 
             func = obj_convert(list_get_from_top(&VM->stack, -1));
             argc = list_get_top(&VM->stack);
-
+            
             if (func.type == T_CFUNCTION && argc.type == T_NUMBER) {
                 vm_stack_pop();     /* pop function */
                 vm_stack_pop();     /* pop argc */
@@ -275,7 +275,7 @@ int VM_execute(VM_instance* VM, int mode, char* input) {
                     vm_throw_error(VM, VM_ERR_CALL, VM_ERRC_CALL_INVALID_NUM_ARGS, "callf");
                 }
                 /* else */
-                Object rvalue = func.value.func.func(VM);
+                Object rvalue = func.value.func.value(VM);
                 vm_stack_push(rvalue, "callf");     /* push rvalue to stack */
                 vm_next;
             
